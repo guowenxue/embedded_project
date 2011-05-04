@@ -77,7 +77,7 @@
 #define DEV_EEPROM_NAME          "eeprom"
 #define DEV_EEPROM_MAJOR         206
 
-#define SKELETON_NAME               "skelton"
+#define SKELETON_NAME               "skeleton"
 //#define DEV_MAJOR                 218      /*Use dynamic major number*/
 
 #define FAKE_TTY_DRV_NAME           "faketty"

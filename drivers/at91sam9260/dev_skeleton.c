@@ -95,12 +95,42 @@ static struct file_operations skeleton_fops = {
     .ioctl = skeleton_ioctl,
 };
 
+#ifdef CONFIG_PROC_FS
+int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, void *data)
+{
+    int len = 0;
+
+    if(offset > 0)
+    {
+        *eof = 1 ; 
+        return 0;
+    }
+
+    len += sprintf(buf+len,"===============================================:\n");
+    len += sprintf(buf+len,"All driver common ioctl:\n");
+    len += sprintf(buf+len,"Enable driver debug: %u\n", SET_DRV_DEBUG);
+    len += sprintf(buf+len,"Get driver version: %u\n", GET_DRV_VER);
+    len += sprintf(buf+len,"\n");
+
+    len += sprintf(buf+len,"Beep driver ioctl:\n");
+    len += sprintf(buf+len,"Alarm enable: %u\n", BEEP_DISALARM);
+    len += sprintf(buf+len,"Alarm disable: %u\n", BEEP_ENALARM);
+    len += sprintf(buf+len,"\n");
+
+    return len;
+}
+#endif
+
 static void skeleton_cleanup(void)
 {
     dev_t devno = MKDEV(dev_major, dev_minor);
 
     cdev_del(skeleton_cdev);
     unregister_chrdev_region(devno, 1);
+
+#ifdef CONFIG_PROC_FS
+    remove_proc_entry("scullseq", NULL);
+#endif
 
     printk("%s driver removed\n", DEV_NAME);
 }
@@ -146,6 +176,10 @@ static int __init skeleton_init(void)
         printk("%s driver can't alloc for skeleton_cdev\n", DEV_NAME);
         goto ERROR;
     }
+
+#ifdef CONFIG_PROC_FS 
+    create_proc_read_entry("ioctl", 0, NULL, read_proc_ioctl, NULL);
+#endif
 
     printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER,
            DRV_REVER_VER);

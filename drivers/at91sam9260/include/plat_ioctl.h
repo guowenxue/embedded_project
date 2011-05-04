@@ -28,57 +28,56 @@
  *===========================================================================*/
 
 /*args is enable or disable*/
-#define SET_DRV_DEBUG               _IOW (AT91_PLATDRV_MAGIC, 0x01, unsigned int)
-#define GET_DRV_VER                 _IOR (AT91_PLATDRV_MAGIC, 0x02, unsigned int)
+#define SET_DRV_DEBUG               _IO (AT91_PLATDRV_MAGIC, 0x01)
+#define GET_DRV_VER                 _IO (AT91_PLATDRV_MAGIC, 0x02)
 
 /*===========================================================================
  *                 ioctl command for few ioctl() cmd driver 0x10~0x2F
  *===========================================================================*/
 /* Restore key */
-#define RESTR_KEY_STATUS            _IOR  (AT91_PLATDRV_MAGIC, 0x14, unsigned int)
-#define QUERY_PRESS_TIME            _IOR  (AT91_PLATDRV_MAGIC, 0x15, unsigned int)
+#define RESTR_KEY_STATUS            _IO  (AT91_PLATDRV_MAGIC, 0x14)
+#define QUERY_PRESS_TIME            _IO  (AT91_PLATDRV_MAGIC, 0x15)
 
 /* BEEP driver */
 #define BEEP_DISALARM               _IO  (AT91_PLATDRV_MAGIC, 0x16)
 #define BEEP_ENALARM                _IO  (AT91_PLATDRV_MAGIC, 0x17)
-#define SET_DEFAULT_BEEP_FREQ       _IOW (AT91_PLATDRV_MAGIC, 0x18, unsigned int)
 
 /* LED driver */
-#define LED_OFF                     _IO   (AT91_PLATDRV_MAGIC, 0x18)
-#define LED_ON                      _IO   (AT91_PLATDRV_MAGIC, 0x19)
+#define LED_OFF                     _IO  (AT91_PLATDRV_MAGIC, 0x18)
+#define LED_ON                      _IO  (AT91_PLATDRV_MAGIC, 0x19)
 /*Let LED blink, argument: 0->HW blink  Else Timer blink, arg is the timeout value*/
-#define LED_BLINK                   _IOW  (AT91_PLATDRV_MAGIC, 0x1A, unsigned int)
+#define LED_BLINK                   _IO  (AT91_PLATDRV_MAGIC, 0x1A)
 
 /*===========================================================================
  *                   ioctl command for GPRS driver 0x30~0x4F
  *===========================================================================*/
 #define GPRS_POWERDOWN              _IO  (AT91_PLATDRV_MAGIC, 0x30)
-#define GPRS_POWERON                _IOW (AT91_PLATDRV_MAGIC, 0x31, unsigned int)
-#define GPRS_RESET                  _IOW (AT91_PLATDRV_MAGIC, 0x32, unsigned int)
+#define GPRS_POWERON                _IO  (AT91_PLATDRV_MAGIC, 0x31)
+#define GPRS_RESET                  _IO  (AT91_PLATDRV_MAGIC, 0x32)
 #define GPRS_POWERMON               _IO  (AT91_PLATDRV_MAGIC, 0x33)
 /*Get Which SIM slot work, ioctl(fd, GET_SIM_SLOT, 0)*/
 #define CHK_WORK_SIMSLOT            _IO  (AT91_PLATDRV_MAGIC, 0x34)
 /*Set Which SIM slot work now*/
-#define SET_WORK_SIMSLOT            _IOW (AT91_PLATDRV_MAGIC, 0x35, unsigned int)
+#define SET_WORK_SIMSLOT            _IO  (AT91_PLATDRV_MAGIC, 0x35)
 /*Check the specify SIM door status*/
-#define GPRS_CHK_SIMDOOR            _IOW(AT91_PLATDRV_MAGIC, 0x36, unsigned int)
-#define GPRS_SET_DTR                _IOW (AT91_PLATDRV_MAGIC, 0x37, unsigned int)
-#define GPRS_GET_RING               _IOR (AT91_PLATDRV_MAGIC, 0x38, unsigned int)
-#define SET_PWUP_TIME               _IOW (AT91_PLATDRV_MAGIC, 0x39, unsigned int)
-#define SET_PWDOWN_TIME             _IOW (AT91_PLATDRV_MAGIC, 0x3A, unsigned int)
-#define SET_RESET_TIME              _IOW (AT91_PLATDRV_MAGIC, 0x3B, unsigned int)
+#define GPRS_CHK_SIMDOOR            _IO  (AT91_PLATDRV_MAGIC, 0x36)
+#define GPRS_SET_DTR                _IO  (AT91_PLATDRV_MAGIC, 0x37)
+#define GPRS_GET_RING               _IO  (AT91_PLATDRV_MAGIC, 0x38)
+#define SET_PWUP_TIME               _IO  (AT91_PLATDRV_MAGIC, 0x39)
+#define SET_PWDOWN_TIME             _IO  (AT91_PLATDRV_MAGIC, 0x3A)
+#define SET_RESET_TIME              _IO  (AT91_PLATDRV_MAGIC, 0x3B)
 
 /*===========================================================================
  *                   ioctl command for EEPROM driver 0x50~0x5F
  *===========================================================================*/
-#define LL_POWEROFF                 _IO   (AT91_PLATDRV_MAGIC, 0x50)
-#define LL_POWERON                  _IO   (AT91_PLATDRV_MAGIC, 0x51)
-#define LL_STOP                     _IO   (AT91_PLATDRV_MAGIC, 0x52)
-#define LL_START                    _IO   (AT91_PLATDRV_MAGIC, 0x53)
-#define LL_READ                     _IOR  (AT91_PLATDRV_MAGIC, 0x54, unsigned char)
-#define LL_WRITE                    _IOW  (AT91_PLATDRV_MAGIC, 0x55, unsigned char)
-#define LL_DATALOW                  _IOW  (AT91_PLATDRV_MAGIC, 0x56, unsigned char)
-#define LL_ACKNAK                   _IOW  (AT91_PLATDRV_MAGIC, 0x57, unsigned char)
+#define LL_POWEROFF                 _IO  (AT91_PLATDRV_MAGIC, 0x50)
+#define LL_POWERON                  _IO  (AT91_PLATDRV_MAGIC, 0x51)
+#define LL_STOP                     _IO  (AT91_PLATDRV_MAGIC, 0x52)
+#define LL_START                    _IO  (AT91_PLATDRV_MAGIC, 0x53)
+#define LL_READ                     _IO  (AT91_PLATDRV_MAGIC, 0x54)
+#define LL_WRITE                    _IO  (AT91_PLATDRV_MAGIC, 0x55)
+#define LL_DATALOW                  _IO  (AT91_PLATDRV_MAGIC, 0x56)
+#define LL_ACKNAK                   _IO  (AT91_PLATDRV_MAGIC, 0x57)
 
 
 #endif                          /* __PLAT_IOCTL_H */
