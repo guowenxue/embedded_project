@@ -1,0 +1,8 @@
+RT2070 AP/STA driver compress command
+----------
+7za a -t7z -mhe=on -P ralink_wifi.7z ralink_wifi/
+
+
+RT2070 AP/STA driver decompress command
+----------
+7za x ralink_wifi.7z 

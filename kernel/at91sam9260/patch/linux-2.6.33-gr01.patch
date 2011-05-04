@@ -1,0 +1,959 @@
+diff -Nuar linux-2.6.33/arch/arm/boot/compressed/misc.c linux-2.6.33-L200v5/arch/arm/boot/compressed/misc.c
+--- linux-2.6.33/arch/arm/boot/compressed/misc.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/boot/compressed/misc.c	2010-12-07 17:09:27.000000000 +0800
+@@ -104,6 +104,7 @@
+ 
+ static void putstr(const char *ptr)
+ {
++#if 0 /*Comment by guowenxue for L350, 2010.07.27*/
+ 	char c;
+ 
+ 	while ((c = *ptr++) != '\0') {
+@@ -113,6 +114,7 @@
+ 	}
+ 
+ 	flush();
++#endif
+ }
+ 
+ #endif
+diff -Nuar linux-2.6.33/arch/arm/mach-at91/at91sam9260_devices.c linux-2.6.33-L200v5/arch/arm/mach-at91/at91sam9260_devices.c
+--- linux-2.6.33/arch/arm/mach-at91/at91sam9260_devices.c	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/mach-at91/at91sam9260_devices.c	2010-12-07 17:09:27.000000000 +0800
+@@ -1050,8 +1050,10 @@
+ 	at91_set_A_periph(AT91_PIN_PB10, 1);		/* TXD3 */
+ 	at91_set_A_periph(AT91_PIN_PB11, 0);		/* RXD3 */
+ 
++#if 0 /*Comment by guowenxue, it's used as LED1 on L200ARM9*/
+ 	if (pins & ATMEL_UART_RTS)
+ 		at91_set_B_periph(AT91_PIN_PC8, 0);	/* RTS3 */
++#endif
+ 	if (pins & ATMEL_UART_CTS)
+ 		at91_set_B_periph(AT91_PIN_PC10, 0);	/* CTS3 */
+ }
+@@ -1308,15 +1310,19 @@
+ 
+ 	switch (data->chipselect) {
+ 	case 4:
++#if 0 /*Comment by guowenxue, it's used as LED1 on L200ARM9*/
+ 		at91_set_multi_drive(AT91_PIN_PC8, 0);
+ 		at91_set_A_periph(AT91_PIN_PC8, 0);
++#endif
+ 		csa |= AT91_MATRIX_CS4A_SMC_CF1;
+ 		cf0_data = *data;
+ 		pdev = &cf0_device;
+ 		break;
+ 	case 5:
++#if 0 /*Comment by guowenxue, it's used as LED1 on L200ARM9*/
+ 		at91_set_multi_drive(AT91_PIN_PC9, 0);
+ 		at91_set_A_periph(AT91_PIN_PC9, 0);
++#endif
+ 		csa |= AT91_MATRIX_CS5A_SMC_CF2;
+ 		cf1_data = *data;
+ 		pdev = &cf1_device;
+diff -Nuar linux-2.6.33/arch/arm/mach-at91/at91sam9261_devices.c linux-2.6.33-L200v5/arch/arm/mach-at91/at91sam9261_devices.c
+--- linux-2.6.33/arch/arm/mach-at91/at91sam9261_devices.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/mach-at91/at91sam9261_devices.c	2010-12-07 17:09:27.000000000 +0800
+@@ -888,8 +888,10 @@
+ 
+ static inline void configure_usart0_pins(unsigned pins)
+ {
++#if 0 /*Comment by guowenxue*/
+ 	at91_set_A_periph(AT91_PIN_PC8, 1);		/* TXD0 */
+ 	at91_set_A_periph(AT91_PIN_PC9, 0);		/* RXD0 */
++#endif
+ 
+ 	if (pins & ATMEL_UART_RTS)
+ 		at91_set_A_periph(AT91_PIN_PC10, 0);	/* RTS0 */
+diff -Nuar linux-2.6.33/arch/arm/mach-at91/board-sam9260ek.c linux-2.6.33-L200v5/arch/arm/mach-at91/board-sam9260ek.c
+--- linux-2.6.33/arch/arm/mach-at91/board-sam9260ek.c	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/mach-at91/board-sam9260ek.c	2010-12-07 17:19:54.000000000 +0800
+@@ -48,6 +48,67 @@
+ #include "sam9_smc.h"
+ #include "generic.h"
+ 
++/*DM9000 support add by guowenxue, 2010.07.27 */
++
++#if defined(CONFIG_DM9000) || defined(CONFIG_DM9000_MODULE)
++static struct resource at91sam9260_dm9000_resource[] = {
++        [0] = {
++                .start  = AT91_CHIPSELECT_4,
++                .end    = AT91_CHIPSELECT_4 + 3,
++                .flags  = IORESOURCE_MEM
++        },
++        [1] = {
++                .start  = AT91_CHIPSELECT_4 + 0x44,
++                .end    = AT91_CHIPSELECT_4 + 0xFF,
++                .flags  = IORESOURCE_MEM
++        },
++        [2] = {
++                .start  = AT91_PIN_PC15,
++                .end    = AT91_PIN_PC15,
++                .flags  = IORESOURCE_IRQ
++        }
++};
++
++#include <linux/dm9000.h>
++static struct dm9000_plat_data dm9000_platdata = {
++        .flags          = DM9000_PLATF_16BITONLY,
++};
++
++static struct platform_device at91sam9260_dm9000_device = {
++        .name           = "dm9000",
++        .id             = 0,
++        .num_resources  = ARRAY_SIZE(at91sam9260_dm9000_resource),
++        .resource       = at91sam9260_dm9000_resource,
++        .dev            = {
++                .platform_data  = &dm9000_platdata,
++        }
++};
++
++static void __init ek_add_device_dm9000(void)
++{
++        /*
++         * Configure Chip-Select 2 on SMC for the DM9000.
++         * Note: These timings were calculated for MASTER_CLOCK = 100000000
++         *  according to the DM9000 timings.
++         */
++        at91_sys_write(AT91_SMC_SETUP(4), AT91_SMC_NWESETUP_(2) | AT91_SMC_NCS_WRSETUP_(0) | AT91_SMC_NRDSETUP_(2) | AT91_SMC_NCS_RDSETUP_(0)); 
++        at91_sys_write(AT91_SMC_PULSE(4), AT91_SMC_NWEPULSE_(4) | AT91_SMC_NCS_WRPULSE_(8) | AT91_SMC_NRDPULSE_(4) | AT91_SMC_NCS_RDPULSE_(8));
++        at91_sys_write(AT91_SMC_CYCLE(4), AT91_SMC_NWECYCLE_(16) | AT91_SMC_NRDCYCLE_(16));
++        at91_sys_write(AT91_SMC_MODE(4), AT91_SMC_READMODE | AT91_SMC_WRITEMODE | AT91_SMC_EXNWMODE_DISABLE | AT91_SMC_BAT_WRITE | AT91_SMC_DBW_16 | AT91_SMC_TDF_(1));
++
++        /* Configure Interrupt pin as PC15, no pull-up */
++        at91_set_gpio_input(AT91_PIN_PC15, 0);
++
++        /* Configure NCS4 pin as cs, pull-up */
++#if 0 /*Comment by guowenxue, for L200ARM9 LED1 use this PIN*/
++        at91_set_A_periph(AT91_PIN_PC8, 1);
++#endif
++
++        platform_device_register(&at91sam9260_dm9000_device);
++}
++#endif /* CONFIG_DM9000 */
++/*Add by guowenxue, 2010.07.27 end*/
++
+ 
+ static void __init ek_map_io(void)
+ {
+@@ -65,8 +126,14 @@
+ 	/* USART1 on ttyS2. (Rx, Tx, RTS, CTS) */
+ 	at91_register_uart(AT91SAM9260_ID_US1, 2, ATMEL_UART_CTS | ATMEL_UART_RTS);
+ 
++    /*This 3 UART port add by guowenxue*/
++	at91_register_uart(AT91SAM9260_ID_US2, 3, ATMEL_UART_CTS | ATMEL_UART_RTS);
++	at91_register_uart(AT91SAM9260_ID_US3, 4, ATMEL_UART_CTS | ATMEL_UART_RTS);
++	at91_register_uart(AT91SAM9260_ID_US4, 5, ATMEL_UART_CTS | ATMEL_UART_RTS);
++    /*Add end*/
+ 	/* set serial console to ttyS0 (ie, DBGU) */
+-	at91_set_serial_console(0);
++	at91_set_serial_console(0); 
++
+ }
+ 
+ static void __init ek_init_irq(void)
+@@ -104,11 +171,13 @@
+ /*
+  * Audio
+  */
++#if 0 /*Comment by guowenxue 2010.07.27, L350 doesn't support it.*/
+ static struct at73c213_board_info at73c213_data = {
+ 	.ssc_id		= 0,
+ 	.shortname	= "AT91SAM9260-EK external DAC",
+ };
+ 
++
+ #if defined(CONFIG_SND_AT73C213) || defined(CONFIG_SND_AT73C213_MODULE)
+ static void __init at73c213_set_clk(struct at73c213_board_info *info)
+ {
+@@ -129,6 +198,7 @@
+ #else
+ static void __init at73c213_set_clk(struct at73c213_board_info *info) {}
+ #endif
++#endif /*Comment by guowenxue 2010.07.27 End*/
+ 
+ /*
+  * SPI devices.
+@@ -173,19 +243,54 @@
+ 
+ 
+ /*
+- * NAND flash
++ * NAND flash, Modify the Nand Flash partition by guowenxue, 2010.07.27
+  */
+ static struct mtd_partition __initdata ek_nand_partition[] = {
+-	{
+-		.name	= "Partition 1",
+-		.offset	= 0,
+-		.size	= SZ_256K,
+-	},
+-	{
+-		.name	= "Partition 2",
+-		.offset	= MTDPART_OFS_NXTBLK,
+-		.size	= MTDPART_SIZ_FULL,
+-	},
++    {
++        name:"bootstrap - 128KB",
++        offset:0,
++        size:SZ_128K
++    },
++    {
++        name:"uboot - 256KB",
++        offset:SZ_128K,
++        size:SZ_256K
++    },
++    {
++        name:"uboot env - 128KB",
++        offset:3 * SZ_128K,
++        size:SZ_128K
++    },
++    {
++        name:"uboot env swap - 128KB",
++        offset:4 * SZ_128K,
++        size:SZ_128K
++    },
++    {
++        name:"kernel - 5MB",
++        offset:5 * SZ_128K,
++        size:5 * SZ_1M
++    },
++    {
++        name:"fs - 5MB",
++        offset:5 * SZ_1M + 5 * SZ_128K,
++        size:5 * SZ_1M
++    },
++    {
++        name:"apps - 20MB",
++        offset:5 * SZ_128K + 10 * SZ_1M,
++        size:20 * SZ_1M
++    },
++    {
++        name:"info - 1MB",
++        offset:5 * SZ_128K + 30 * SZ_1M,
++        size:1 * SZ_1M
++    },
++    {
++        name:"data - 224MB",
++        offset:5 * SZ_128K + 31 * SZ_1M,
++        size:224 * SZ_1M
++    },
+ };
+ 
+ static struct mtd_partition * __init nand_partitions(int size, int *num_partitions)
+@@ -247,9 +352,9 @@
+ static struct at91_mmc_data __initdata ek_mmc_data = {
+ 	.slot_b		= 1,
+ 	.wire4		= 1,
+-//	.det_pin	= ... not connected
+-//	.wp_pin		= ... not connected
+-//	.vcc_pin	= ... not connected
++	.det_pin	= AT91_PIN_PA6,  /*Add by guowenxue, 2010.07.27*/
++	.wp_pin		= AT91_PIN_PA9,  /*Add by guowenxue, 2010.07.27*/
++	.vcc_pin	= AT91_PIN_PB19, /*Add by guowenxue, 2010.07.27*/
+ };
+ 
+ 
+@@ -359,7 +464,10 @@
+ 	/* Compact Flash */
+ 	at91_add_device_cf(&ek_cf_data);
+ 	/* SSC (to AT73C213) */
+-	at73c213_set_clk(&at73c213_data);
++//	at73c213_set_clk(&at73c213_data); /*Comment by guowenxue, 2010.07.27*/
++#if defined(CONFIG_DM9000) || defined(CONFIG_DM9000_MODULE)
++    ek_add_device_dm9000(); /*Add dm9000 driver by guowenxue*/
++#endif
+ 	at91_add_device_ssc(AT91SAM9260_ID_SSC, ATMEL_SSC_TX);
+ 	/* LEDs */
+ 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
+diff -Nuar linux-2.6.33/arch/arm/mach-at91/include/mach/at91sam9260.h linux-2.6.33-L200v5/arch/arm/mach-at91/include/mach/at91sam9260.h
+--- linux-2.6.33/arch/arm/mach-at91/include/mach/at91sam9260.h	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/mach-at91/include/mach/at91sam9260.h	2010-12-07 17:09:27.000000000 +0800
+@@ -135,4 +135,138 @@
+ 
+ #define AT91SAM9G20_UHP_BASE	0x00500000	/* USB Host controller */
+ 
++/*Add by guowenxue, copy from linux 2.6.22.1/include/asm/arch-at91/at91sam9260.h */
++
++/*Part I*/
++#define AT91C_US_RSTRX        (0x1 <<  2) 
++#define AT91C_US_RSTTX        (0x1 <<  3) 
++#define AT91C_US_RXEN         (0x1 <<  4) 
++#define AT91C_US_RXDIS        (0x1 <<  5) 
++#define AT91C_US_TXEN         (0x1 <<  6) 
++#define AT91C_US_TXDIS        (0x1 <<  7) 
++#define AT91C_US_RSTSTA       (0x1 <<  8) 
++
++#define AT91C_US_PAR          (0x7 <<  9) 
++#define     AT91C_US_PAR_EVEN                 (0x0 <<  9) 
++#define     AT91C_US_PAR_ODD                  (0x1 <<  9) 
++#define     AT91C_US_PAR_SPACE                (0x2 <<  9) 
++#define     AT91C_US_PAR_MARK                 (0x3 <<  9) 
++#define     AT91C_US_PAR_NONE                 (0x4 <<  9) 
++#define     AT91C_US_PAR_MULTI_DROP           (0x6 <<  9) 
++#define AT91C_US_CHMODE       (0x3 << 14) 
++#define     AT91C_US_CHMODE_NORMAL               (0x0 << 14) 
++#define     AT91C_US_CHMODE_AUTO                 (0x1 << 14) 
++#define     AT91C_US_CHMODE_LOCAL                (0x2 << 14) 
++#define     AT91C_US_CHMODE_REMOTE               (0x3 << 14) 
++
++#define AT91C_US_RXRDY        (0x1 <<  0) 
++#define AT91C_US_TXRDY        (0x1 <<  1) 
++#define AT91C_US_ENDRX        (0x1 <<  3) 
++#define AT91C_US_ENDTX        (0x1 <<  4) 
++#define AT91C_US_OVRE         (0x1 <<  5) 
++#define AT91C_US_FRAME        (0x1 <<  6) 
++#define AT91C_US_PARE         (0x1 <<  7) 
++#define AT91C_US_TXEMPTY      (0x1 <<  9) 
++#define AT91C_US_TXBUFE       (0x1 << 11) 
++#define AT91C_US_RXBUFF       (0x1 << 12) 
++#define AT91C_US_COMM_TX      (0x1 << 30) 
++#define AT91C_US_COMM_RX      (0x1 << 31) 
++/*Part I End*/
++
++/*Part II*/
++#define AT91C_US_STTBRK       (0x1 <<  9) 
++#define AT91C_US_STPBRK       (0x1 << 10) 
++#define AT91C_US_STTTO        (0x1 << 11) 
++#define AT91C_US_SENDA        (0x1 << 12) 
++#define AT91C_US_RSTIT        (0x1 << 13) 
++#define AT91C_US_RSTNACK      (0x1 << 14) 
++#define AT91C_US_RETTO        (0x1 << 15) 
++#define AT91C_US_DTREN        (0x1 << 16) 
++#define AT91C_US_DTRDIS       (0x1 << 17) 
++#define AT91C_US_RTSEN        (0x1 << 18) 
++#define AT91C_US_RTSDIS       (0x1 << 19) 
++
++#define AT91C_US_USMODE       (0xF <<  0) 
++#define     AT91C_US_USMODE_NORMAL               (0x0) 
++#define     AT91C_US_USMODE_RS485                (0x1) 
++#define     AT91C_US_USMODE_HWHSH                (0x2) 
++#define     AT91C_US_USMODE_MODEM                (0x3) 
++#define     AT91C_US_USMODE_ISO7816_0            (0x4) 
++#define     AT91C_US_USMODE_ISO7816_1            (0x6) 
++#define     AT91C_US_USMODE_IRDA                 (0x8) 
++#define     AT91C_US_USMODE_SWHSH                (0xC) 
++#define AT91C_US_CLKS         (0x3 <<  4) 
++#define     AT91C_US_CLKS_CLOCK                (0x0 <<  4) 
++#define     AT91C_US_CLKS_FDIV1                (0x1 <<  4) 
++#define     AT91C_US_CLKS_SLOW                 (0x2 <<  4) 
++#define     AT91C_US_CLKS_EXT                  (0x3 <<  4) 
++#define AT91C_US_CHRL         (0x3 <<  6) 
++#define     AT91C_US_CHRL_5_BITS               (0x0 <<  6) 
++#define     AT91C_US_CHRL_6_BITS               (0x1 <<  6) 
++#define     AT91C_US_CHRL_7_BITS               (0x2 <<  6) 
++#define     AT91C_US_CHRL_8_BITS               (0x3 <<  6) 
++#define AT91C_US_SYNC         (0x1 <<  8) 
++#define AT91C_US_NBSTOP       (0x3 << 12) 
++#define     AT91C_US_NBSTOP_1_BIT                (0x0 << 12) 
++#define     AT91C_US_NBSTOP_15_BIT               (0x1 << 12) 
++#define     AT91C_US_NBSTOP_2_BIT                (0x2 << 12) 
++#define AT91C_US_MSBF         (0x1 << 16) 
++#define AT91C_US_MODE9        (0x1 << 17) 
++#define AT91C_US_CKLO         (0x1 << 18) 
++#define AT91C_US_OVER         (0x1 << 19) 
++#define AT91C_US_INACK        (0x1 << 20) 
++#define AT91C_US_DSNACK       (0x1 << 21) 
++#define AT91C_US_MAX_ITER     (0x1 << 24) 
++#define AT91C_US_FILTER       (0x1 << 28) 
++
++#define AT91C_US_RXBRK        (0x1 <<  2) 
++#define AT91C_US_TIMEOUT      (0x1 <<  8) 
++#define AT91C_US_ITERATION    (0x1 << 10) 
++#define AT91C_US_NACK         (0x1 << 13) 
++#define AT91C_US_RIIC         (0x1 << 16) 
++#define AT91C_US_DSRIC        (0x1 << 17) 
++#define AT91C_US_DCDIC        (0x1 << 18) 
++#define AT91C_US_CTSIC        (0x1 << 19) 
++
++#define AT91C_US_RI           (0x1 << 20) 
++#define AT91C_US_DSR          (0x1 << 21) 
++#define AT91C_US_DCD          (0x1 << 22) 
++#define AT91C_US_CTS          (0x1 << 23) 
++/*Part II end*/
++
++/*Part III for GTM900B driver*/
++#define AT91C_ID_FIQ    ( 0) 
++#define AT91C_ID_SYS    ( 1) 
++#define AT91C_ID_PIOA   ( 2) 
++#define AT91C_ID_PIOB   ( 3) 
++#define AT91C_ID_PIOC   ( 4) 
++#define AT91C_ID_ADC    ( 5) 
++#define AT91C_ID_US0    ( 6) 
++#define AT91C_ID_US1    ( 7) 
++#define AT91C_ID_US2    ( 8) 
++#define AT91C_ID_MCI    ( 9) 
++#define AT91C_ID_UDP    (10) 
++#define AT91C_ID_TWI    (11) 
++#define AT91C_ID_SPI0   (12) 
++#define AT91C_ID_SPI1   (13) 
++#define AT91C_ID_SSC0   (14) 
++#define AT91C_ID_TC0    (17) 
++#define AT91C_ID_TC1    (18) 
++#define AT91C_ID_TC2    (19) 
++#define AT91C_ID_UHP    (20) 
++#define AT91C_ID_EMAC   (21) 
++#define AT91C_ID_HISI   (22) 
++#define AT91C_ID_US3    (23) 
++#define AT91C_ID_US4    (24) 
++#define AT91C_ID_US5    (25) 
++#define AT91C_ID_TC3    (26) 
++#define AT91C_ID_TC4    (27) 
++#define AT91C_ID_TC5    (28) 
++#define AT91C_ID_IRQ0   (29) 
++#define AT91C_ID_IRQ1   (30) 
++#define AT91C_ID_IRQ2   (31) 
++#define AT91C_ALL_INT   (0xFFFE7FFF) 
++/*PART III End*/
++/*Add end by guowenxue*/
++
+ #endif
+diff -Nuar linux-2.6.33/arch/arm/mach-at91/Makefile.boot linux-2.6.33-L200v5/arch/arm/mach-at91/Makefile.boot
+--- linux-2.6.33/arch/arm/mach-at91/Makefile.boot	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/arch/arm/mach-at91/Makefile.boot	2010-12-07 17:09:27.000000000 +0800
+@@ -7,10 +7,6 @@
+    zreladdr-y	:= 0x70008000
+ params_phys-y	:= 0x70000100
+ initrd_phys-y	:= 0x70410000
+-else ifeq ($(CONFIG_ARCH_AT91SAM9G45),y)
+-   zreladdr-y	:= 0x70008000
+-params_phys-y	:= 0x70000100
+-initrd_phys-y	:= 0x70410000
+ else
+    zreladdr-y	:= 0x20008000
+ params_phys-y	:= 0x20000100
+diff -Nuar linux-2.6.33/drivers/i2c/busses/i2c-at91.c linux-2.6.33-L200v5/drivers/i2c/busses/i2c-at91.c
+--- linux-2.6.33/drivers/i2c/busses/i2c-at91.c	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/i2c/busses/i2c-at91.c	2010-12-07 17:09:27.000000000 +0800
+@@ -46,7 +46,8 @@
+ /*
+  * Initialize the TWI hardware registers.
+  */
+-static void __devinit at91_twi_hwinit(void)
++//static void __devinit at91_twi_hwinit(void)
++void at91_twi_hwinit(void)
+ {
+ 	unsigned long cdiv, ckdiv;
+ 
+@@ -73,6 +74,7 @@
+ 
+ 	at91_twi_write(AT91_TWI_CWGR, (ckdiv << 16) | (cdiv << 8) | cdiv);
+ }
++EXPORT_SYMBOL_GPL(at91_twi_hwinit);
+ 
+ /*
+  * Poll the i2c status register until the specified bit is set.
+diff -Nuar linux-2.6.33/drivers/mmc/card/block.c linux-2.6.33-L200v5/drivers/mmc/card/block.c
+--- linux-2.6.33/drivers/mmc/card/block.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/mmc/card/block.c	2010-12-07 17:09:27.000000000 +0800
+@@ -588,6 +588,12 @@
+ 	return 0;
+ }
+ 
++/*Add by guowenxue, 2010.07.27*/
++int card_state = 0;
++static DEFINE_SPINLOCK(card_state_lock);
++DECLARE_WAIT_QUEUE_HEAD(wait_if_state_changed);
++/*Add end*/
++
+ static int mmc_blk_probe(struct mmc_card *card)
+ {
+ 	struct mmc_blk_data *md;
+@@ -617,6 +623,14 @@
+ 
+ 	mmc_set_drvdata(card, md);
+ 	add_disk(md->disk);
++
++    /* Add by guowenxue, 2010.07.27 */
++    spin_lock_irq(&card_state_lock);
++    card_state = 1;
++    wake_up(&wait_if_state_changed);
++    spin_unlock_irq(&card_state_lock);
++    /*Add end*/
++
+ 	return 0;
+ 
+  out:
+@@ -639,6 +653,12 @@
+ 
+ 		mmc_blk_put(md);
+ 	}
++    /*Add by guowenxue, 2010.07.27*/
++    spin_lock_irq(&card_state_lock);
++    card_state = 0;
++    wake_up(&wait_if_state_changed);
++    spin_unlock_irq(&card_state_lock);
++    /*Add end*/
+ 	mmc_set_drvdata(card, NULL);
+ }
+ 
+@@ -703,6 +723,11 @@
+ 	unregister_blkdev(MMC_BLOCK_MAJOR, "mmc");
+ }
+ 
++/*Add by guowenxue, 2010.07.27*/
++EXPORT_SYMBOL(card_state);
++EXPORT_SYMBOL(wait_if_state_changed);
++/*Add end*/
++
+ module_init(mmc_blk_init);
+ module_exit(mmc_blk_exit);
+ 
+diff -Nuar linux-2.6.33/drivers/mmc/host/at91_mci.c linux-2.6.33-L200v5/drivers/mmc/host/at91_mci.c
+--- linux-2.6.33/drivers/mmc/host/at91_mci.c	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/mmc/host/at91_mci.c	2010-12-07 17:09:27.000000000 +0800
+@@ -799,14 +799,21 @@
+ 	/* Set the clock divider */
+ 	at91_mci_write(host, AT91_MCI_MR, (at91_mci_read(host, AT91_MCI_MR) & ~AT91_MCI_CLKDIV) | clkdiv);
+ 
++   /*
++    * Add By guowenxue, 2010.07.27
++    * L350 V21 set vcc low to poweroff, high to poweron
++    * L350 V22 set vcc high to poweroff, low to poweron
++    */
+ 	/* maybe switch power to the card */
+ 	if (host->board->vcc_pin) {
+ 		switch (ios->power_mode) {
+ 			case MMC_POWER_OFF:
+-				gpio_set_value(host->board->vcc_pin, 0);
++				//gpio_set_value(host->board->vcc_pin, 0);
++                at91_set_gpio_value(host->board->vcc_pin, 1); 
+ 				break;
+ 			case MMC_POWER_UP:
+-				gpio_set_value(host->board->vcc_pin, 1);
++				//gpio_set_value(host->board->vcc_pin, 1);
++                at91_set_gpio_value(host->board->vcc_pin, 0);
+ 				break;
+ 			case MMC_POWER_ON:
+ 				break;
+diff -Nuar linux-2.6.33/drivers/net/arm/at91_ether.c linux-2.6.33-L200v5/drivers/net/arm/at91_ether.c
+--- linux-2.6.33/drivers/net/arm/at91_ether.c	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/net/arm/at91_ether.c	2010-12-07 17:09:27.000000000 +0800
+@@ -281,6 +281,17 @@
+ 		read_phy(lp->phy_address, MII_DSINTR_REG, &dsintr);
+ 		dsintr = dsintr & ~0xf00;		/* clear bits 8..11 */
+ 		write_phy(lp->phy_address, MII_DSINTR_REG, dsintr);
++       
++        /*Add by guowenxue, 2010.07.27*/
++        read_phy(lp->phy_address, MII_DBMCR_REG,  &dsintr);    /* add by zxw */
++        dsintr = dsintr | 0x800;                        /* set bits 11,Power Down add by zxw*/
++        write_phy(lp->phy_address, MII_DBMCR_REG, dsintr);/* add by zxw */
++
++        read_phy(lp->phy_address, MII_DSCR2_REG,  &dsintr);    /* add by zxw */
++        dsintr = dsintr | 0x10;                        /* set bits 4,Disable auto MDI/MDIX add by zx
++                                                          w */
++        write_phy(lp->phy_address, MII_DSCR2_REG, dsintr);/* add by zxw */
++        /*Add end*/
+ 	}
+ 	else if (lp->phy_type == MII_LXT971A_ID) {	/* for Intel PHY */
+ 		read_phy(lp->phy_address, MII_ISINTE_REG, &dsintr);
+diff -Nuar linux-2.6.33/drivers/net/macb.c linux-2.6.33-L200v5/drivers/net/macb.c
+--- linux-2.6.33/drivers/net/macb.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/net/macb.c	2010-12-07 17:09:27.000000000 +0800
+@@ -23,6 +23,14 @@
+ 
+ #include <mach/board.h>
+ #include <mach/cpu.h>
++/*Add by guowenxue, 2010.07.27*/
++#include <mach/gpio.h>
++#include <mach/hardware.h>
++#include <asm/io.h>
++
++#define SIM_SLOT_1              AT91_PIN_PC6
++#define SIM_SLOT_2              AT91_PIN_PC7
++/*Add end*/
+ 
+ #include "macb.h"
+ 
+@@ -53,6 +61,15 @@
+ #define MACB_RX_INT_FLAGS	(MACB_BIT(RCOMP) | MACB_BIT(RXUBR)	\
+ 				 | MACB_BIT(ISR_ROVR))
+ 
++/*Add by guowenxue, 2010.07.27*/
++int eth1_link_state = 0;
++static DEFINE_SPINLOCK(eth1_state_lock);
++extern wait_queue_head_t wait_if_state_changed;
++int sim1_state = 0;
++int sim2_state = 0;
++static DEFINE_SPINLOCK(sim_state_lock);
++/*Add end*/
++
+ static void __macb_set_hwaddr(struct macb *bp)
+ {
+ 	u32 bottom;
+@@ -142,6 +159,22 @@
+ 
+ 	spin_lock_irqsave(&bp->lock, flags);
+ 
++    /* Add by guowenxue, 2010.07.27 */
++    if (sim1_state != (!at91_get_gpio_value(SIM_SLOT_1))) 
++    {
++          spin_lock_irq(&sim_state_lock);
++          sim1_state = (!at91_get_gpio_value(SIM_SLOT_1));
++          wake_up(&wait_if_state_changed);
++          spin_unlock_irq(&sim_state_lock);
++    } 
++    if (sim2_state != (!at91_get_gpio_value(SIM_SLOT_2))) {
++          spin_lock_irq(&sim_state_lock); 
++          sim2_state = (!at91_get_gpio_value(SIM_SLOT_2)); 
++          wake_up(&wait_if_state_changed); 
++          spin_unlock_irq(&sim_state_lock); 
++    }
++    /*Add end*/
++
+ 	if (phydev->link) {
+ 		if ((bp->speed != phydev->speed) ||
+ 		    (bp->duplex != phydev->duplex)) {
+@@ -177,11 +210,34 @@
+ 
+ 	if (status_change) {
+ 		if (phydev->link)
++        {
+ 			printk(KERN_INFO "%s: link up (%d/%s)\n",
+ 			       dev->name, phydev->speed,
+ 			       DUPLEX_FULL == phydev->duplex ? "Full":"Half");
++
++            /* Add by guowenxue, 2010.07.27 */
++            if (NULL!=strstr(dev->name, "eth1")) 
++            { 
++                   spin_lock_irq(&eth1_state_lock); 
++                   eth1_link_state = 1; 
++                   wake_up(&wait_if_state_changed); 
++                   spin_unlock_irq(&eth1_state_lock); 
++            }
++            /*Add end*/
++        }
+ 		else
++        {
+ 			printk(KERN_INFO "%s: link down\n", dev->name);
++           /* Add by guowenxue, 2010.07.27 */
++            if (NULL!=strstr(dev->name, "eth1")) 
++            { 
++                   spin_lock_irq(&eth1_state_lock); 
++                   eth1_link_state = 0; 
++                   wake_up(&wait_if_state_changed); 
++                   spin_unlock_irq(&eth1_state_lock); 
++            }
++           /*Add end*/
++        }
+ 	}
+ }
+ 
+@@ -1348,6 +1404,12 @@
+ 
+ static int __init macb_init(void)
+ {
++    /*Add by guowenxue, 2010.07.27*/
++    gpio_request(SIM_SLOT_1, "macb_sim");
++    gpio_request(SIM_SLOT_2, "macb_sim");
++    gpio_direction_input( SIM_SLOT_1 );
++    gpio_direction_input( SIM_SLOT_2 );
++    /*Add end*/
+ 	return platform_driver_probe(&macb_driver, macb_probe);
+ }
+ 
+@@ -1356,6 +1418,13 @@
+ 	platform_driver_unregister(&macb_driver);
+ }
+ 
++/* Add by guowenxue, 2010.07.27 */
++EXPORT_SYMBOL(eth1_link_state);
++EXPORT_SYMBOL(sim1_state);
++EXPORT_SYMBOL(sim2_state);
++/*Add end*/
++
++
+ module_init(macb_init);
+ module_exit(macb_exit);
+ 
+diff -Nuar linux-2.6.33/drivers/net/mii.c linux-2.6.33-L200v5/drivers/net/mii.c
+--- linux-2.6.33/drivers/net/mii.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/net/mii.c	2010-12-07 17:09:27.000000000 +0800
+@@ -32,6 +32,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/mdio.h>
++#include <linux/sched.h> /*Add by guowenxue*/
+ 
+ static u32 mii_get_an(struct mii_if_info *mii, u16 addr)
+ {
+@@ -319,6 +320,11 @@
+ 		netif_carrier_off(mii->dev);
+ }
+ 
++/* Add by guowenxue, 2010.07.27 */
++int eth0_link_state = 0;
++static DEFINE_SPINLOCK(eth0_state_lock);
++extern wait_queue_head_t wait_if_state_changed;
++/*Add end*/
+ /**
+  * mii_check_media - check the MII interface for a duplex change
+  * @mii: the MII interface
+@@ -354,7 +360,19 @@
+ 	if (!new_carrier) {
+ 		netif_carrier_off(mii->dev);
+ 		if (ok_to_print)
++        {
+ 			printk(KERN_INFO "%s: link down\n", mii->dev->name);
++
++           /* Add by guowenxue, 2010.07.27*/
++            if (NULL!=strstr(mii->dev->name, "eth0")) 
++            { 
++                  spin_lock_irq(&eth0_state_lock); 
++                  eth0_link_state = 0; 
++                  wake_up(&wait_if_state_changed); 
++                  spin_unlock_irq(&eth0_state_lock); 
++            }
++            /*Add end*/
++        }
+ 		return 0; /* duplex did not change */
+ 	}
+ 
+@@ -381,12 +399,23 @@
+ 		duplex = 1;
+ 
+ 	if (ok_to_print)
++    {
+ 		printk(KERN_INFO "%s: link up, %sMbps, %s-duplex, lpa 0x%04X\n",
+ 		       mii->dev->name,
+ 		       lpa2 & (LPA_1000FULL | LPA_1000HALF) ? "1000" :
+ 		       media & (ADVERTISE_100FULL | ADVERTISE_100HALF) ? "100" : "10",
+ 		       duplex ? "full" : "half",
+ 		       lpa);
++        /*Add by guowenxue, 2010.07.27 */
++        if (NULL!=strstr(mii->dev->name, "eth0")) 
++        { 
++               spin_lock_irq(&eth0_state_lock); 
++               eth0_link_state = 1; 
++               wake_up(&wait_if_state_changed); 
++               spin_unlock_irq(&eth0_state_lock); 
++        }
++        /*Add end*/
++    }
+ 
+ 	if ((init_media) || (mii->full_duplex != duplex)) {
+ 		mii->full_duplex = duplex;
+@@ -479,6 +508,7 @@
+ MODULE_DESCRIPTION ("MII hardware support library");
+ MODULE_LICENSE("GPL");
+ 
++EXPORT_SYMBOL(eth0_link_state); /*Add by guowenxue, 2010.07.27*/
+ EXPORT_SYMBOL(mii_link_ok);
+ EXPORT_SYMBOL(mii_nway_restart);
+ EXPORT_SYMBOL(mii_ethtool_gset);
+diff -Nuar linux-2.6.33/drivers/rtc/rtc-pcf8563.c linux-2.6.33-L200v5/drivers/rtc/rtc-pcf8563.c
+--- linux-2.6.33/drivers/rtc/rtc-pcf8563.c	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/rtc/rtc-pcf8563.c	2010-12-07 17:09:27.000000000 +0800
+@@ -79,10 +79,12 @@
+ 	};
+ 
+ 	/* read registers */
++    preempt_disable(); /*Add by guowenxue, 2010.07.27*/
+ 	if ((i2c_transfer(client->adapter, msgs, 2)) != 2) {
+ 		dev_err(&client->dev, "%s: read error\n", __func__);
+ 		return -EIO;
+ 	}
++    preempt_enable(); /*Add by guowenxue, 2010.07.27*/
+ 
+ 	if (buf[PCF8563_REG_SC] & PCF8563_SC_LV)
+ 		dev_info(&client->dev,
+@@ -159,13 +161,17 @@
+ 		unsigned char data[2] = { PCF8563_REG_SC + i,
+ 						buf[PCF8563_REG_SC + i] };
+ 
++
++        preempt_disable(); /*Add by guowenxue, 2010.07.27*/
+ 		err = i2c_master_send(client, data, sizeof(data));
+ 		if (err != sizeof(data)) {
++            preempt_enable(); /*Add by guowenxue, 2010.07.27*/
+ 			dev_err(&client->dev,
+ 				"%s: err=%d addr=%02x, data=%02x\n",
+ 				__func__, err, data[0], data[1]);
+ 			return -EIO;
+ 		}
++        preempt_enable(); /*Add by guowenxue, 2010.07.27*/
+ 	};
+ 
+ 	return 0;
+diff -Nuar linux-2.6.33/drivers/scsi/sd.c linux-2.6.33-L200v5/drivers/scsi/sd.c
+--- linux-2.6.33/drivers/scsi/sd.c	2010-12-07 17:25:14.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/scsi/sd.c	2010-12-07 17:09:27.000000000 +0800
+@@ -2140,6 +2140,12 @@
+ 	return 0;
+ }
+ 
++/* Add by guowenxue, 2010.07.27 */
++int usb_state = 0;
++static DEFINE_SPINLOCK(usb_state_lock);
++extern wait_queue_head_t wait_if_state_changed;
++/*Add end */
++
+ /*
+  * The asynchronous part of sd_probe
+  */
+@@ -2192,6 +2198,14 @@
+ 
+ 	sd_printk(KERN_NOTICE, sdkp, "Attached SCSI %sdisk\n",
+ 		  sdp->removable ? "removable " : "");
++
++    /* Add by guowenxue, 2010.07.27 */
++    spin_lock_irq(&usb_state_lock);
++    usb_state = 1;
++    wake_up(&wait_if_state_changed);
++    spin_unlock_irq(&usb_state_lock);
++    /*Add end*/
++
+ 	put_device(&sdkp->dev);
+ }
+ 
+@@ -2322,8 +2336,16 @@
+ 	put_device(&sdkp->dev);
+ 	mutex_unlock(&sd_ref_mutex);
+ 
++    /* Add by guowenxue, 2010.07.27 */ 
++    spin_lock_irq(&usb_state_lock); 
++    usb_state = 0; 
++    wake_up(&wait_if_state_changed); 
++    spin_unlock_irq(&usb_state_lock); 
++    /*Add end*/
++
+ 	return 0;
+ }
++EXPORT_SYMBOL(usb_state); /* Add by guowenxue, 2010.07.27 */
+ 
+ /**
+  *	scsi_disk_release - Called to free the scsi_disk structure
+diff -Nuar linux-2.6.33/drivers/usb/core/hub.c linux-2.6.33-L200v5/drivers/usb/core/hub.c
+--- linux-2.6.33/drivers/usb/core/hub.c	2010-12-07 17:25:14.000000000 +0800
++++ linux-2.6.33-L200v5/drivers/usb/core/hub.c	2010-12-07 17:09:27.000000000 +0800
+@@ -37,6 +37,8 @@
+ #endif
+ #endif
+ 
++u16 ralinkID = 0; /* Add By guowenxue 2010.07.27, call by L350Detect Driver */
++
+ struct usb_hub {
+ 	struct device		*intfdev;	/* the "interface" device */
+ 	struct usb_device	*hdev;
+@@ -1563,6 +1565,11 @@
+ 		hcd->driver->free_dev(hcd, udev);
+ }
+ 
++/* Add by guowenxue on 2010.07.27 */
++int device_disconnected = 0;
++DECLARE_WAIT_QUEUE_HEAD(wait_ttyUSB0_disconnect);
++/*Add end*/
++
+ /**
+  * usb_disconnect - disconnect a device (usbcore-internal)
+  * @pdev: pointer to device being disconnected
+@@ -1636,6 +1643,13 @@
+ 	hub_free_dev(udev);
+ 
+ 	put_device(&udev->dev);
++
++    /* Add by guowenxue 2010.07.27 */
++    spin_lock_irq(&device_state_lock);
++    device_disconnected = 1;   
++    wake_up(&wait_ttyUSB0_disconnect);
++    spin_unlock_irq(&device_state_lock);
++    /*Add end*/
+ }
+ 
+ #ifdef CONFIG_USB_ANNOUNCE_NEW_DEVICES
+@@ -1821,6 +1835,7 @@
+ 	dev_dbg(&udev->dev, "udev %d, busnum %d, minor = %d\n",
+ 			udev->devnum, udev->bus->busnum,
+ 			(((udev->bus->busnum-1) * 128) + (udev->devnum-1)));
++
+ 	/* export the usbdev device-node for libusb */
+ 	udev->dev.devt = MKDEV(USB_DEVICE_MAJOR,
+ 			(((udev->bus->busnum-1) * 128) + (udev->devnum-1)));
+@@ -1828,6 +1843,12 @@
+ 	/* Tell the world! */
+ 	announce_device(udev);
+ 
++    /*Add by guowenxue 2010.07.27*/
++    if(0x148f == udev->descriptor.idVendor) 
++    { 
++            ralinkID = udev->descriptor.idProduct; 
++    }
++    /*Add end*/
+ 	/* Register the device.  The device driver is responsible
+ 	 * for configuring the device and invoking the add-device
+ 	 * notifier chain (used by usbfs and possibly others).
+@@ -3857,3 +3878,4 @@
+ 	schedule_work(&iface->reset_ws);
+ }
+ EXPORT_SYMBOL_GPL(usb_queue_reset_device);
++EXPORT_SYMBOL(ralinkID); /*Add by guowenxue, 2010.07.27*/
+diff -Nuar linux-2.6.33/init/initramfs.c linux-2.6.33-L200v5/init/initramfs.c
+--- linux-2.6.33/init/initramfs.c	2010-12-07 17:25:14.000000000 +0800
++++ linux-2.6.33-L200v5/init/initramfs.c	2010-12-07 17:09:27.000000000 +0800
+@@ -577,6 +577,7 @@
+ 	if (initrd_start) {
+ #ifdef CONFIG_BLK_DEV_RAM
+ 		int fd;
++#if 0  /*Comment by guowenxue to skip this part to save time, 2010.07.27 */
+ 		printk(KERN_INFO "Trying to unpack rootfs image as initramfs...\n");
+ 		err = unpack_to_rootfs((char *)initrd_start,
+ 			initrd_end - initrd_start);
+@@ -590,6 +591,7 @@
+ 		}
+ 		printk(KERN_INFO "rootfs image is not initramfs (%s)"
+ 				"; looks like an initrd\n", err);
++#endif
+ 		fd = sys_open("/initrd.image", O_WRONLY|O_CREAT, 0700);
+ 		if (fd >= 0) {
+ 			sys_write(fd, (char *)initrd_start,
+diff -Nuar linux-2.6.33/init/Kconfig linux-2.6.33-L200v5/init/Kconfig
+--- linux-2.6.33/init/Kconfig	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/init/Kconfig	2010-12-07 17:09:27.000000000 +0800
+@@ -55,7 +55,9 @@
+ 	  drivers that are currently considered to be in the alpha-test phase.
+ 
+ config BROKEN
+-	bool
++	bool "Broken"
++	---help---
++      Add by guowenxue for Atmel AT91 I2C Two-Wire interface depend on it.
+ 
+ config BROKEN_ON_SMP
+ 	bool
+diff -Nuar linux-2.6.33/Makefile linux-2.6.33-L200v5/Makefile
+--- linux-2.6.33/Makefile	2010-12-07 17:25:13.000000000 +0800
++++ linux-2.6.33-L200v5/Makefile	2010-12-07 17:09:27.000000000 +0800
+@@ -186,8 +186,8 @@
+ # Default value for CROSS_COMPILE is not to prefix executables
+ # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
+ export KBUILD_BUILDHOST := $(SUBARCH)
+-ARCH		?= $(SUBARCH)
+-CROSS_COMPILE	?=
++ARCH		?= arm
++CROSS_COMPILE	?= /opt/buildroot-2011.02/arm926ejs/usr/bin/arm-linux-
+ 
+ # Architecture as present in compile.h
+ UTS_MACHINE 	:= $(ARCH)
+@@ -1208,6 +1208,9 @@
+ 		-o -name '.*.rej' -o -size 0 \
+ 		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
+ 		-type f -print | xargs rm -f
++	@rm -f arch/arm/boot/compressed/piggy.gzip 
++	@rm -f arch/arm/boot/compressed/lib1funcs.S
++	@rm -f do.sh uImage.gz zImage
+ 
+ 
+ # Packaging of the kernel to various formats
+diff -Nuar linux-2.6.33/scripts/mkcompile_h linux-2.6.33-L200v5/scripts/mkcompile_h
+--- linux-2.6.33/scripts/mkcompile_h	2010-02-25 02:52:17.000000000 +0800
++++ linux-2.6.33-L200v5/scripts/mkcompile_h	2010-12-07 17:09:27.000000000 +0800
+@@ -27,7 +27,9 @@
+ export LC_ALL
+ 
+ if [ -z "$KBUILD_BUILD_VERSION" ]; then
+-	if [ -r .version ]; then
++    if [ -r ../.svn/entries ]; then
++        VERSION=`sed -n -e 11p ../.svn/entries`
++    elif [ -r .version ]; then
+ 		VERSION=`cat .version`
+ 	else
+ 		VERSION=0

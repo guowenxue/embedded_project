@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#    Author:  GuoWenxue<guowenxue@gmail.com>
+#      Date:  2011.04.24
+#Descripion:  This shell script used to generate a ramdisk block device file
+
+RF_MNT=rootfs
+LOOPDEV=loop7
+
+if [ $# != 1 ] ; then
+   echo "This shell script used to generate a ramdisk block device file"
+   echo "Usage: $0 [ramdisk]"
+   exit;
+fi
+
+RF_NAME=$1
+
+dd if=/dev/zero of=$RF_NAME bs=1M count=16
+if [ ! -d $RF_MNT ] ; then
+mkdir $RF_MNT
+fi
+losetup /dev/$LOOPDEV $RF_NAME
+mke2fs -m 0 /dev/$LOOPDEV
+losetup -d /dev/$LOOPDEV
+
+mount -o loop $RF_NAME $RF_MNT
+rm -rf $RF_MNT/lost+found
+

@@ -1,0 +1,63 @@
+#!/bin/sh
+#    Author:  GuoWenxue<guowenxue@gmail.com>
+#      Date:  2011.04.24
+#Descripion:  This shell script used to uncomperss the rootfs and mount it to ./mnt
+
+MNT_POINT=mnt
+
+if [ 1 != $# ] ; then
+   echo "This shell script used to uncomperss the rootfs and mount it to ./mnt"
+   echo "Usage: $0 [rootfs]"
+   exit
+fi
+
+function uncompress()
+{
+    ftype=`file "$1"`
+    case "$ftype" in
+       "$1: Zip archive"*)
+           unzip "$1" ;;
+       "$1: gzip compressed"*)
+           if [ 0 != `expr "$1" : ".*.tar.*" ` ] ; then
+               tar -xzf $1
+           else
+               gzip -d "$1"
+           fi ;;
+       "$1: bzip2 compressed"*)
+           if [ 0 != `expr "$1" : ".*.tar.*" ` ] ; then
+               tar -xjf $1
+           else
+               bunzip2 "$1"
+           fi ;;
+       "$1: POSIX tar archive"*)
+           tar -xf "$1" ;;
+       *)
+          echo "$1 is unknow compress format";;
+    esac
+}
+
+#Rootfs packet name
+RF_PACK=$1
+
+if [ ! -s $RF_PACK ] ; then
+   echo "ERROR: Rootfs \"$RF_PACK\" doesn't exist"
+   exit
+fi 
+
+#Rootfs uncompressed name
+RF_NAME=`echo $RF_PACK | awk -F '.' '{print $1}'`
+uncompress $RF_PACK
+
+if [ ! -d $MNT_POINT ] ; then
+   mkdir $MNT_POINT
+fi
+
+mountpoint $MNT_POINT >> /dev/null
+if [ 0 == $? ] ; then
+   echo "ERROR:  $RF_NAME not mounted"
+   exit;
+fi
+
+set -x
+mount -o loop $RF_NAME $MNT_POINT
+

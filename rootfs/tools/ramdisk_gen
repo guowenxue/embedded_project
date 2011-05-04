@@ -1,0 +1,27 @@
+#!/bin/sh
+#    Author:  GuoWenxue<guowenxue@gmail.com>
+#      Date:  2011.04.24
+#Descripion:  This shell script used to umount ramdisk rootfs and compress it
+
+if [ 1 != $# ] ; then
+   echo "This shell script used to umount ramdisk rootfs and compress it"
+   echo "$0 [rootfs]"
+   exit
+fi
+
+#Rootfs name
+RF_NAME=$1
+
+file $RF_NAME | grep "Linux rev 1.0 ext2 filesystem" >> /dev/null
+if [ 0 != $? ] ; then
+   echo "$RF_NAME is not linux initrd file system" 
+   exit
+fi
+
+file $RF_NAME | grep ".*mount.*" >> /dev/null
+if [ 0 == $? ] ; then
+   umount $RF_NAME
+fi
+
+echo "Compress ramdisk now..."
+gzip $RF_NAME

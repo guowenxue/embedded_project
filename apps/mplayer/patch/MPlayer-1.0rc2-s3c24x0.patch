@@ -1,0 +1,116 @@
+diff -Nuar MPlayer-1.0rc2/build.sh MPlayer-1.0rc2-s3c24x0/build.sh
+--- MPlayer-1.0rc2/build.sh	1970-01-01 08:00:00.000000000 +0800
++++ MPlayer-1.0rc2-s3c24x0/build.sh	2011-04-26 22:11:21.000000000 +0800
+@@ -0,0 +1,66 @@
++#!/bin/sh
++
++CROSS=$1
++
++if [ -z $CROSS ] ; then
++    echo "ERROR: Miss cross compile"
++    exit
++fi
++echo "+================================================================="
++echo "|  CROSS:  $CROSS"
++echo "+================================================================="
++export PATH=$CROSS/bin:$PATH
++make distclean
++./configure  --disable-mencoder \
++--enable-linux-devfs \
++--disable-iconv \
++--disable-live  \
++--disable-dvdnav \
++--disable-dvdread \
++--disable-dvdread-internal \
++--disable-libdvdcss-internal \
++--enable-ftp  \
++--disable-tv \
++--disable-ivtv \
++--disable-network \
++--disable-libmpeg2 \
++--disable-bitmap-font \
++--disable-ass \
++--disable-gif \
++--disable-jpeg \
++--disable-libcdio \
++--disable-xanim \
++--disable-real \
++--disable-win32dll \
++--disable-real \
++--disable-xvid \
++--disable-tremor-internal \
++--disable-faad-external \
++--disable-theora \
++--disable-libvorbis \
++--disable-faac \
++--disable-libdv \
++--disable-freetype \
++--disable-toolame \
++--disable-twolame \
++--disable-xmms \
++--disable-libdca \
++--disable-libmpeg2 \
++--disable-musepack \
++--disable-libamr_nb \
++--disable-libamr_wb \
++--disable-vidix-internal \
++--enable-libavcodec_a  \
++--enable-libavcodec_mpegaudio_hp \
++--disable-mp3lib \
++--enable-fbdev \
++--enable-ossaudio \
++--enable-cross-compile \
++--cc=arm-linux-gcc \
++--host-cc=gcc \
++--target=arm-linux \
++--enable-static \
++--with-extraincdir=$CROSS/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include \
++--with-extralibdir=$CROSS/lib
++make
++#--enable-mad \
+diff -Nuar MPlayer-1.0rc2/configure MPlayer-1.0rc2-s3c24x0/configure
+--- MPlayer-1.0rc2/configure	2007-10-08 03:49:33.000000000 +0800
++++ MPlayer-1.0rc2-s3c24x0/configure	2011-04-26 21:57:05.000000000 +0800
+@@ -5003,8 +5003,8 @@
+   _aosrc="$_aosrc ao_oss.c"
+   _aomodules="oss $_aomodules"
+   if test "$_linux_devfs" = yes; then
+-    _def_ossaudio_devdsp='#define PATH_DEV_DSP "/dev/sound/dsp"'
+-    _def_ossaudio_devmixer='#define PATH_DEV_MIXER "/dev/sound/mixer"'
++    _def_ossaudio_devdsp='#define PATH_DEV_DSP "/dev/dsp"'
++    _def_ossaudio_devmixer='#define PATH_DEV_MIXER "/dev/mixer"'
+   else
+      cat > $TMPC << EOF
+ #include <sys/ioctl.h>
+diff -Nuar MPlayer-1.0rc2/libavcodec/armv4l/dsputil_arm_s.S MPlayer-1.0rc2-s3c24x0/libavcodec/armv4l/dsputil_arm_s.S
+--- MPlayer-1.0rc2/libavcodec/armv4l/dsputil_arm_s.S	2007-10-08 03:49:35.000000000 +0800
++++ MPlayer-1.0rc2-s3c24x0/libavcodec/armv4l/dsputil_arm_s.S	2011-04-26 21:57:05.000000000 +0800
+@@ -19,6 +19,12 @@
+ @ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ @
+ 
++@ Add by guowenxue, 2010.10.11
++#ifndef HAVE_PLD
++.macro pld reg
++.endm
++#endif
++
+ .macro  ADJ_ALIGN_QUADWORD_D shift, Rd0, Rd1, Rd2, Rd3, Rn0, Rn1, Rn2, Rn3, Rn4
+         mov \Rd0, \Rn0, lsr #(\shift * 8)
+         mov \Rd1, \Rn1, lsr #(\shift * 8)
+diff -Nuar MPlayer-1.0rc2/libmpeg2/motion_comp_arm_s.S MPlayer-1.0rc2-s3c24x0/libmpeg2/motion_comp_arm_s.S
+--- MPlayer-1.0rc2/libmpeg2/motion_comp_arm_s.S	2007-10-08 03:49:28.000000000 +0800
++++ MPlayer-1.0rc2-s3c24x0/libmpeg2/motion_comp_arm_s.S	2011-04-26 21:57:05.000000000 +0800
+@@ -18,6 +18,12 @@
+ @ along with this program; if not, write to the Free Software
+ @ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
++@ Add by guowenxue, 2010.10.11
++#ifndef HAVE_PLD
++.macro pld reg
++.endm
++#endif
++
+ 	.text
+ 	
+ @ ----------------------------------------------------------------
