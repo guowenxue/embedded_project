@@ -1,0 +1,5 @@
+
+=========================
+This repository is for an embedded project based on AT91SAM9260/S3C24x0, which include bootloader,
+linux kernel, driver, migrate application and myown C program.
+
