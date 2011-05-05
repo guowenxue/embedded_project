@@ -46,20 +46,20 @@ module_param(dev_minor, int, S_IRUGO);
 
 #define dbg_print(format,args...) if(DISABLE!=debug) {printk("[%s] ", DEV_NAME);printk(format, ##args);}
 
-struct cdev *skeleton_cdev = NULL;
+struct cdev *dev_cdev = NULL;
 static struct class * dev_class;
 
-static int skeleton_open(struct inode *inode, struct file *file)
+static int dev_open(struct inode *inode, struct file *file)
 {
     return 0;
 }
 
-static int skeleton_release(struct inode *inode, struct file *file)
+static int dev_release(struct inode *inode, struct file *file)
 {
     return 0;
 }
 
-static int skeleton_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
+static int dev_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
                           unsigned long arg)
 {
     dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
@@ -86,11 +86,11 @@ static int skeleton_ioctl(struct inode *inode, struct file *file, unsigned int c
     return 0;
 }
 
-static struct file_operations skeleton_fops = {
+static struct file_operations dev_fops = {
     .owner = THIS_MODULE,
-    .open = skeleton_open,
-    .release = skeleton_release,
-    .ioctl = skeleton_ioctl,
+    .open = dev_open,
+    .release = dev_release,
+    .ioctl = dev_ioctl,
 };
 
 #ifdef CONFIG_PROC_FS
@@ -127,7 +127,7 @@ static void skeleton_cleanup(void)
     device_destroy (dev_class, devno);
     class_destroy (dev_class);
 
-    cdev_del(skeleton_cdev);
+    cdev_del(dev_cdev);
     unregister_chrdev_region(devno, 1);
 
 #ifdef CONFIG_PROC_FS
@@ -162,20 +162,20 @@ static int __init skeleton_init(void)
     }
 
     /*Alloc cdev structure */
-    skeleton_cdev = cdev_alloc();;
-    if (NULL == skeleton_cdev)
+    dev_cdev = cdev_alloc();;
+    if (NULL == dev_cdev)
     {
-        printk("%s driver can't alloc for skeleton_cdev\n", DEV_NAME);
+        printk("%s driver can't alloc for dev_cdev\n", DEV_NAME);
         goto ERROR;
     }
 
     /*Initialize cdev structure and register it */
-    skeleton_cdev->owner = THIS_MODULE;
-    skeleton_cdev->ops = &skeleton_fops;
-    result = cdev_add(skeleton_cdev, devno, 1);
+    dev_cdev->owner = THIS_MODULE;
+    dev_cdev->ops = &dev_fops;
+    result = cdev_add(dev_cdev, devno, 1);
     if (0 != result)
     {
-        printk("%s driver can't alloc for skeleton_cdev\n", DEV_NAME);
+        printk("%s driver can't alloc for dev_cdev\n", DEV_NAME);
         goto ERROR;
     }
 

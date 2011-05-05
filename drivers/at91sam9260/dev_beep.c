@@ -47,10 +47,10 @@ volatile unsigned int *PMC_SR;
 
 static unsigned int m_uiPrescaler = 0x5;
 
-struct cdev *beep_cdev = NULL;
+struct cdev *dev_cdev = NULL;
 static struct class * dev_class;
 
-static int beep_open(struct inode *inode, struct file *file)
+static int dev_open(struct inode *inode, struct file *file)
 {
     at91_set_B_periph(BEEP_PIN, DISPULLUP);
 
@@ -61,12 +61,12 @@ static int beep_open(struct inode *inode, struct file *file)
     return 0;
 }
 
-static int beep_release(struct inode *inode, struct file *file)
+static int dev_release(struct inode *inode, struct file *file)
 {
     return 0;
 }
 
-static int beep_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
+static int dev_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
 {
     dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
     switch (cmd)
@@ -102,11 +102,11 @@ static int beep_ioctl(struct inode *inode, struct file *file, unsigned int cmd, 
     return 0;
 }
 
-static struct file_operations beep_fops = {
+static struct file_operations dev_fops = {
     .owner = THIS_MODULE,
-    .open = beep_open,
-    .release = beep_release,
-    .ioctl = beep_ioctl,
+    .open = dev_open,
+    .release = dev_release,
+    .ioctl = dev_ioctl,
 };
 
 
@@ -125,7 +125,7 @@ static void beep_cleanup(void)
     device_destroy (dev_class, devno);
     class_destroy (dev_class);
 
-    cdev_del(beep_cdev);
+    cdev_del(dev_cdev);
     unregister_chrdev_region(devno, 1);
 
     printk("%s driver removed\n", DEV_NAME);
@@ -156,20 +156,20 @@ static int __init beep_init(void)
     }
 
     /*Alloc cdev structure */
-    beep_cdev = cdev_alloc();;
-    if (NULL == beep_cdev)
+    dev_cdev = cdev_alloc();;
+    if (NULL == dev_cdev)
     {
-        printk("%s driver can't alloc for beep_cdev\n", DEV_NAME);
+        printk("%s driver can't alloc for dev_cdev\n", DEV_NAME);
         goto ERROR;
     }
 
     /*Initialize cdev structure and register it */
-    beep_cdev->owner = THIS_MODULE;
-    beep_cdev->ops = &beep_fops;
-    result = cdev_add(beep_cdev, devno, 1);
+    dev_cdev->owner = THIS_MODULE;
+    dev_cdev->ops = &dev_fops;
+    result = cdev_add(dev_cdev, devno, 1);
     if (0 != result)
     {
-        printk("%s driver can't alloc for beep_cdev\n", DEV_NAME);
+        printk("%s driver can't regist dev_cdev\n", DEV_NAME);
         goto ERROR;
     }
 
