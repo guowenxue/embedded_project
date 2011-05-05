@@ -177,7 +177,11 @@ static int __init beep_init(void)
     /*Create device /dev/$DEV_NAME */
     dev_class = class_create (THIS_MODULE, DEV_NAME);
     if(dev_class)
+#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)
+        device_create (dev_class, NULL, devno, NULL, "%s", DEV_NAME);
+#else
         device_create (dev_class, NULL, devno, "%s", DEV_NAME);
+#endif
     else
         printk ("%s driver can't create device class\n", DEV_NAME);
 
