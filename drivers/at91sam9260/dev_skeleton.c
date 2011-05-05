@@ -121,15 +121,20 @@ int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, 
 }
 #endif
 
+static struct class * dev_class;
+
 static void skeleton_cleanup(void)
 {
     dev_t devno = MKDEV(dev_major, dev_minor);
+
+    device_destroy (dev_class, devno);
+    class_destroy (dev_class);
 
     cdev_del(skeleton_cdev);
     unregister_chrdev_region(devno, 1);
 
 #ifdef CONFIG_PROC_FS
-    remove_proc_entry("scullseq", NULL);
+    remove_proc_entry("ioctl" , NULL);
 #endif
 
     printk("%s driver removed\n", DEV_NAME);
@@ -176,6 +181,13 @@ static int __init skeleton_init(void)
         printk("%s driver can't alloc for skeleton_cdev\n", DEV_NAME);
         goto ERROR;
     }
+
+    /*Create device /dev/$DEV_NAME */
+    dev_class = class_create (THIS_MODULE, DEV_NAME);
+    if(dev_class)
+        device_create (dev_class, NULL, devno, "%s", DEV_NAME); 
+    else
+        printk ("%s driver can't create device class\n", DEV_NAME);    
 
 #ifdef CONFIG_PROC_FS 
     create_proc_read_entry("ioctl", 0, NULL, read_proc_ioctl, NULL);

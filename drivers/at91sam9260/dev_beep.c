@@ -109,6 +109,8 @@ static struct file_operations beep_fops = {
     .ioctl = beep_ioctl,
 };
 
+static struct class * dev_class;
+
 static void beep_cleanup(void)
 {
     dev_t devno = MKDEV(dev_major, dev_minor);
@@ -120,6 +122,9 @@ static void beep_cleanup(void)
     iounmap(PMC_SCDR);
     iounmap(PMC_PCK1);
     iounmap(PMC_SR);
+
+    device_destroy (dev_class, devno);
+    class_destroy (dev_class);
 
     cdev_del(beep_cdev);
     unregister_chrdev_region(devno, 1);
@@ -168,6 +173,14 @@ static int __init beep_init(void)
         printk("%s driver can't alloc for beep_cdev\n", DEV_NAME);
         goto ERROR;
     }
+
+    /*Create device /dev/$DEV_NAME */
+    dev_class = class_create (THIS_MODULE, DEV_NAME);
+    if(dev_class)
+        device_create (dev_class, NULL, devno, "%s", DEV_NAME);
+    else
+        printk ("%s driver can't create device class\n", DEV_NAME);
+
 
     PMC_SCER = ioremap(AT91_PMC + AT91_BASE_SYS + 0x00, 0x04);
     PMC_SCDR = ioremap(AT91_PMC + AT91_BASE_SYS + 0x04, 0x04);
