@@ -16,7 +16,7 @@
 #include "include/plat_driver.h"
 
 #define DRV_AUTHOR                "GuoWenxue<guowenxue@gmail.com>"
-#define DRV_DESC                  "AT91SAM9260 beep driver"
+#define DRV_DESC                  "AT91SAM9260 platform buzzer driver"
 
 /*Driver version*/
 #define DRV_MAJOR_VER             1
@@ -25,19 +25,20 @@
 
 #define DEV_NAME                  DEV_BEEP_NAME
 
-#ifndef DEV_MAJOR
-#define DEV_MAJOR                 0 /*dynamic major by default */
+#ifdef BEEP_DRIVER_DEBUG
+int debug = ENABLE;
+#else
+int debug = DISABLE;
 #endif
 
-struct cdev *beep_cdev = NULL;
-
-static int debug = DISABLE;
-static int dev_major = DEV_MAJOR;
+static int dev_major = DEV_BEEP_MAJOR;
 static int dev_minor = 0;
 
 module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
+
+#define dbg_print(format,args...) if(DISABLE!=debug) {printk("[%s] ", DEV_NAME);printk(format, ##args);}
 
 volatile unsigned int *PMC_SCER;
 volatile unsigned int *PMC_SCDR;
@@ -46,8 +47,8 @@ volatile unsigned int *PMC_SR;
 
 static unsigned int m_uiPrescaler = 0x5;
 
-#define dbg_print(format,args...) if(DISABLE!=debug) \
-                                  {printk("[kernel] ");printk(format, ##args);}
+struct cdev *beep_cdev = NULL;
+static struct class * dev_class;
 
 static int beep_open(struct inode *inode, struct file *file)
 {
@@ -67,6 +68,7 @@ static int beep_release(struct inode *inode, struct file *file)
 
 static int beep_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
 {
+    dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
     switch (cmd)
     {
       case BEEP_ENALARM:
@@ -86,13 +88,11 @@ static int beep_ioctl(struct inode *inode, struct file *file, unsigned int cmd, 
               debug = DISABLE;
           else
               debug = ENABLE;
-
-          break;
+          return debug;
 
       case GET_DRV_VER:
           print_version(DRV_VERSION);
           return DRV_VERSION;
-          break;
 
       default:
           printk("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);
@@ -109,7 +109,6 @@ static struct file_operations beep_fops = {
     .ioctl = beep_ioctl,
 };
 
-static struct class * dev_class;
 
 static void beep_cleanup(void)
 {

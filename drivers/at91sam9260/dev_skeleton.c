@@ -11,7 +11,6 @@
  *                Char skeleton driver version 1.0.0 initiliazed
  *                /tmp >: cat /proc/devices | grep skeleton    
  *                218 skeleton
- *                /tmp >: mknod -m 777 /dev/skeleton c 218 09
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
@@ -31,23 +30,24 @@
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
-#define DEV_NAME                  SKELETON_NAME
-
-#ifndef DEV_MAJOR
-#define DEV_MAJOR                 0 /*dynamic major by default */
+#ifdef BEEP_SKELETON_DEBUG
+static int debug = ENABLE;
+#else
+static int debug = DISABLE;
 #endif
 
-struct cdev *skeleton_cdev = NULL;
-
-static int debug = DISABLE;
-static int dev_major = DEV_MAJOR;
+#define DEV_NAME                  SKELETON_NAME
+static int dev_major = DEV_SKELETON_MAJOR;
 static int dev_minor = 0;
 
 module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
 
-#define dbg_print(format,args...) if(DISABLE!=debug){printk(format, ##args);}
+#define dbg_print(format,args...) if(DISABLE!=debug) {printk("[%s] ", DEV_NAME);printk(format, ##args);}
+
+struct cdev *skeleton_cdev = NULL;
+static struct class * dev_class;
 
 static int skeleton_open(struct inode *inode, struct file *file)
 {
@@ -62,7 +62,7 @@ static int skeleton_release(struct inode *inode, struct file *file)
 static int skeleton_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
                           unsigned long arg)
 {
-    //int   ret_val;
+    dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
     switch (cmd)
     {
       case SET_DRV_DEBUG:
@@ -72,13 +72,11 @@ static int skeleton_ioctl(struct inode *inode, struct file *file, unsigned int c
               debug = DISABLE;
           else
               debug = ENABLE;
-
-          break;
+          return debug;
 
       case GET_DRV_VER:
           print_version(DRV_VERSION);
           return DRV_VERSION;
-          break;
 
       default:
           printk("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);
@@ -108,20 +106,19 @@ int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, 
 
     len += sprintf(buf+len,"===============================================:\n");
     len += sprintf(buf+len,"All driver common ioctl:\n");
-    len += sprintf(buf+len,"Enable driver debug: %u\n", SET_DRV_DEBUG);
-    len += sprintf(buf+len,"Get driver version: %u\n", GET_DRV_VER);
+    len += sprintf(buf+len,"Enable driver debug       : %u\n", SET_DRV_DEBUG);
+    len += sprintf(buf+len,"Check driver version      : %u\n", GET_DRV_VER);
     len += sprintf(buf+len,"\n");
 
     len += sprintf(buf+len,"Beep driver ioctl:\n");
-    len += sprintf(buf+len,"Alarm enable: %u\n", BEEP_DISALARM);
-    len += sprintf(buf+len,"Alarm disable: %u\n", BEEP_ENALARM);
+    len += sprintf(buf+len,"Alarm enable              : %u\n", BEEP_ENALARM);
+    len += sprintf(buf+len,"Alarm disable             : %u\n", BEEP_DISALARM);
     len += sprintf(buf+len,"\n");
 
     return len;
 }
 #endif
 
-static struct class * dev_class;
 
 static void skeleton_cleanup(void)
 {
