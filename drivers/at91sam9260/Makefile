@@ -13,7 +13,7 @@ EXTRA_CFLAGS+=-DARCH_${ARCH}
 obj-m += dev_skeleton.o
 obj-m += dev_gprs.o
 obj-m += dev_beep.o
-dev_gprs-objs := dev_gprs_main.o gprs.o
+dev_gprs-objs := dev_gprs_main.o gprs_lowlevel.o
 
 modules:
 	@make -C $(LINUX_SRC) M=$(PWD) modules
