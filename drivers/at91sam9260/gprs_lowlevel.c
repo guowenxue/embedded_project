@@ -81,4 +81,53 @@ GSM_DEVICE support_gprs[] = {
 
 int dev_count = ARRAY_SIZE(support_gprs);
 
+void init_gprs_pin(void)
+{
+    at91_set_gpio_output (GPRS_POWER_PIN, HIGHLEVEL);
+    at91_set_gpio_output (GPRS_RESET_PIN, LOWLEVEL);
+    at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);
+
+    at91_set_gpio_input  (GPRS_CHK_SIM_PIN, DISPULLUP);
+}
+
+int gprs_powerup(int which)
+{
+    at91_set_gpio_value (GPRS_POWER_PIN, LOWLEVEL);    
+    msleep(support_gprs[which].poweron_period_time);
+    at91_set_gpio_value (GPRS_POWER_PIN, HIGHLEVEL);    
+
+    dbg_print("Delay for %ld ms wait for AT command ready\n", support_gprs[which].atcmd_active_time);
+    msleep(support_gprs[which].atcmd_active_time);
+
+    return 0;
+}
+
+int gprs_powerdown(int which)
+{
+    at91_set_gpio_value (GPRS_POWER_PIN, LOWLEVEL);    
+    msleep(support_gprs[which].poweron_period_time);
+    at91_set_gpio_value (GPRS_POWER_PIN, HIGHLEVEL);    
+
+    dbg_print("Delay for %ld ms wait for AT command ready\n", support_gprs[which].atcmd_active_time);
+    msleep(support_gprs[which].atcmd_active_time);
+
+    return 0;
+}
+
+int gprs_chk_simdoor(void)
+{
+    int status = SIM_NOTPRESENT;
+
+    if(LOWLEVEL == at91_get_gpio_value(GPRS_CHK_SIM_PIN))
+    {
+          status = SIM_PRESENT; 
+    }
+
+    return status;
+}
+
+int gprs_chk_ring(int which)
+{
+    return 0;
+}
 

@@ -3,7 +3,23 @@
 
 #include "include/plat_driver.h"
 
-/*GPRS Module Type*/
+#define RING_NONE                   0x00    /*No Ring incoming */
+#define RING_SMS                    0x01    /*Ring incoming */
+#define RING_CALL                   0x02    /*A SMS Ring */
+
+#define SIM1                        1
+#define SIM2                        2
+#define SIM_DEFAULT                 SIM1
+
+#define SIMDOOR_CLOSE               0
+#define SIMDOOR_OPEN                1
+
+#define SIM_NOTPRESENT              0
+#define SIM_PRESENT                 1
+
+#define dbg_print(format,args...) if(DISABLE!=debug) {printk(format, ##args);}
+
+/*GPRS module ID*/
 enum
 {
     GSM_GTM900B = 0,
@@ -37,17 +53,12 @@ extern GSM_DEVICE support_gprs[]; /*All the support GPRS list*/
 extern int dev_count;
 extern int debug;
 
-#define dbg_print(format,args...) if(DISABLE!=debug) {printk("[%s] ", DEV_NAME);printk(format, ##args);}
+void init_gprs_pin(void);
+int gprs_powerup(int which);
+int gprs_powerdown(int which);
+int gprs_reset(int which);
+int gprs_chk_simdoor(void);
+int gprs_chk_ring(int which);
 
-#define RING_NONE                   0x00    /*No Ring incoming */
-#define RING_SMS                    0x01    /*Ring incoming */
-#define RING_CALL                   0x02    /*A SMS Ring */
-
-#define SIM1                        1
-#define SIM2                        2
-#define SIM_DEFAULT                 SIM1
-
-#define SIMDOOR_CLOSE               0
-#define SIMDOOR_OPEN                1
 
 #endif

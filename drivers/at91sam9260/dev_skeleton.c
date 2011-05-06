@@ -30,7 +30,7 @@
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
-#ifdef BEEP_SKELETON_DEBUG
+#ifdef SKELETON_DRIVER_DEBUG
 static int debug = ENABLE;
 #else
 static int debug = DISABLE;
@@ -113,6 +113,14 @@ int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, 
     len += sprintf(buf+len,"Beep driver ioctl:\n");
     len += sprintf(buf+len,"Alarm enable              : %u\n", BEEP_ENALARM);
     len += sprintf(buf+len,"Alarm disable             : %u\n", BEEP_DISALARM);
+    len += sprintf(buf+len,"\n");
+
+    len += sprintf(buf+len,"GPRS driver ioctl:\n");
+    len += sprintf(buf+len,"GPRS power on             : %u\n", GPRS_POWERON);
+    len += sprintf(buf+len,"GPRS power down           : %u\n", GPRS_POWERDOWN);
+    len += sprintf(buf+len,"GPRS reset                : %u\n", GPRS_RESET);
+    len += sprintf(buf+len,"Check SIM door status     : %u\n", GPRS_CHK_SIMDOOR);
+    len += sprintf(buf+len,"Check incoming ring       : %u\n", GPRS_GET_RING);
     len += sprintf(buf+len,"\n");
 
     return len;

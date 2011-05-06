@@ -36,8 +36,7 @@
  *=========================================================================*/
 /*Pin definition For GPRS/3G Driver*/
 
-#define GPRS_ON_PIN                 AT91_PIN_PA10 
-#define GPRS_RESET_PIN              AT91_PIN_PA11
+#define GPRS_POWER_PIN              AT91_PIN_PA10 
 #define GPRS_DSR_PIN                AT91_PIN_PA25 
 #define GPRS_DTR_PIN                AT91_PIN_PA27 
 #define GPRS_DCD_PIN                AT91_PIN_PA28 
@@ -47,8 +46,14 @@
 #define GPRS_CTS_PIN                AT91_PIN_PB29 
 #define GPRS_RI_PIN                 AT91_PIN_PB30 
 
-#define GPRS_CHK_SIM1_PIN           AT91_PIN_PC6  /*Only support 1 SIM slot */
-#define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9  /*For 3G GPRS module*/
+#define GPRS_CHK_SIM_PIN            AT91_PIN_PC6  /*Only support 1 SIM slot */
+
+/*Compatible with L300*/
+#define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9  /*For 3G USB GPRS module*/
+#define GPRS_RESET_PIN              AT91_PIN_PA11 /*For 3G USB GPRS module*/
+#define GPRS_POWER_MON_PIN          AT91_PIN_PB13 /*For 3G USB GPRS module(only UC864E available)*/
+#define GPRS_CHK_SIM2_PIN           AT91_PIN_PC7  /*There are two SIM slot on L300*/
+#define GPRS_SELECT_SIM_PIN         AT91_PIN_PC1  /*Two SIM card switch pin*/
 
 /* For DTR/FTU extend use */
 #define SAMPLE_PORT0                AT91_PIN_PB12

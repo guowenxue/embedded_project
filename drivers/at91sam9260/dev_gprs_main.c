@@ -25,13 +25,13 @@
 
 #define DEV_NAME                  DEV_GPRS_NAME
 
-#ifdef BEEP_DRIVER_DEBUG
+#ifdef GPRS_DRIVER_DEBUG
 int debug = ENABLE;
 #else
 int debug = DISABLE;
 #endif
 
-static int dev_major = DEV_BEEP_MAJOR;
+static int dev_major = DEV_GPRS_MAJOR;
 static int dev_minor = 0;
 
 module_param(debug, int, S_IRUGO);
@@ -39,7 +39,6 @@ module_param(dev_major, int, S_IRUGO);
 
 static struct class *dev_class;
 static struct cdev *dev_cdev;
-int    gprs_index;  /*Opened GPRS index in the support GPRS module list*/
 
 #ifdef CONFIG_PROC_FS
 static int read_proc_gprs(char *page, char **start, off_t offset, int count, int *eof, void *data)
@@ -71,15 +70,12 @@ static int read_proc_gprs(char *page, char **start, off_t offset, int count, int
 
 static int dev_open(struct inode *inode, struct file *filp)
 {
-    gprs_index = NUM(inode->i_rdev);
+    int index = NUM(inode->i_rdev);
 
-    if(gprs_index >= dev_count)
+    if(index >= dev_count)
          return -ENODEV;
 
-    /*Save open() which GPRS module*/
-    filp->private_data = &gprs_index;
-
-    dbg_print("Open %s%d <-> \"%s\"\n", DEV_NAME, gprs_index, support_gprs[gprs_index].name);
+    dbg_print("Open %s%d <-> \"%s\"\n", DEV_NAME, index, support_gprs[index].name);
 
     return 0;
 }
@@ -91,12 +87,31 @@ static int dev_release(struct inode *inode, struct file *filp)
 
 static int dev_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
 {
-    int    index = *(int *) (filp->private_data);
+    int    index = NUM(inode->i_rdev);
+    int    retval = 0;
+
+    init_gprs_pin();
 
     dbg_print("ioctl() on %s%d<->%s driver with cmd=%u arg=%lu\n", DEV_NAME, index, support_gprs[index].name, cmd, arg);
 
     switch (cmd)
     {
+      case GPRS_POWERON:
+          gprs_powerup(index);
+          break;
+      case GPRS_POWERDOWN:
+          gprs_powerdown(index);
+          break;
+      case GPRS_RESET:
+//          gprs_reset(index);
+          break;
+      case GPRS_CHK_SIMDOOR:
+          retval = gprs_chk_simdoor();
+          break;
+      case GPRS_GET_RING:
+          //gprs_chk_ring(index);
+          break;
+
       case SET_DRV_DEBUG:
           printk("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
           if (0 == arg)
@@ -114,7 +129,7 @@ static int dev_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, u
           return -ENOTTY;
     }
 
-    return 0;
+    return retval;
 }
 
 static struct file_operations dev_fops = {
