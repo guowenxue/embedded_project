@@ -99,17 +99,29 @@ static int dev_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, u
       case GPRS_POWERON:
           gprs_powerup(index);
           break;
+
       case GPRS_POWERDOWN:
           gprs_powerdown(index);
           break;
+
       case GPRS_RESET:
-//          gprs_reset(index);
+          gprs_reset(index);
           break;
+
       case GPRS_CHK_SIMDOOR:
-          retval = gprs_chk_simdoor();
+          retval = gprs_chk_simdoor(arg);
           break;
+
       case GPRS_GET_RING:
-          //gprs_chk_ring(index);
+          retval = gprs_chk_ring(index);
+          break;
+
+      case SET_WORK_SIMSLOT:
+          gprs_set_worksim(arg);
+          break;
+
+      case CHK_WORK_SIMSLOT: 
+          retval = gprs_get_worksim();
           break;
 
       case SET_DRV_DEBUG:

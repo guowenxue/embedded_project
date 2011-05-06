@@ -57,8 +57,12 @@ void init_gprs_pin(void);
 int gprs_powerup(int which);
 int gprs_powerdown(int which);
 int gprs_reset(int which);
-int gprs_chk_simdoor(void);
+int gprs_chk_simdoor(int which);
 int gprs_chk_ring(int which);
 
+/*To compatible with L350*/
+int gprs_reset(int which);
+int gprs_get_worksim(void);
+int gprs_set_worksim(int sim);
 
-#endif
+#endif  /*End of __DEV_GPRS_H*/
