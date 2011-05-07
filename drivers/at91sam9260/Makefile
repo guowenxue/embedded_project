@@ -12,6 +12,7 @@ EXTRA_CFLAGS+=-DPLAT_${PLAT}
 EXTRA_CFLAGS+=-DARCH_${ARCH}
 
 obj-m += dev_skeleton.o
+obj-m += dev_led.o
 obj-m += dev_gprs.o
 obj-m += dev_beep.o
 dev_gprs-objs := dev_gprs_main.o gprs_lowlevel.o

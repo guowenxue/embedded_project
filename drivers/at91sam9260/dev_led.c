@@ -48,6 +48,8 @@ enum
    LED2,
 };
 
+#define ON            1
+#define OFF           0
 #define BIT_CMD       0  /* led_status bit[0]: 1->LED On 0->LED Off[0] */
 #define BIT_BLINK     1  /* led_status bit[1]: 1->Blink mode, 0->common mode */
 static unsigned char led_status[LED_COUNT];
@@ -74,16 +76,19 @@ static int dev_ioctl(struct inode *inode, struct file *file, unsigned int cmd, u
     switch (cmd)
     {
       case LED_ON:
+          dbg_print("Turn LED%d on\n", index);
           CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
           SET_BIT(led_status[index], BIT_CMD);  /* Turn LED on */
           break;
 
       case LED_OFF: 
+          dbg_print("Turn LED%d off\n", index);
           CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
           CLR_BIT(led_status[index], BIT_CMD);  /* Turn LED off */
           break;
 
       case LED_BLINK: 
+          dbg_print("Turn LED%d blink\n", index);
           SET_BIT(led_status[index], BIT_BLINK);  /* Turn LED blink */
           break;
 
@@ -121,18 +126,22 @@ static void blink_timer_handle(unsigned long arg)
 
     for(i=0; i<LED_COUNT; i++) 
     {
-       level = (LED_ON==(led_status[i]&0x01) ? LOWLEVEL : HIGHLEVEL);
+       level = (ON==GET_BIT(led_status[i], BIT_CMD) ? LOWLEVEL : HIGHLEVEL);
 
        /* Set GPIO low level will turn LED on, high level will turn led off */
        at91_set_gpio_value(led_gpio[i], level);  
 
-       if(1==(led_status[i]&0x02))  /* LED is in blink mode */
+       if(ON==GET_BIT(led_status[i], BIT_BLINK))  /* LED is in blink mode */
        {
            /* Switch the LED status */
-           if(LED_ON==(led_status[i]&0x01)) 
+           if(ON==GET_BIT(led_status[i], BIT_CMD)) 
+           {
                CLR_BIT(led_status[i], BIT_CMD); /* Turn LED off */ 
+           }
            else
+           {
                SET_BIT(led_status[i], BIT_CMD); /* Turn LED on */
+           }
        }
     }
     mod_timer(&blink_timer, jiffies + HZ/2);
@@ -141,13 +150,13 @@ static void blink_timer_handle(unsigned long arg)
 
 static void led_cleanup(void)
 {
-    dev_t devno;
     int i;
+
+    del_timer(&blink_timer);
 
     for (i=0; i<LED_COUNT; i++)
     { 
-        devno = MKDEV(dev_major, i); 
-        device_destroy(dev_class, devno); 
+        device_destroy(dev_class, MKDEV(dev_major, i)); 
     }
     class_destroy (dev_class);
 
@@ -231,8 +240,7 @@ static int __init led_init(void)
     blink_timer.expires = jiffies + HZ;
     add_timer(&blink_timer);
 
-    printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER,
-           DRV_REVER_VER);
+    printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
 
     return 0;
 

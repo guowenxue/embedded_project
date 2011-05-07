@@ -110,6 +110,12 @@ int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, 
     len += sprintf(buf+len,"Check driver version      : %u\n", GET_DRV_VER);
     len += sprintf(buf+len,"\n");
 
+    len += sprintf(buf+len,"LED driver ioctl:\n");
+    len += sprintf(buf+len,"Turn LED on               : %u\n", LED_ON);
+    len += sprintf(buf+len,"Turn LED off              : %u\n", LED_OFF);
+    len += sprintf(buf+len,"Turn LED blink            : %u\n", LED_BLINK);
+    len += sprintf(buf+len,"\n");
+
     len += sprintf(buf+len,"Beep driver ioctl:\n");
     len += sprintf(buf+len,"Alarm enable              : %u\n", BEEP_ENALARM);
     len += sprintf(buf+len,"Alarm disable             : %u\n", BEEP_DISALARM);

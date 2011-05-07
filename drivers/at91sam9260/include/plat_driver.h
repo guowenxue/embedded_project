@@ -76,6 +76,14 @@
 #define MINOR_VER(a)             ((a)>>8&0xFF)
 #define REVER_VER(a)             ((a)&0xFF)
 
+/* ***** Bit Operate Define *****/
+#define SET_BIT(data, i)   ((data) |=  (1 << (i)))    /*  Set the bit "i" in "data" to 1  */
+#define CLR_BIT(data, i)   ((data) &= ~(1 << (i)))    /*  Clear the bit "i" in "data" to 0 */
+#define NOT_BIT(data, i)   ((data) ^=  (1 << (i)))    /*  Inverse the bit "i" in "data"  */
+#define GET_BIT(data, i)   ((data) >> (i) & 1)        /*  Get the value of bit "i"  in "data" */
+#define L_SHIFT(data, i)?? ((data) << (i))            /*  Shift "data" left for "i" bit  */
+#define R_SHIFT(data, i)?? ((data) >> (i))            /*  Shift "data" Right for "i" bit  */
+
 static inline void print_version(int version)
 {
 #ifdef __KERNEL__

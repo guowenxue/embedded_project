@@ -45,7 +45,7 @@
 /* LED driver */
 #define LED_OFF                     _IO  (AT91_PLATDRV_MAGIC, 0x18)
 #define LED_ON                      _IO  (AT91_PLATDRV_MAGIC, 0x19)
-/*Let LED blink, argument: 0->HW blink  Else Timer blink, arg is the timeout value*/
+/*Let LED blink*/
 #define LED_BLINK                   _IO  (AT91_PLATDRV_MAGIC, 0x1A)
 
 /*===========================================================================
