@@ -77,6 +77,22 @@ GSM_DEVICE support_gprs[] = {
                      .ring_sms_time = 10,
                      }
     ,
+   [GSM_G600B] = {
+                     .name = "G600B",
+                     .id = GSM_G600B,
+                     /*600 ms specified in user manul. */
+                     .poweron_period_time = 600,
+                     /*Experience value on GR01*/
+                     .atcmd_active_time = 7000,
+                     /*About 3 seconds specified in user manul */
+                     .poweroff_period_time = 3000,
+                     /*Experience value on GR01*/
+                     .atcmd_inactive_time = 10000,
+                     .ring_call_time = 10,
+                     .ring_sms_time = 10,
+                     }
+    ,
+
 };
 
 int dev_count = ARRAY_SIZE(support_gprs);
