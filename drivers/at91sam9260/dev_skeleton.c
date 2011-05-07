@@ -119,8 +119,8 @@ int read_proc_ioctl(char *buf, char **start, off_t offset, int count, int *eof, 
     len += sprintf(buf+len,"GPRS power on             : %u\n", GPRS_POWERON);
     len += sprintf(buf+len,"GPRS power down           : %u\n", GPRS_POWERDOWN);
     len += sprintf(buf+len,"GPRS reset                : %u\n", GPRS_RESET);
-    len += sprintf(buf+len,"Check working sim door    : %u\n", CHK_WORK_SIMSLOT);
-    len += sprintf(buf+len,"Set working sim door      : %u\n", SET_WORK_SIMSLOT);
+    len += sprintf(buf+len,"Check working SIM slot    : %u\n", CHK_WORK_SIMSLOT);
+    len += sprintf(buf+len,"Set working SIM slot      : %u\n", SET_WORK_SIMSLOT);
     len += sprintf(buf+len,"Check SIM door status     : %u\n", GPRS_CHK_SIMDOOR);
     len += sprintf(buf+len,"Check incoming ring       : %u\n", GPRS_GET_RING);
     len += sprintf(buf+len,"\n");

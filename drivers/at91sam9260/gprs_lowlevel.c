@@ -36,7 +36,7 @@ GSM_DEVICE support_gprs[] = {
                      .name = "GTM900C",
                      .id = GSM_GTM900C,
                      /*At least 50 ms specified in user manul. */
-                     .poweron_period_time = 60,
+                     .poweron_period_time = 70,
                      /*Experience value on L200, datasheet is wrong */
                      .atcmd_active_time = 6000,
                      /*At least 50 ms specified in user manul, 
@@ -66,7 +66,7 @@ GSM_DEVICE support_gprs[] = {
                      .name = "SIM5215",
                      .id = GSM_SIM5215,
                      /*Turn GPRS_PWR pin to low level >=64 ms, Page 22 */
-                     .poweron_period_time = 80,
+                     .poweron_period_time = 100,
                      /*Reference Page 22, AT command can be set 2~3 after SIM5215 is power on */
                      .atcmd_active_time = 3000,
                      /* Turn GPRS_PWR pin to low level about 2 second, 64 ms in datasheet Page 22 
@@ -81,15 +81,49 @@ GSM_DEVICE support_gprs[] = {
 
 int dev_count = ARRAY_SIZE(support_gprs);
 
+void init_gprs_pin(void)
+{
+    static int  initilized = 0;
+
+    if(initilized)
+         return; 
+
+    printk("Initilize GPRS module GPIO pin now.\n");
+
+    at91_set_A_periph    (GPRS_CTS_PIN, DISPULLUP);
+    at91_set_A_periph    (GPRS_RTS_PIN, DISPULLUP);
+    at91_set_A_periph    (GPRS_RXD_PIN, DISPULLUP);
+    at91_set_A_periph    (GPRS_TXD_PIN, ENPULLUP);
+
+    at91_set_gpio_input  (GPRS_DSR_PIN, DISPULLUP);
+    at91_set_gpio_input  (GPRS_RI_PIN,  DISPULLUP);
+    at91_set_gpio_input  (GPRS_DCD_PIN, DISPULLUP);
+    at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);
+
+    at91_set_gpio_output (GPRS_POWER_PIN, HIGHLEVEL);
+    at91_set_gpio_input  (GPRS_CHK_SIM_PIN, DISPULLUP);
+
+    /*To compatbile with L350*/
+    at91_set_gpio_output (GPRS_SELECT_SIM_PIN, HIGHLEVEL);  // Default set to SIM1
+    at91_set_gpio_input  (GPRS_CHK_SIM2_PIN, DISPULLUP);
+    at91_set_gpio_output (GPRS_RESET_PIN, HIGHLEVEL);
+
+    initilized = 1;
+}
+
+
+
 #if 1 /*To compatable with L350*/
 
 static inline void vbus_on(void)
 {
+    at91_set_gpio_output (GPRS_VBUS_CTRL_PIN, HIGHLEVEL);
     at91_set_gpio_value (GPRS_VBUS_CTRL_PIN, HIGHLEVEL);    
 }
 
 static inline void vbus_off(void)
 {
+    at91_set_gpio_output (GPRS_VBUS_CTRL_PIN, LOWLEVEL);
     at91_set_gpio_value (GPRS_VBUS_CTRL_PIN, LOWLEVEL);    
 }
 
@@ -102,6 +136,14 @@ static inline int uc864e_power_mon (void)
 
 int gprs_reset(int which)
 {
+    if(GSM_UC864E!=which && GSM_SIM5215!=which) 
+    {
+        dbg_print("GPRS reset doesn't support %s module.\n", support_gprs[which].name);
+        return -1;
+    }
+
+    dbg_print("Reset %s module.\n", support_gprs[which].name);
+
     at91_set_gpio_value (GPRS_RESET_PIN, LOWLEVEL);
     msleep(220);
     at91_set_gpio_value (GPRS_RESET_PIN, HIGHLEVEL);
@@ -138,37 +180,22 @@ int gprs_set_worksim(int sim)
 }
 #endif
 
-void init_gprs_pin(void)
-{
-    at91_set_A_periph    (GPRS_CTS_PIN, DISPULLUP);
-    at91_set_A_periph    (GPRS_RTS_PIN, DISPULLUP);
-    at91_set_A_periph    (GPRS_RXD_PIN, DISPULLUP);
-    at91_set_A_periph    (GPRS_TXD_PIN, ENPULLUP);
-
-    at91_set_gpio_output (GPRS_POWER_PIN, HIGHLEVEL);
-    at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);
-    at91_set_gpio_input  (GPRS_CHK_SIM_PIN, DISPULLUP);
-
-    /*To compatbile with L350*/
-    at91_set_gpio_output (GPRS_SELECT_SIM_PIN, HIGHLEVEL);  // Default set to SIM1
-    at91_set_gpio_input  (GPRS_CHK_SIM2_PIN, DISPULLUP);
-    at91_set_gpio_output (GPRS_RESET_PIN, LOWLEVEL);
-    at91_set_gpio_output (GPRS_VBUS_CTRL_PIN, LOWLEVEL);
-    at91_set_gpio_input  (GPRS_POWER_MON_PIN, DISPULLUP);
-}
-
 int gprs_powerup(int which)
 {
+    dbg_print("Power up %s module.\n", support_gprs[which].name);
     /*Must turn VBUS_off before turn UC864E on, after UC864E power on, then turn vbus on.*/
     if(GSM_UC864E==which)
     {
        if( 1 == uc864e_power_mon())  /*UC864E already power up*/
-               return 0;
-
+       {
+           dbg_print("%s module already power up.\n", support_gprs[which].name);
+           return 0;
+       }
        vbus_off();  
     }
 
     at91_set_gpio_value (GPRS_POWER_PIN, LOWLEVEL);    
+    dbg_print("Pull power pin lowlevel for %ld seconds\n", support_gprs[which].poweron_period_time);
     msleep(support_gprs[which].poweron_period_time);
     at91_set_gpio_value (GPRS_POWER_PIN, HIGHLEVEL);    
 
@@ -183,6 +210,7 @@ int gprs_powerup(int which)
 
 int gprs_powerdown(int which)
 {
+    dbg_print("Power down %s module.\n", support_gprs[which].name);
     /* To turn OFF UC864E , first of all, you MUST cut off supplying power to 
      * the USB_VBUS, or the module does not turn off*/
     if(GSM_UC864E==which)
