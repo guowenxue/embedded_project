@@ -59,8 +59,7 @@ static int dev_release(struct inode *inode, struct file *file)
     return 0;
 }
 
-static int dev_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
-                          unsigned long arg)
+static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
     dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
     switch (cmd)
@@ -90,7 +89,7 @@ static struct file_operations dev_fops = {
     .owner = THIS_MODULE,
     .open = dev_open,
     .release = dev_release,
-    .ioctl = dev_ioctl,
+    .unlocked_ioctl = dev_ioctl,
 };
 
 #ifdef CONFIG_PROC_FS

@@ -41,7 +41,11 @@ module_param(dev_minor, int, S_IRUGO);
 static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
 struct timer_list blink_timer;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
 DECLARE_MUTEX(led_sem);
+#else
+DEFINE_SEMAPHORE(led_sem);
+#endif
 
 enum 
 {
@@ -71,9 +75,9 @@ static int dev_release(struct inode *inode, struct file *file)
     return 0;
 }
 
-static int dev_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
+static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-    int  index = NUM(inode->i_rdev); /* Which LED */
+    int  index = NUM(file->f_path.dentry->d_inode->i_rdev); /*Which LED*/
     dbg_print("Come into %s() with cmd=%u arg=%ld\n", __FUNCTION__, cmd, arg);
     switch (cmd)
     {
@@ -125,7 +129,7 @@ static struct file_operations dev_fops = {
     .owner = THIS_MODULE,
     .open = dev_open,
     .release = dev_release,
-    .ioctl = dev_ioctl,
+    .unlocked_ioctl = dev_ioctl,
 };
 
 static void blink_timer_handle(unsigned long arg)

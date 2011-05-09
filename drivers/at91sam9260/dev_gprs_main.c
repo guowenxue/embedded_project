@@ -85,9 +85,9 @@ static int dev_release(struct inode *inode, struct file *filp)
     return 0;
 }
 
-static int dev_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
+static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-    int    index = NUM(inode->i_rdev);
+    int    index = NUM(file->f_path.dentry->d_inode->i_rdev);
     int    retval = 0;
 
     init_gprs_pin();
@@ -148,7 +148,7 @@ static struct file_operations dev_fops = {
     .owner = THIS_MODULE,
     .open = dev_open,
     .release = dev_release,
-    .ioctl = dev_ioctl,
+    .unlocked_ioctl = dev_ioctl,
 };
 
 static void gprs_cleanup(void)
