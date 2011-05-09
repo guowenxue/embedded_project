@@ -41,7 +41,7 @@ module_param(dev_minor, int, S_IRUGO);
 static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
 struct timer_list blink_timer;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
 DECLARE_MUTEX(led_sem);
 #else
 DEFINE_SEMAPHORE(led_sem);
