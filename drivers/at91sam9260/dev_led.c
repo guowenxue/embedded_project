@@ -38,15 +38,19 @@ module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
 
-static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
-struct timer_list blink_timer;
-
 enum 
 {
    RUN_LED = 0,
    LDE1,
    LED2,
+   ALL_LED,
 };
+
+#define LED_COUNT     ALL_LED
+#define LED_DEVS      (LED_COUNT+1)  /* Last LED device used to control all the LED */
+
+static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
+struct timer_list blink_timer;
 
 #define OFF           0
 #define ON            1
@@ -61,41 +65,43 @@ static unsigned char led_status[LED_COUNT];
 struct cdev *dev_cdev = NULL;
 static struct class * dev_class;
 
-static void turn_led(int which, unsigned char cmd)
+static void turn_led_onoff(int which, unsigned char cmd)
 {
-    int  level;
+    int  i, level;
+
     level = (ON==cmd) ? LOWLEVEL : HIGHLEVEL;
-    at91_set_gpio_value(led_gpio[which], level);  
-}
 
-static void turn_all_led(unsigned char cmd)
-{
-    int  i,  level = HIGHLEVEL;
-
-    if(ON==cmd)
+    if(ALL_LED == which)
     {
-        dbg_print("Turn all LED on\n");
-        level = LOWLEVEL;
-    }
-    else if(OFF==cmd)
-    {
-        dbg_print("Turn all LED off\n");
-        level = HIGHLEVEL;
-    }
-    else if(BLINK==cmd)
-    {
-        dbg_print("Turn all LED blink\n");
+        for(i=0; i<LED_COUNT; i++) 
+        {
+           CLR_BIT(led_status[i], BIT_BLINK); 
+           at91_set_gpio_value(led_gpio[i], level);
+        }
     }
     else
-        return;
-
-    for(i=0; i<LED_COUNT; i++) 
     {
-        if(BLINK == cmd) /*Turn all LED blink*/
-            SET_BIT(led_status[i], BIT_BLINK);  /* Turn LED blink */
-        else /*Turn all LED On/off*/
-            at91_set_gpio_value(led_gpio[i], level);  
+        CLR_BIT(led_status[which], BIT_BLINK); 
+        at91_set_gpio_value(led_gpio[which], level);  
     }
+}
+
+static void turn_led_blink(int which)
+{
+    int  i;
+
+    if(ALL_LED == which)
+    {
+        for(i=0; i<LED_COUNT; i++) 
+        {
+           SET_BIT(led_status[i], BIT_BLINK); 
+        }
+    }
+    else
+    {
+        SET_BIT(led_status[which], BIT_BLINK); 
+    }
+
 }
 
 static void blink_timer_handle(unsigned long arg)
@@ -140,23 +146,17 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     {
       case LED_ON:
           dbg_print("Turn LED%d on\n", index);
-          CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
-          turn_led(index, ON);
+          turn_led_onoff(index, ON);
           break;
 
       case LED_OFF: 
           dbg_print("Turn LED%d off\n", index);
-          CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
-          turn_led(index, OFF);
+          turn_led_onoff(index, OFF);
           break;
 
       case LED_BLINK: 
           dbg_print("Turn LED%d blink\n", index);
-          SET_BIT(led_status[index], BIT_BLINK);  /* Turn LED blink */
-          break;
-
-      case LED_ALL:
-          turn_all_led(arg);
+          turn_led_blink(index);
           break;
 
       case SET_DRV_DEBUG:
@@ -194,15 +194,16 @@ static void led_cleanup(void)
 
     del_timer(&blink_timer);
 
-    for (i=0; i<LED_COUNT; i++)
+    turn_led_onoff(ALL_LED, OFF);
+
+    for (i=0; i<LED_DEVS; i++)
     { 
-        at91_set_gpio_value(led_gpio[i], HIGHLEVEL);  /* Turn all LED off */
         device_destroy(dev_class, MKDEV(dev_major, i)); 
     }
     class_destroy (dev_class);
 
     cdev_del(dev_cdev);
-    unregister_chrdev_region(MKDEV(dev_major, 0), LED_COUNT);
+    unregister_chrdev_region(MKDEV(dev_major, 0), LED_DEVS);
 
     printk("%s driver removed\n", DEV_NAME);
 }
@@ -217,11 +218,11 @@ static int __init led_init(void)
     if (0 != dev_major)
     {
         devno = MKDEV(dev_major, dev_minor);
-        result = register_chrdev_region(devno, LED_COUNT, DEV_NAME);
+        result = register_chrdev_region(devno, LED_DEVS, DEV_NAME);
     }
     else
     {
-        result = alloc_chrdev_region(&devno, dev_minor, LED_COUNT, DEV_NAME);
+        result = alloc_chrdev_region(&devno, dev_minor, LED_DEVS, DEV_NAME);
         dev_major = MAJOR(devno);
     }
 
@@ -243,7 +244,7 @@ static int __init led_init(void)
     /*Initialize cdev structure and register it */
     dev_cdev->owner = THIS_MODULE;
     dev_cdev->ops = &dev_fops;
-    result = cdev_add(dev_cdev, devno, LED_COUNT);
+    result = cdev_add(dev_cdev, devno, LED_DEVS);
     if (0 != result)
     {
         printk("%s driver can't regist dev_cdev\n", DEV_NAME);
@@ -259,7 +260,7 @@ static int __init led_init(void)
         goto ERROR; 
     }
 
-    for(i=0; i<LED_COUNT; i++)
+    for(i=0; i<LED_DEVS; i++)
     {
         devno = MKDEV(dev_major, i);
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,24)

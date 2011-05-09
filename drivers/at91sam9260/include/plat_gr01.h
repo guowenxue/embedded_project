@@ -71,7 +71,6 @@
 /* LED definintion on PCB: 
  * LED2->Power_LED, LED3->RUN_LED, LED4->GPRS_LED, LED5->ETH1_LED(DM9161), 
  * LED6->ETH2_LED(DM9000),  LED7->LED0,    LED8->LED1 */
-#define LED_COUNT                   3
 #define LED_RUN_PIN                 AT91_PIN_PA26
 #define LED1_PIN                    AT91_PIN_PB0
 #define LED2_PIN                    AT91_PIN_PB1
