@@ -41,12 +41,6 @@ module_param(dev_minor, int, S_IRUGO);
 static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
 struct timer_list blink_timer;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
-DECLARE_MUTEX(led_sem);
-#else
-DEFINE_SEMAPHORE(led_sem);
-#endif
-
 enum 
 {
    RUN_LED = 0,
@@ -54,8 +48,10 @@ enum
    LED2,
 };
 
-#define ON            1
 #define OFF           0
+#define ON            1
+#define BLINK         2
+
 #define BIT_CMD       0  /* led_status bit[0]: 1->LED On 0->LED Off[0] */
 #define BIT_BLINK     1  /* led_status bit[1]: 1->Blink mode, 0->common mode */
 static unsigned char led_status[LED_COUNT];
@@ -64,6 +60,67 @@ static unsigned char led_status[LED_COUNT];
 
 struct cdev *dev_cdev = NULL;
 static struct class * dev_class;
+
+static void turn_led(int which, unsigned char cmd)
+{
+    int  level;
+    level = (ON==cmd) ? LOWLEVEL : HIGHLEVEL;
+    at91_set_gpio_value(led_gpio[which], level);  
+}
+
+static void turn_all_led(unsigned char cmd)
+{
+    int  i,  level = HIGHLEVEL;
+
+    if(ON==cmd)
+    {
+        dbg_print("Turn all LED on\n");
+        level = LOWLEVEL;
+    }
+    else if(OFF==cmd)
+    {
+        dbg_print("Turn all LED off\n");
+        level = HIGHLEVEL;
+    }
+    else if(BLINK==cmd)
+    {
+        dbg_print("Turn all LED blink\n");
+    }
+    else
+        return;
+
+    for(i=0; i<LED_COUNT; i++) 
+    {
+        if(BLINK == cmd) /*Turn all LED blink*/
+            SET_BIT(led_status[i], BIT_BLINK);  /* Turn LED blink */
+        else /*Turn all LED On/off*/
+            at91_set_gpio_value(led_gpio[i], level);  
+    }
+}
+
+static void blink_timer_handle(unsigned long arg)
+{
+    int  i;
+
+    for(i=0; i<LED_COUNT; i++) 
+    {
+       if(ON==GET_BIT(led_status[i], BIT_BLINK))  /* LED is in blink mode */
+       {
+           /* Switch the LED status */
+           if(ON==GET_BIT(led_status[i], BIT_CMD)) 
+           {
+               at91_set_gpio_value(led_gpio[i], LOWLEVEL);  
+               CLR_BIT(led_status[i], BIT_CMD); /* Turn LED off */ 
+           }
+           else
+           {
+               at91_set_gpio_value(led_gpio[i], HIGHLEVEL);  
+               SET_BIT(led_status[i], BIT_CMD); /* Turn LED on */
+           }
+       }
+    }
+    mod_timer(&blink_timer, jiffies + HZ/2);
+}
 
 static int dev_open(struct inode *inode, struct file *file)
 {
@@ -82,26 +139,24 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     switch (cmd)
     {
       case LED_ON:
-          down_interruptible(&led_sem);
           dbg_print("Turn LED%d on\n", index);
           CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
-          SET_BIT(led_status[index], BIT_CMD);  /* Turn LED on */
-          up(&led_sem);
+          turn_led(index, ON);
           break;
 
       case LED_OFF: 
-          down_interruptible(&led_sem);
           dbg_print("Turn LED%d off\n", index);
           CLR_BIT(led_status[index], BIT_BLINK);  /* Don't blink */
-          CLR_BIT(led_status[index], BIT_CMD);  /* Turn LED off */
-          up(&led_sem);
+          turn_led(index, OFF);
           break;
 
       case LED_BLINK: 
-          down_interruptible(&led_sem);
           dbg_print("Turn LED%d blink\n", index);
           SET_BIT(led_status[index], BIT_BLINK);  /* Turn LED blink */
-          up(&led_sem);
+          break;
+
+      case LED_ALL:
+          turn_all_led(arg);
           break;
 
       case SET_DRV_DEBUG:
@@ -131,35 +186,6 @@ static struct file_operations dev_fops = {
     .release = dev_release,
     .unlocked_ioctl = dev_ioctl,
 };
-
-static void blink_timer_handle(unsigned long arg)
-{
-    int  i,  level;
-
-    for(i=0; i<LED_COUNT; i++) 
-    {
-       level = (ON==GET_BIT(led_status[i], BIT_CMD) ? LOWLEVEL : HIGHLEVEL);
-
-       /* Set GPIO low level will turn LED on, high level will turn led off */
-       at91_set_gpio_value(led_gpio[i], level);  
-
-       if(ON==GET_BIT(led_status[i], BIT_BLINK))  /* LED is in blink mode */
-       {
-           down_interruptible(&led_sem);
-           /* Switch the LED status */
-           if(ON==GET_BIT(led_status[i], BIT_CMD)) 
-           {
-               CLR_BIT(led_status[i], BIT_CMD); /* Turn LED off */ 
-           }
-           else
-           {
-               SET_BIT(led_status[i], BIT_CMD); /* Turn LED on */
-           }
-           up(&led_sem);
-       }
-    }
-    mod_timer(&blink_timer, jiffies + HZ/2);
-}
 
 
 static void led_cleanup(void)

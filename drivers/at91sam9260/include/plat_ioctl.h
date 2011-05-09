@@ -47,6 +47,8 @@
 #define LED_ON                      _IO  (AT91_PLATDRV_MAGIC, 0x19)
 /*Let LED blink*/
 #define LED_BLINK                   _IO  (AT91_PLATDRV_MAGIC, 0x1A)
+/*arg: 0-> Turn All LED on  1->Turn all LED off, 2->Turn all LED blink*/
+#define LED_ALL                     _IO  (AT91_PLATDRV_MAGIC, 0x1B)
 
 /*===========================================================================
  *                   ioctl command for GPRS driver 0x30~0x4F
