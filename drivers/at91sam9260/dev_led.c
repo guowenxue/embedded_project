@@ -7,7 +7,7 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-05-02
+ *              Date: 2011-05-07
  *            Author: guowenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
@@ -38,7 +38,7 @@ module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
 
-static const int led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
+static const unsigned led_gpio [LED_COUNT] = {LED_RUN_PIN, LED1_PIN, LED2_PIN};
 struct timer_list blink_timer;
 
 DECLARE_MUTEX(led_sem);
