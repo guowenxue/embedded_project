@@ -101,7 +101,6 @@ static void turn_led_blink(int which)
     {
         SET_BIT(led_status[which], BIT_BLINK); 
     }
-
 }
 
 static void blink_timer_handle(unsigned long arg)

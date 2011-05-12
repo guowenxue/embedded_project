@@ -23,7 +23,7 @@ INST_PATH=$PWD/bin
 SRC_NAME=
 
 
-sup_ver=("" "linux-2.6.24" "linux-2.6.33")
+sup_ver=("" "linux-2.6.24" "linux-2.6.33" "linux-2.6.38")
 
 #===============================================================
 #               Functions forward definition                   =
