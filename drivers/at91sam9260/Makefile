@@ -2,7 +2,8 @@ ARCH = AT91SAM9260
 PLAT ?= GR01
 
 CROSS_COMPILE ?= /opt/buildroot-2011.02/arm926ejs/usr/bin/arm-linux-
-LINUX_SRC ?= ../../kernel/at91sam9260/linux-2.6.24/
+#LINUX_SRC ?= ../../kernel/at91sam9260/linux-2.6.24/
+LINUX_SRC ?= ../../kernel/at91sam9260/linux-2.6.38/
 #LINUX_SRC ?= ~/l300/src/kernel/linux-2.6.22.1/
 #LINUX_SRC ?= ~/l300/src/kernel/linux-2.6.38/
 INST_PATH=/tftpboot
