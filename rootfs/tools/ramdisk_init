@@ -33,6 +33,16 @@ $CMD_PREFIX losetup -d /dev/$LOOPDEV
 
 $CMD_PREFIX mount -o loop $RF_NAME $RF_MNT
 $CMD_PREFIX rm -rf $RF_MNT/lost+found
+$CMD_PREFIX mkdir -p $RF_MNT/{apps,bin,data,dev,info,proc,root,sbin,sys,tmp,var,etc/{,init.d,dropbear},mnt/{,usb,sdc,nfs,dev},usr/{,bin,sbin,lib,share},lib/{,modules/{,2.6.24,2.6.38}}} 
+
+$CMD_PREFIX mknod -m755 $RF_MNT/dev/null c 1 3 
+$CMD_PREFIX mknod -m755 $RF_MNT/dev/console c 5 1
+
+$CMD_PREFIX ln -s /tmp $RF_MNT/var/lock
+$CMD_PREFIX ln -s /tmp $RF_MNT/var/log
+$CMD_PREFIX ln -s /tmp $RF_MNT/var/run
+$CMD_PREFIX ln -s /tmp $RF_MNT/var/tmp
+
 $CMD_PREFIX umount $RF_NAME
 rm -rf $RF_MNT
 
