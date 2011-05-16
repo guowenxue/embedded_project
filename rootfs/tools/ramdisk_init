@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#    Author:  GuoWenxue<guowenxue@gmail.com>
+#      Date:  2011.04.24
+#Descripion:  This shell script used to generate a ramdisk block device file
+
+RF_MNT=mnt
+LOOPDEV=loop7
+
+if [ $# != 2 ] ; then
+   echo "This shell script used to generate a ramdisk block device file"
+   echo "Usage: $0 [ramdisk] [size]"
+   exit;
+fi
+
+RF_NAME=$1
+SIZE=$2
+CMD_PREFIX=
+
+if [ root != `whoami` ] ; then 
+    echo "WARNING: Not root user, use sudo to excute this shell script commands" 
+    CMD_PREFIX=sudo
+fi
+
+dd if=/dev/zero of=$RF_NAME bs=1M count=$SIZE
+if [ ! -d $RF_MNT ] ; then
+mkdir $RF_MNT
+fi
+
+$CMD_PREFIX losetup /dev/$LOOPDEV $RF_NAME
+$CMD_PREFIX mke2fs -m 0 /dev/$LOOPDEV
+$CMD_PREFIX losetup -d /dev/$LOOPDEV
+
+$CMD_PREFIX mount -o loop $RF_NAME $RF_MNT
+$CMD_PREFIX rm -rf $RF_MNT/lost+found
+$CMD_PREFIX umount $RF_NAME
+rm -rf $RF_MNT
+

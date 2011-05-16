@@ -11,6 +11,12 @@ fi
 
 #Rootfs name
 RF_NAME=$1
+CMD_PREFIX=
+
+if [ root != `whoami` ] ; then
+    echo "WARNING: Not root user, use sudo to excute this shell script commands" 
+    CMD_PREFIX=sudo
+fi
 
 file $RF_NAME | grep "Linux rev 1.0 ext2 filesystem" >> /dev/null
 if [ 0 != $? ] ; then
@@ -20,7 +26,7 @@ fi
 
 file $RF_NAME | grep ".*mount.*" >> /dev/null
 if [ 0 == $? ] ; then
-   umount $RF_NAME
+  $CMD_PREFIX umount $RF_NAME
 fi
 
 echo "Compress ramdisk now..."

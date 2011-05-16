@@ -18,13 +18,13 @@ function uncompress()
        "$1: Zip archive"*)
            unzip "$1" ;;
        "$1: gzip compressed"*)
-           if [ 0 != `expr "$1" : ".*.tar.*" ` ] ; then
+           if [ "$1" = *tar* ] ; then
                tar -xzf $1
            else
                gzip -d "$1"
            fi ;;
        "$1: bzip2 compressed"*)
-           if [ 0 != `expr "$1" : ".*.tar.*" ` ] ; then
+           if [ "$1" = *tar* ] ; then
                tar -xjf $1
            else
                bunzip2 "$1"
@@ -38,6 +38,12 @@ function uncompress()
 
 #Rootfs packet name
 RF_PACK=$1
+CMD_PREFIX=
+
+if [ root != `whoami` ] ; then
+    echo "WARNING: Not root user, use sudo to excute this shell script commands" 
+    CMD_PREFIX=sudo
+fi
 
 if [ ! -s $RF_PACK ] ; then
    echo "ERROR: Rootfs \"$RF_PACK\" doesn't exist"
@@ -52,12 +58,12 @@ if [ ! -d $MNT_POINT ] ; then
    mkdir $MNT_POINT
 fi
 
-mountpoint $MNT_POINT >> /dev/null
+$CMD_PREFIX mountpoint $MNT_POINT
 if [ 0 == $? ] ; then
    echo "ERROR:  $RF_NAME not mounted"
    exit;
 fi
 
 set -x
-mount -o loop $RF_NAME $MNT_POINT
+$CMD_PREFIX mount -o loop $RF_NAME $MNT_POINT
 
