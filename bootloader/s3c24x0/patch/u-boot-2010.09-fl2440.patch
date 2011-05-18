@@ -2760,7 +2760,7 @@ diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-fl2440/Makefile
  # load ARCH, BOARD, and CPU configuration
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
-+CROSS_COMPILE = /opt/buildroot-eabi/staging/usr/bin/arm-linux-
++CROSS_COMPILE = /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
  
  # set default to nothing for native builds
  ifeq ($(HOSTARCH),$(ARCH))
