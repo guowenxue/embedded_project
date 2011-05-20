@@ -33,7 +33,7 @@ ZLIB="zlib-1.2.5"
 ARCH=$1
 
 ARM920T_CROSS="/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-"
-ARM926T_CROSS="/opt/buildroot-2011.02/arm926ejs/usr/bin/arm-linux-"
+ARM926T_CROSS="/opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-"
 CROSS=
 
 sup_arch=("" "s3c2410" "s3c2440" "at91sam9260")
