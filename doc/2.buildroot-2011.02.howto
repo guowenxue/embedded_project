@@ -1,13 +1,15 @@
-    Author:  GuoWenxue   Wuhan. Hubei Province. China
-Connect:
-     Email:  <guowenxue@gmail.com>
-        QQ:  281143292
-     Skype:  kkernel
- 
- ChangeLog:  
-   Version: 1.0.0 (Fri May 20 15:11:13 CST 2011)
-        a, Add howto build cross compiler for ARM920T(S3C2410,S3C2440,AT91RM9200), 
-           ARM926T(S3C2416, AT91SAM9260),ARM1176JZF-S(S3C6410) by buildroot-2011.02
++-------------------------------------------------------------------------------------------------------
++    Author:  GuoWenxue   Wuhan. Hubei Province. China
++ Connect:
++     Email:  <guowenxue@gmail.com>
++        QQ:  281143292
++     Skype:  kkernel
++
++ ChangeLog:
++   Version: 1.0.0 (Fri May 20 15:11:13 CST 2011)
++        a, Add howto build cross compiler for ARM920T(S3C2410,S3C2440,AT91RM9200), 
++           ARM926T(S3C2416, AT91SAM9260),ARM1176JZF-S(S3C6410) by buildroot-2011.02
++-------------------------------------------------------------------------------------------------------
 
 
 I, Build cross compiler for ARM920T, such as s3c2410, s3c2440, at91rm9200

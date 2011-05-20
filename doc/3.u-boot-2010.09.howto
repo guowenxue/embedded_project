@@ -1,0 +1,220 @@
++-------------------------------------------------------------------------------------------------------
++    Author:  GuoWenxue   Wuhan. Hubei Province. China
++ Connect:
++     Email:  <guowenxue@gmail.com>
++        QQ:  281143292
++     Skype:  kkernel
++ 
++ ChangeLog:  
++   Version: 1.0.0 (Fri May 20 15:11:13 CST 2011)
++        a, Add howto build u-boot-2010.09 for s3c2410,s3c2440,at91sam9260 
++-------------------------------------------------------------------------------------------------------
+
+
+1, Refer to "1.get_source_code.howto" get the whole project source code.
+
+2, Refer to "2.buildroot-2011.02.howto" to build the ARM920T corss compiler for s3c2410,s3c2440 if 
+   you wanna cross compile u-boot for them. If you wanna compile the u-boot for at91sam9260 or s3c2416,
+   you must build the ARM926T cross compiler.
+
+
++----------------------------------------------------------------------+
++ Part II:  Cross compile the u-boot for s3c2440(on my FL2440 board)   +
++----------------------------------------------------------------------+
+
+[guowenxue@localhost workpath]$ cd bootloader/
+[guowenxue@localhost bootloader]$ cd s3c24x0/
+[guowenxue@localhost s3c24x0]$ ls
+bin  build.sh  patch
+[guowenxue@localhost s3c24x0]$ sh build.sh 
+basename: too few arguments
+Try `basename --help' for more information.
+Current support u-boot version:
+1: u-boot-2010.09
+Please select: 
+1
+Current support S3C24X0 boards:
+1: fl2440
+2: sd2410
+Please select: 
+1
+
+*******************************************************
+*     Cross compile u-boot-2010.09 for fl2440 now...       
+*******************************************************
+
+*  Decompress the source code patcket and patch now...  *
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/s3c24x0/speed.c
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/s3c24x0/timer.c
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/start.S
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/u-boot.lds
+patching file u-boot-2010.09/arch/arm/include/asm/arch-s3c24x0/s3c24x0_cpu.h
+patching file u-boot-2010.09/arch/arm/include/asm/arch-s3c24x0/s3c24x0.h
+patching file u-boot-2010.09/arch/arm/lib/board.c
+patching file u-boot-2010.09/board/kkernel/fl2440/config.mk
+patching file u-boot-2010.09/board/kkernel/fl2440/fl2440.c
+patching file u-boot-2010.09/board/kkernel/fl2440/flash.c
+patching file u-boot-2010.09/board/kkernel/fl2440/lowlevel_init.S
+patching file u-boot-2010.09/board/kkernel/fl2440/Makefile
+patching file u-boot-2010.09/board/kkernel/fl2440/nand_read.c
+patching file u-boot-2010.09/board/kkernel/sd2410/config.mk
+patching file u-boot-2010.09/board/kkernel/sd2410/flash.c
+patching file u-boot-2010.09/board/kkernel/sd2410/lowlevel_init.S
+patching file u-boot-2010.09/board/kkernel/sd2410/Makefile
+patching file u-boot-2010.09/board/kkernel/sd2410/nand_read.c
+patching file u-boot-2010.09/board/kkernel/sd2410/sd2410.c
+patching file u-boot-2010.09/boards.cfg
+patching file u-boot-2010.09/build.sh
+patching file u-boot-2010.09/common/env_common.c
+patching file u-boot-2010.09/common/serial.c
+patching file u-boot-2010.09/drivers/i2c/s3c24x0_i2c.c
+patching file u-boot-2010.09/drivers/mtd/nand/s3c2410_nand.c
+patching file u-boot-2010.09/drivers/net/dm9000x.c
+patching file u-boot-2010.09/include/configs/fl2440.h
+patching file u-boot-2010.09/include/configs/sd2410.h
+patching file u-boot-2010.09/include/serial.h
+patching file u-boot-2010.09/Makefile
+patching file u-boot-2010.09/net/nfs.c
+
++------------------------------------------+
+|      Build u-boot-2010.09 for fl2440            
++------------------------------------------+
+
+Configuring for fl2440 board...
+Generating include/autoconf.mk
+Generating include/autoconf.mk.dep
+......
+
+/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-objcopy -O srec u-boot u-boot.srec
+/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-objcopy --gap-fill=0xff -O binary u-boot u-boot.bin
++ sudo rm -rf /home/guowenxue/winxp/images//u-boot-fl2440.bin
++ sudo cp u-boot.bin /home/guowenxue/winxp/images//u-boot-fl2440.bin
+/bin/cp: cannot create regular file `/home/guowenxue/winxp/images//u-boot-fl2440.bin': No such file or directory
++ sudo cp u-boot.bin /tftpboot/u-boot-fl2440.bin
+
+[gwenxue@localhost s3c24x0]$ ls u-boot-2010.09/u-boot.bin 
+u-boot-2010.09/u-boot.bin
+
+
+
+
+
++----------------------------------------------------------------------+
++ Part II:  Cross compile the u-boot for s3c2410(on my SD2410 board)   +
++----------------------------------------------------------------------+
+
+[guowenxue@localhost s3c24x0]$ sh build.sh 
+basename: too few arguments
+Try `basename --help' for more information.
+Current support u-boot version:
+1: u-boot-2010.09
+Please select: 
+1
+Current support S3C24X0 boards:
+1: fl2440
+2: sd2410
+Please select: 
+2
+
+*******************************************************
+*     Cross compile u-boot-2010.09 for sd2410 now...       
+*******************************************************
+
+*  Decompress the source code patcket and patch now...  *
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/s3c24x0/speed.c
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/s3c24x0/timer.c
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/start.S
+patching file u-boot-2010.09/arch/arm/cpu/arm920t/u-boot.lds
+patching file u-boot-2010.09/arch/arm/include/asm/arch-s3c24x0/s3c24x0_cpu.h
+patching file u-boot-2010.09/arch/arm/include/asm/arch-s3c24x0/s3c24x0.h
+patching file u-boot-2010.09/arch/arm/lib/board.c
+patching file u-boot-2010.09/board/kkernel/fl2440/config.mk
+patching file u-boot-2010.09/board/kkernel/fl2440/fl2440.c
+patching file u-boot-2010.09/board/kkernel/fl2440/flash.c
+patching file u-boot-2010.09/board/kkernel/fl2440/lowlevel_init.S
+patching file u-boot-2010.09/board/kkernel/fl2440/Makefile
+patching file u-boot-2010.09/board/kkernel/fl2440/nand_read.c
+patching file u-boot-2010.09/board/kkernel/sd2410/config.mk
+patching file u-boot-2010.09/board/kkernel/sd2410/flash.c
+patching file u-boot-2010.09/board/kkernel/sd2410/lowlevel_init.S
+patching file u-boot-2010.09/board/kkernel/sd2410/Makefile
+patching file u-boot-2010.09/board/kkernel/sd2410/nand_read.c
+patching file u-boot-2010.09/board/kkernel/sd2410/sd2410.c
+patching file u-boot-2010.09/boards.cfg
+patching file u-boot-2010.09/build.sh
+patching file u-boot-2010.09/common/env_common.c
+patching file u-boot-2010.09/common/serial.c
+patching file u-boot-2010.09/drivers/i2c/s3c24x0_i2c.c
+patching file u-boot-2010.09/drivers/mtd/nand/s3c2410_nand.c
+patching file u-boot-2010.09/drivers/net/dm9000x.c
+patching file u-boot-2010.09/include/configs/fl2440.h
+patching file u-boot-2010.09/include/configs/sd2410.h
+patching file u-boot-2010.09/include/serial.h
+patching file u-boot-2010.09/Makefile
+patching file u-boot-2010.09/net/nfs.c
+
++------------------------------------------+
+|      Build u-boot-2010.09 for sd2410            
++------------------------------------------+
+Configuring for sd2410 board...
+Generating include/autoconf.mk
+Generating include/autoconf.mk.dep
+......
+
+/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-objcopy -O srec u-boot u-boot.srec
+/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-objcopy --gap-fill=0xff -O binary u-boot u-boot.bin
++ sudo rm -rf /home/guowenxue/winxp/images//u-boot-sd2410.bin
++ sudo cp u-boot.bin /home/guowenxue/winxp/images//u-boot-sd2410.bin
+/bin/cp: cannot create regular file `/home/guowenxue/winxp/images//u-boot-sd2410.bin': No such file or directory
++ sudo cp u-boot.bin /tftpboot/u-boot-sd2410.bin
+
+[guowenxue@localhost s3c24x0]$ ls u-boot-2010.09/u-boot.bin 
+u-boot-2010.09/u-boot.bin
+
+
+
+
++-------------------------------------------------------------------------+
++ Part III:  Cross compile the u-boot for AT91SAM9260(on my GR01 board)   +
++-------------------------------------------------------------------------+
+
+[guowenxue@localhost ~]$ cd workpath/bootloader/
+at91sam9260/ packet/      s3c24x0/     tools/       
+[guowenxue@localhost ~]$ cd workpath/bootloader/at91sam9260/
+[guowenxue@localhost at91sam9260]$ ls
+bin  build.sh  patch
+[guowenxue@localhost at91sam9260]$ sh build.sh 
+
++------------------------------------------+
+|      Build u-boot for at91sam9260            
++------------------------------------------+
+
+Current support u-boot version:
+1: u-boot-1.3.4
+2: u-boot-2010.09
+Please select: 
+2
+*  Decompress the source code patcket and patch now...  *
+patching file u-boot-2010.09/board/atmel/at91sam9260ek/partition.c
+patching file u-boot-2010.09/boards.cfg
+patching file u-boot-2010.09/do.sh
+patching file u-boot-2010.09/drivers/mtd/dataflash.c
+patching file u-boot-2010.09/drivers/net/macb.c
+patching file u-boot-2010.09/include/image.h
+patching file u-boot-2010.09/Makefile
+
+********************************************
+*     Cross compile u-boot-2010.09 now...       
+********************************************
+
+Configuring for at91sam9260ek board...
+Generating include/autoconf.mk
+Generating include/autoconf.mk.dep
+......
+/opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-objcopy -O srec u-boot u-boot.srec
+/opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-objcopy --gap-fill=0xff -O binary u-boot u-boot.bin
++ cp u-boot.bin u-boot-2010.09_sam9260.bin
++ cp u-boot-2010.09_sam9260.bin /tmp/tftp
+[guowenxue@localhost at91sam9260]$ ls u-boot-2010.09/u-boot.bin 
+u-boot-2010.09/u-boot.bin
+
