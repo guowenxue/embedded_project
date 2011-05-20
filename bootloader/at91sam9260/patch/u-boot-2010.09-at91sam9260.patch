@@ -46,7 +46,7 @@ diff -Nuar u-boot-2010.09/do.sh u-boot-2010.09-sam9260/do.sh
 +fi
 +make
 +set -x
-+mv u-boot.bin  $BIN_NAME
++cp u-boot.bin  $BIN_NAME
 +cp $BIN_NAME $INST_PATH
 diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-sam9260/drivers/mtd/dataflash.c
 --- u-boot-2010.09/drivers/mtd/dataflash.c	2010-09-29 05:20:55.000000000 +0800
@@ -121,7 +121,7 @@ diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-sam9260/Makefile
  # load ARCH, BOARD, and CPU configuration
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
-+CROSS_COMPILE = arm-linux-
++CROSS_COMPILE = /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
  
  # set default to nothing for native builds
  ifeq ($(HOSTARCH),$(ARCH))
