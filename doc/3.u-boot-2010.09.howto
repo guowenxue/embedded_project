@@ -17,6 +17,10 @@
    you wanna cross compile u-boot for them. If you wanna compile the u-boot for at91sam9260 or s3c2416,
    you must build the ARM926T cross compiler.
 
+3, After you cross compile the u-boot for the board, you should install the "mkimage" to "/usr/local/bin"
+   on your PC, for cross compile Linux kernel depends on it. Last part introduce how to make it.
+
+
 
 +----------------------------------------------------------------------+
 + Part II:  Cross compile the u-boot for s3c2440(on my FL2440 board)   +
@@ -217,4 +221,38 @@ Generating include/autoconf.mk.dep
 + cp u-boot-2010.09_sam9260.bin /tmp/tftp
 [guowenxue@localhost at91sam9260]$ ls u-boot-2010.09/u-boot.bin 
 u-boot-2010.09/u-boot.bin
+
+
+
++-------------------------------------------------------------------------+
++ Part IV:  Compile "mkimage" tool to make linux kernel uImage for u-boot +
++-------------------------------------------------------------------------+
+
+For mkimage is work on PC, so we can either compiler it in s3c2440 or at91sam9260 bootloader.
+
+[guowenxue@localhost s3c24x0]$ cd u-boot-2010.09/
+[guowenxue@localhost u-boot-2010.09]$ make tools
+for dir in tools examples/standalone examples/api arch/arm/cpu/arm920t /usr/.devices_group/guowenxue/embedded_project/bootloader/s3c24x0/u-boot-2010.09/arch/arm/cpu/arm920t/ ; do \
+                        make -C $dir _depend ; done
+......
+strip mkimage
+make[1]: Leaving directory `/usr/.devices_group/guowenxue/embedded_project/bootloader/s3c24x0/u-boot-2010.09/tools'
+
+[guowenxue@localhost u-boot-2010.09]$ ls tools/mkimage -l
+-rwxr-xr-x  1 guowenxue DEV 49168 May 20 16:23 tools/mkimage
+[guowenxue@localhost u-boot-2010.09]$ cp tools/mkimage /usr/local/bin/
+wenxue@localhost u-boot-2010.09]$ mkimage -h
+Usage: mkimage -l image
+          -l ==> list image header information
+       mkimage [-x] -A arch -O os -T type -C comp -a addr -e ep -n name -d data_file[:data_file...] image
+          -A ==> set architecture to 'arch'
+          -O ==> set operating system to 'os'
+          -T ==> set image type to 'type'
+          -C ==> set compression type 'comp'
+          -a ==> set load address to 'addr' (hex)
+          -e ==> set entry point to 'ep' (hex)
+          -n ==> set image name to 'name'
+          -d ==> use image data from 'datafile'
+          -x ==> set XIP (execute in place)
+       mkimage [-D dtc_options] -f fit-image.its fit-image
 

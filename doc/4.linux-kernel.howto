@@ -1,0 +1,102 @@
++-------------------------------------------------------------------------------------------------------
++    Author:  GuoWenxue   Wuhan. Hubei Province. China
++ Connect:
++     Email:  <guowenxue@gmail.com>
++        QQ:  281143292
++     Skype:  kkernel
++ 
++ ChangeLog:  
++   Version: 1.0.0 (Fri May 20 15:11:13 CST 2011)
++        a, Add howto build u-boot-2010.09 for s3c2440,at91sam9260 
++-------------------------------------------------------------------------------------------------------
+
+
+1, Refer to "1.get_source_code.howto" get the whole project source code.
+
+2, Refer to "2.buildroot-2011.02.howto" to build the ARM920T corss compiler for s3c2410,s3c2440 if 
+   you wanna cross compile linux for them. If you wanna compile the linux for at91sam9260 or s3c2416,
+   you must build the ARM926T cross compiler.
+
+3, Refer to "3.u-boot-2010.09.howto", install the "mkimage" tool to /usr/local/bin
+
+4, Download the support Linux kernel source code to kernel/packet:
+[guowenxue@localhost ~]$ cd workpath/kernel/
+[guowenxue@localhost kernel]$ ls
+at91sam9260  packet  s3c2440  tools
+[guowenxue@localhost kernel]$ cd packet/
+[guowenxue@localhost packet]$ cp ~/winxp/kernel/linux-2.6.24.tar.bz2 .
+[guowenxue@localhost packet]$ ls
+linux-2.6.24.tar.bz2  ReadMe
+[guowenxue@localhost packet]$ cd ..
+
+
++----------------------------------------------------------------------------+
++ Part II:  Cross compile the linux-2.6.24 for s3c2440(on my FL2440 board)   +
++----------------------------------------------------------------------------+
+
+guowenxue@localhost kernel]$ cd s3c2440/
+[guowenxue@localhost s3c2440]$ ls
+bin  build.sh  patch
+[guowenxue@localhost s3c2440]$ sh build.sh 
+
++------------------------------------------+
+|      Build linux kernel for fl2440            
++------------------------------------------+
+
+Current support linux kernel version:
+1: linux-2.6.24
+2: linux-2.6.33
+3: linux-2.6.38
+Please select: 
+1
+*  Decompress the source code patcket and patch now...  *
+patching file linux-2.6.24/arch/arm/kernel/module.c
+patching file linux-2.6.24/arch/arm/mach-s3c2440/mach-smdk2440.c
+patching file linux-2.6.24/arch/arm/plat-s3c24xx/common-smdk.c
+patching file linux-2.6.24/arch/arm/plat-s3c24xx/devs.c
+patching file linux-2.6.24/arch/arm/tools/mach-types
+patching file linux-2.6.24/.cfg-fl2440
+patching file linux-2.6.24/do.sh
+patching file linux-2.6.24/drivers/net/dm9000.c
+patching file linux-2.6.24/drivers/serial/s3c2410.c
+patching file linux-2.6.24/include/asm-arm/elf.h
+patching file linux-2.6.24/init/initramfs.c
+patching file linux-2.6.24/Makefile
+
+********************************************
+*     Cross compile linux-2.6.24 now...       
+********************************************
+
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/basic/docproc
+......
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+  LD      vmlinux
+  SYSMAP  System.map
+  SYSMAP  .tmp_System.map
+  OBJCOPY arch/arm/boot/Image
+  Kernel: arch/arm/boot/Image is ready
+  AS      arch/arm/boot/compressed/head.o
+  GZIP    arch/arm/boot/compressed/piggy.gz
+  AS      arch/arm/boot/compressed/piggy.o
+  CC      arch/arm/boot/compressed/misc.o
+  LD      arch/arm/boot/compressed/vmlinux
+  OBJCOPY arch/arm/boot/zImage
+  Kernel: arch/arm/boot/zImage is ready
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      drivers/scsi/scsi_wait_scan.mod.o
+  LD [M]  drivers/scsi/scsi_wait_scan.ko
+cp arch/arm/boot/zImage . -f
+mkimage -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
+Image Name:   Linux Kernel
+Created:      Fri May 20 16:24:40 2011
+Image Type:   ARM Linux Kernel Image (uncompressed)
+Data Size:    1828044 Bytes = 1785.20 kB = 1.74 MB
+Load Address: 30008000
+Entry Point:  30008040
+rm -f zImage
+[guowenxue@localhost s3c2440]$ ls linux-2.6.24/uImage.gz 
+linux-2.6.24/uImage.gz
+
