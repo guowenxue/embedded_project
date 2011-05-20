@@ -13,7 +13,7 @@ diff -Nuar u-boot-1.3.4/Makefile u-boot-1.3.4-at91sam9260/Makefile
  # load ARCH, BOARD, and CPU configuration
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
-+CROSS_COMPILE = arm-linux-
++CROSS_COMPILE = /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
  
  ifndef CROSS_COMPILE
  ifeq ($(HOSTARCH),$(ARCH))
