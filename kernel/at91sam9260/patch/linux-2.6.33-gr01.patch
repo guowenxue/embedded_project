@@ -929,7 +929,7 @@ diff -Nuar linux-2.6.33/Makefile linux-2.6.33-L200v5/Makefile
 -ARCH		?= $(SUBARCH)
 -CROSS_COMPILE	?=
 +ARCH		?= arm
-+CROSS_COMPILE	?= /opt/buildroot-2011.02/arm926ejs/usr/bin/arm-linux-
++CROSS_COMPILE	?= /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
  
  # Architecture as present in compile.h
  UTS_MACHINE 	:= $(ARCH)
