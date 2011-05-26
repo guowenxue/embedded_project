@@ -1,0 +1,429 @@
+# .bashrc
+
+# User specific aliases and functions
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+alias gitco='git checkout'
+alias gitci='git commit'
+alias vt100='export TERM=vt100'
+alias linux='export TERM=linux'
+alias maek='make'
+#alias rmsvn='find -name .svn -exec rm -rf {} \;'
+#alias rmgdb='find -iname "*.gdb" -exec rm -rf {} \;'
+#alias rmobj='find -iname "*.o" -exec rm -rf {} \;'
+#alias rmdep='find -name .depend -exec rm -rf {} \;'
+alias myindent='indent -npro -kr -i4 -ts4 -bls -bl -bli0 -cli2 -ss -bap -sc -sob -l100 -ncs -nce -nut'
+alias tag='cscope -Rbq && ctags --c-kinds=+defglmnstuvx --langmap=c:.c.h.ho.hem.het.hec.hev.him.hit.hic.hiv -R .'
+alias tagclean='rm -f cscope.* tags'
+alias vim='/usr/.devices_group/guowenxue/vim/bin/vim'
+alias nocvim='mv ~/.vimrc ~/.vimrcb'
+alias cvim='mv ~/.vimrcb ~/.vimrc'
+
+# Description:  This function used to remove some specified files in current folder
+#      Author:  Guo Wenxue(guowenxue@gmail.com)
+#     Version:  1.0.0 (Release by guowenxue on 26th Fri. 2011)
+
+function erm ()
+{
+   if [ -z $1 ]; then
+      echo "This function used to remove some specified files in current folder"
+      echo "Usage: $FUNCNAME [express]"
+      echo "Example: $FUNCNAME *.gdb"
+      return;
+   fi
+
+   express=$1
+   find -iname "$express" -exec rm -rf {} \;
+}
+alias rmsvn='erm .svn'
+
+# Description:  This function use samba filesystem to mount windows folder
+#      Author:  Guo Wenxue(guowenxue@gmail.com)
+#     Version:  1.0.0 (Release by guowenxue on 26th Fri. 2011)
+
+# Password List: dglwx420#  kernel123#  pwd?12345 kernel123!
+function mntwinxp ()
+{
+#  if [ -z $1 ] ; then
+#     echo "This function used to mount the windows XP folder to Linux, and it use sudo to excute"
+#     echo "Usage: $FUNCNAME [password]"
+#     return;
+#  fi
+
+  password="dglwx420#"
+  if [ ! -z $1 ] ; then
+     password=$1
+  fi
+
+  sudo mount -t cifs -o username="guowenxue",password="$password" //10.78.28.74/linux /home/guowenxue/winxp/
+}
+
+# Description:  This function used to uncompress the packets according to the packet name
+#      Author:  Guo Wenxue(guowenxue@gmail.com)
+#     Version:  1.0.0 (Release by guowenxue on 26th Fri. 2011)
+
+function ex () 
+{
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1        ;;
+      *.tar.gz)    tar xzf $1     ;;
+      *.bz2)       bunzip2 $1       ;;
+      *.rar)       rar x $1     ;;
+      *.gz)        gunzip $1     ;;
+      *.tar)       tar xf $1        ;;
+      *.tbz2)      tar xjf $1      ;;
+      *.tgz)       tar xzf $1       ;;
+      *.zip)       unzip $1     ;;
+      *.Z)         uncompress $1  ;;
+      *.7z)        7z x $1    ;;
+      *)           echo "'$1' cannot be extracted via extract()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Description:  This function used to format all the source code in current forlder
+#               and convert source code file format from windows to linux
+#      Author:  Guo Wenxue(guowenxue@gmail.com)
+#     Version:  1.0.0 (Release by guowenxue on 18th Fri. 2010)
+
+function format_src ()
+{
+
+  find -iname "*.c" -exec dos2unix {} \;
+  find -iname "*.h" -exec dos2unix {} \;
+  find -iname "makefile" -exec dos2unix {} \;
+  find -iname "Makefile" -exec dos2unix {} \;
+
+  # -npro   不要读取indent的配置文件.indent.pro
+  # -kr     使用Kernighan&Ritchie的格式
+  # -i4     设置缩排的格数为4
+  # -di28   将声明区段的变量置于指定的栏位(28) 
+  # -ts4    设置tab的长度为4 
+  # -bls    定义结构，"struct"和"{"分行
+  # -bl     if(或是else,for等等)与后面执行区段的”{“不同行，且”}”自成一行。
+  # -bli0   设置{ }缩排的格数为0 
+  # -cli2   使用case时，switch缩排的格数
+  # -ss     若for或whiile区段只有一行时，在分号前加上空格
+  # -bad    在声明区段后加上空白行
+  # -bbb    块注释前加空行
+  # -bap    函数结束后加空行
+  # -sc     在每行注释左侧加上星号(*)。
+  # -bc     在声明区段中，若出现逗号即换行。
+  # -sob    删除多余的空白行
+  # -l100   非注释行最长100
+  # -ncs    不要在类型转换后面加空格
+  # -nce    不要将else置于”}”之后
+  # -nut    不要使用tab来缩进
+
+  INDET_FORMAT="-npro -kr -i4 -ts4 -bls -bl -bli0 -cli2 -ss -bap -sc -sob -l100 -ncs -nce -nut"
+
+  find -iname "*.c" -exec indent $INDET_FORMAT {} \;
+  find -iname "*.h" -exec indent $INDET_FORMAT {} \;
+
+  find -iname "*.h~" | xargs rm -rf {} \;
+  find -iname "*.c~" | xargs rm -rf {} \;
+}
+
+# Description:  This function used to generate uImage for ARM linux.
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 04th Feb. 2010)
+# 
+function mkuimage ()
+{
+  ZIMAGE=arch/arm/boot/zImage
+  if [ ! -f $ZIMAGE ] ; then
+     echo "ERROR: $ZIMAGE doesn't exist"
+     return;
+  fi
+
+  cp $ZIMAGE zImage --reply=yes
+  mkimage -A arm -O linux -n Netaceess -C NONE -a 0x20008000 -e 0x20008000 -d zImage uImage.gz
+  rm -f zImage
+}
+
+# Description:  This function used to generate romfs image for uclinux.
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 04th Feb. 2010)
+# 
+
+function mkromfs ( )
+{
+
+  if [ $# != 1 ] ; then
+      echo "Usage: $FUNCNAME [romdisk]"
+      return;
+  fi
+
+  romdisk=$1
+
+  if [ ! -d $romdisk ] ; then
+       echo "ERROR: "$romdisk" folder doesn't exist."
+       return;
+  fi
+
+  genromfs -d $romdisk -f romfs.img
+  rm -f romfs.img.gz
+  gzip romfs.img
+  mkmagic -A arm -O linux -T filesystem -n L200 -d  romfs.img.gz romfs_magic.img.gz
+
+  rm -f romfs.img.gz
+}
+
+
+# Description:  This function used to grep the "key" in all the files in current folder.
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 04th Feb. 2010)
+# 
+
+function mygrep ( )
+{
+  if [ $# -lt 1 ] ; then
+      echo "   Usage: $FUNCNAME key [-g] [suffix]"
+      echo "Example1: mygrep haha"
+      echo "Example2: mygrep haha -g"
+      echo "Example3: mygrep haha *.c"
+      echo "Example4: mygrep haha -g *.c"
+      return
+  fi
+
+  key=$1         #The grep key
+
+  if [ $# = 1 ] ; then
+      grep -n "$key" -r *
+
+  elif [ $# = 2 ] ; then
+      if [ $2 = "-g" ] ; then
+         grep -n "\<$key\>" -r *
+      else
+         suffix=$2
+         find -iname "$suffix" | xargs grep -n "$key"
+      fi
+  else # Arguments more than 3
+
+      if [ $2 = "-g" ] ; then
+             suffix=$3
+
+      elif [ $3 = "-g" ]; then
+             suffix=$2
+      fi
+
+      find -iname "$suffix" | xargs grep -n "\<$key\>"
+  fi
+}
+
+
+# Description:  This function used to generate a ramdisk block device file
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 24th Apr. 2011)
+# 
+
+function ramdisk_init ()
+{
+  RF_MNT=mnt
+  LOOPDEV=loop7
+
+  if [ $# != 2 ] ; then
+     echo "This function used to generate a ramdisk block device file"
+     echo "Usage: $FUNCNAME [ramdisk] [size]"
+     return;
+  fi
+
+  RF_NAME=$1
+  SIZE=$2
+  CMD_PREFIX=
+
+  if [ root != `whoami` ] ; then 
+     echo "WARNING: Not root user, use sudo to excute this function commands" 
+     CMD_PREFIX=sudo
+  fi
+
+  dd if=/dev/zero of=$RF_NAME bs=1M count=$SIZE
+
+  if [ ! -d $RF_MNT ] ; then
+     mkdir $RF_MNT
+  fi
+
+  $CMD_PREFIX losetup /dev/$LOOPDEV $RF_NAME
+  $CMD_PREFIX mke2fs -m 0 /dev/$LOOPDEV
+  $CMD_PREFIX losetup -d /dev/$LOOPDEV
+
+  $CMD_PREFIX mount -o loop $RF_NAME $RF_MNT
+  $CMD_PREFIX rm -rf $RF_MNT/lost+found
+  $CMD_PREFIX mkdir -p $RF_MNT/{apps,bin,data,dev,info,proc,root,sbin,sys,tmp,var,etc/{,init.d,dropbear},mnt/{,usb,sdc,nfs,dev},usr/{,bin,sbin,lib,share},lib/{,modules/{,2.6.24,2.6.38}}} 
+
+  $CMD_PREFIX mknod -m666 $RF_MNT/dev/null c 1 3 
+  $CMD_PREFIX mknod -m666 $RF_MNT/dev/console c 5 1
+  $CMD_PREFIX mknod -m666 $RF_MNT/dev/ttyS0 c 4 64
+
+  $CMD_PREFIX ln -s /tmp $RF_MNT/var/lock
+  $CMD_PREFIX ln -s /tmp $RF_MNT/var/log
+  $CMD_PREFIX ln -s /tmp $RF_MNT/var/run
+  $CMD_PREFIX ln -s /tmp $RF_MNT/var/tmp
+
+  $CMD_PREFIX umount $RF_NAME
+  rm -rf $RF_MNT
+}
+
+# Description:  This function used to uncomperss the rootfs and mount it to ./mnt
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 24th Apr. 2011)
+# 
+
+function ramdisk_mnt ()
+{
+  MNT_POINT=mnt
+
+  if [ 1 != $# ] ; then
+     echo "This function used to uncomperss the rootfs and mount it to ./mnt"
+     echo "Usage: $FUNCNAME [rootfs]"
+     return;
+  fi
+
+  #Rootfs packet name
+  RF_PACK=$1
+  CMD_PREFIX=
+
+  if [ root != `whoami` ] ; then
+     echo "WARNING: Not root user, use sudo to excute this function commands"
+     CMD_PREFIX=sudo
+  fi
+
+  if [ ! -s $RF_PACK ] ; then
+     echo "ERROR: Rootfs \"$RF_PACK\" doesn't exist"
+     return;
+  fi
+
+  #Rootfs uncompressed name
+  RF_NAME=`echo $RF_PACK | awk -F '.' '{print $1}'`
+  ex $RF_PACK
+
+  if [ ! -d $MNT_POINT ] ; then
+     mkdir $MNT_POINT
+  fi
+
+  $CMD_PREFIX mountpoint $MNT_POINT
+  if [ 0 == $? ] ; then
+     echo "ERROR:  $RF_NAME not mounted"
+     return;
+  fi
+
+  set -x
+  $CMD_PREFIX mount -o loop $RF_NAME $MNT_POINT
+  set +x
+}
+
+
+# Description:  This function used to umount ramdisk rootfs and compress it
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 24th Apr. 2011)
+# 
+
+function ramdisk_gen ()
+{
+  if [ 1 != $# ] ; then
+     echo "This function used to umount ramdisk rootfs and compress it"
+     echo "$FUNCNAME [rootfs]"
+     return;
+  fi
+
+  #Rootfs name
+  RF_NAME=$1
+  CMD_PREFIX=
+
+  if [ root != `whoami` ] ; then
+     echo "WARNING: Not root user, use sudo to excute this function commands" 
+     CMD_PREFIX=sudo
+  fi
+
+  file $RF_NAME | grep "Linux rev 1.0 ext2 filesystem" >> /dev/null
+  if [ 0 != $? ] ; then
+     echo "$RF_NAME is not linux initrd file system" 
+     return;
+  fi
+
+  file $RF_NAME | grep ".*mount.*" >> /dev/null
+  if [ 0 == $? ] ; then
+     $CMD_PREFIX umount $RF_NAME
+  fi
+
+  echo "Compress ramdisk now..."
+  gzip $RF_NAME
+
+  mkimage -A arm -O linux -T filesystem -C gzip -d $RF_NAME.gz $RF_NAME.gz-magic
+}
+
+
+# Description:  This function used to generate the NUP file
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 24th Apr. 2011)
+# 
+
+function nup_gen ()
+{
+  path=`pwd`
+  folder=`basename $path`
+  nup_name=${folder}.nup
+
+  #first, compress these folders and name them as ${foldername}.nup
+  for i in N??*; do
+       cd $i
+       7za a -tzip $i.nup *
+       mv $i.nup ..
+       cd ..
+       rm -rf $i
+  done
+
+  #second, generate the final NUP file and move it to parent folder
+  7za a -tzip $nup_name *
+  mv $nup_name ..
+  cd ..
+  rm -rf $folder
+}
+
+
+# Description:  This function used to uncompress the NUP file
+#      Author:  GuoWenxue<guowenxue@gmail.com>
+#     Version:  1.0.0 (Release by guowenxue on 24th Apr. 2011)
+# 
+
+function nup_uncmp ()
+{
+  if [ $# -ne 1 ]; then
+      echo "This function used to uncompress the NUP file"
+      echo "Usage:   $FUNCNAME \"nup_path\"             "
+      return;
+  fi
+
+  nup_path=$1
+  nup_name=`basename ${nup_path}`
+  work_path=`echo ${nup_name}|awk -F '.' '{print   $1}'`
+
+  # Uncompress the TOP NUP file
+  7za x $nup_path -o$work_path
+
+  if [ ! -d  $work_path ];then
+      echo "================================================================="
+      echo "*  ERROR: Uncompress failure, make sure the file is zip format  *"
+      echo "================================================================="
+      echo ""
+      return;
+  fi
+
+  # Goes into the folder and uncompress the child NUP file one by one.
+
+  cd $work_path
+  for i in *.nup; do
+      fold_name=`echo $i|awk -F '.' '{print   $1}' `
+      echo $fold_name
+      7za x $i -o$fold_name
+      rm -f $i
+  done
+}
+
