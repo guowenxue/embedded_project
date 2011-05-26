@@ -1,6 +1,6 @@
 diff -Nuar linux-2.6.24/arch/arm/kernel/module.c linux-2.6.24-fl2440/arch/arm/kernel/module.c
 --- linux-2.6.24/arch/arm/kernel/module.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/arch/arm/kernel/module.c	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/arch/arm/kernel/module.c	2011-05-18 21:42:48.000000000 +0800
 @@ -131,6 +131,11 @@
  			*(u32 *)loc |= offset & 0x00ffffff;
  			break;
@@ -15,7 +15,7 @@ diff -Nuar linux-2.6.24/arch/arm/kernel/module.c linux-2.6.24-fl2440/arch/arm/ke
  			       module->name, ELF32_R_TYPE(rel->r_info));
 diff -Nuar linux-2.6.24/arch/arm/mach-s3c2440/mach-smdk2440.c linux-2.6.24-fl2440/arch/arm/mach-s3c2440/mach-smdk2440.c
 --- linux-2.6.24/arch/arm/mach-s3c2440/mach-smdk2440.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-05-18 21:42:48.000000000 +0800
 @@ -148,18 +148,20 @@
  	.lpcsel		= ((0xCE6) & ~7) | 1<<4,
  };
@@ -40,8 +40,8 @@ diff -Nuar linux-2.6.24/arch/arm/mach-s3c2440/mach-smdk2440.c linux-2.6.24-fl244
  
 diff -Nuar linux-2.6.24/arch/arm/plat-s3c24xx/common-smdk.c linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/common-smdk.c
 --- linux-2.6.24/arch/arm/plat-s3c24xx/common-smdk.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/common-smdk.c	2011-04-28 21:27:50.000000000 +0800
-@@ -104,48 +104,48 @@
++++ linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/common-smdk.c	2011-05-25 20:13:39.000000000 +0800
+@@ -104,48 +104,53 @@
  	},
  };
  
@@ -61,62 +61,67 @@ diff -Nuar linux-2.6.24/arch/arm/plat-s3c24xx/common-smdk.c linux-2.6.24-fl2440/
 -		.offset = 0,
 -		.size	= SZ_2M,
 +		.name	= "mtdblock1 kernel 5MB",
-+		.offset = SZ_1M*5,
-+		.size	= SZ_1M*1,
++		.size	= SZ_1M*5,
++		.offset = SZ_1M*1,
  	},
  	[2] = {
 -		.name	= "S3C2410 flash partition 2",
 -		.offset = SZ_4M,
 -		.size	= SZ_4M,
 +		.name	= "mtdblock2 ramdisk 10MB",
-+		.offset = SZ_1M*10,
-+		.size	= SZ_1M*6,
++		.size	= SZ_1M*10,
++		.offset = SZ_1M*6,
  	},
  	[3] = {
 -		.name	= "S3C2410 flash partition 3",
 -		.offset	= SZ_8M,
 -		.size	= SZ_2M,
 +		.name	= "mtdblock3 cramfs 10MB",
-+		.offset	= SZ_1M*10,
-+		.size	= SZ_1M*16,
++		.size	= SZ_1M*10,
++		.offset	= SZ_1M*16,
  	},
  	[4] = {
 -		.name	= "S3C2410 flash partition 4",
 -		.offset = SZ_1M * 10,
 -		.size	= SZ_4M,
 +		.name	= "mtdblock4 yaffs 20MB",
-+		.offset = SZ_1M*20,
-+		.size	= SZ_1M*26,
++		.size	= SZ_1M*20,
++		.offset = SZ_1M*26,
  	},
  	[5] = {
 -		.name	= "S3C2410 flash partition 5",
 -		.offset	= SZ_1M * 14,
 -		.size	= SZ_1M * 10,
-+		.name	= "mtdblock5 apps 40MB",
-+		.offset	= SZ_1M*40,
-+		.size	= SZ_1M*46,
++		.name	= "mtdblock5 jffs 20MB",
++		.size	= SZ_1M*20,
++		.offset	= SZ_1M*46,
  	},
  	[6] = {
 -		.name	= "S3C2410 flash partition 6",
 -		.offset	= SZ_1M * 24,
 -		.size	= SZ_1M * 24,
-+		.name	= "mtdblock6 info 20MB",
-+		.offset	= SZ_1M*20,
-+		.size	= SZ_1M*86,
++		.name	= "mtdblock6 apps 20MB",
++		.size	= SZ_1M*20,
++		.offset	= SZ_1M*66,
  	},
  	[7] = {
 -		.name	= "S3C2410 flash partition 7",
 -		.offset = SZ_1M * 48,
 -		.size	= SZ_16M,
-+		.name	= "mtdblock7 data 40MB",
-+		.offset = SZ_1M*40,
-+		.size	= SZ_1M*106,
++		.name	= "mtdblock7 info 20MB",
++		.size	= SZ_1M*20,
++		.offset	= SZ_1M*86,
++	},
++	[8] = {
++		.name	= "mtdblock8 data 40MB",
++		.size	= SZ_1M*40,
++		.offset = SZ_1M*106,
  	}
  };
  
 diff -Nuar linux-2.6.24/arch/arm/plat-s3c24xx/devs.c linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/devs.c
 --- linux-2.6.24/arch/arm/plat-s3c24xx/devs.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/devs.c	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/arch/arm/plat-s3c24xx/devs.c	2011-05-18 21:42:48.000000000 +0800
 @@ -35,6 +35,8 @@
  #include <asm/plat-s3c24xx/cpu.h>
  #include <asm/plat-s3c24xx/regs-spi.h>
@@ -170,7 +175,7 @@ diff -Nuar linux-2.6.24/arch/arm/plat-s3c24xx/devs.c linux-2.6.24-fl2440/arch/ar
  #endif // CONFIG_CPU_S32440
 diff -Nuar linux-2.6.24/arch/arm/tools/mach-types linux-2.6.24-fl2440/arch/arm/tools/mach-types
 --- linux-2.6.24/arch/arm/tools/mach-types	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/arch/arm/tools/mach-types	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/arch/arm/tools/mach-types	2011-05-18 21:42:48.000000000 +0800
 @@ -376,7 +376,7 @@
  ixp421_dnaeeth		ARCH_IXP421_DNAEETH	IXP421_DNAEETH		359
  pocketserv9200		ARCH_POCKETSERV9200	POCKETSERV9200		360
@@ -182,12 +187,12 @@ diff -Nuar linux-2.6.24/arch/arm/tools/mach-types linux-2.6.24-fl2440/arch/arm/t
  quadriceps		ARCH_QUADRICEPS		QUADRICEPS		365
 diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 --- linux-2.6.24/.cfg-fl2440	1970-01-01 08:00:00.000000000 +0800
-+++ linux-2.6.24-fl2440/.cfg-fl2440	2011-04-28 22:26:03.000000000 +0800
-@@ -0,0 +1,1279 @@
++++ linux-2.6.24-fl2440/.cfg-fl2440	2011-05-25 20:23:17.000000000 +0800
+@@ -0,0 +1,1283 @@
 +#
 +# Automatically generated make config: don't edit
 +# Linux kernel version: 2.6.24
-+# Thu Apr 28 21:56:35 2011
++# Wed May 25 20:08:09 2011
 +#
 +CONFIG_ARM=y
 +CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -267,7 +272,7 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +CONFIG_MODULE_FORCE_UNLOAD=y
 +# CONFIG_MODVERSIONS is not set
 +# CONFIG_MODULE_SRCVERSION_ALL is not set
-+CONFIG_KMOD=y
++# CONFIG_KMOD is not set
 +CONFIG_BLOCK=y
 +# CONFIG_LBD is not set
 +# CONFIG_BLK_DEV_IO_TRACE is not set
@@ -500,7 +505,10 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +CONFIG_IP_MULTIPLE_TABLES=y
 +# CONFIG_IP_ROUTE_MULTIPATH is not set
 +# CONFIG_IP_ROUTE_VERBOSE is not set
-+# CONFIG_IP_PNP is not set
++CONFIG_IP_PNP=y
++# CONFIG_IP_PNP_DHCP is not set
++# CONFIG_IP_PNP_BOOTP is not set
++# CONFIG_IP_PNP_RARP is not set
 +# CONFIG_NET_IPIP is not set
 +# CONFIG_NET_IPGRE is not set
 +# CONFIG_IP_MROUTE is not set
@@ -675,10 +683,10 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +# CONFIG_BLK_DEV_COW_COMMON is not set
 +CONFIG_BLK_DEV_LOOP=y
 +# CONFIG_BLK_DEV_CRYPTOLOOP is not set
-+CONFIG_BLK_DEV_NBD=y
++# CONFIG_BLK_DEV_NBD is not set
 +# CONFIG_BLK_DEV_UB is not set
 +CONFIG_BLK_DEV_RAM=y
-+CONFIG_BLK_DEV_RAM_COUNT=3
++CONFIG_BLK_DEV_RAM_COUNT=1
 +CONFIG_BLK_DEV_RAM_SIZE=16384
 +CONFIG_BLK_DEV_RAM_BLOCKSIZE=1024
 +# CONFIG_CDROM_PKTCDVD is not set
@@ -870,7 +878,7 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +CONFIG_SERIAL_CORE_CONSOLE=y
 +CONFIG_UNIX98_PTYS=y
 +CONFIG_LEGACY_PTYS=y
-+CONFIG_LEGACY_PTY_COUNT=10
++CONFIG_LEGACY_PTY_COUNT=8
 +# CONFIG_IPMI_HANDLER is not set
 +# CONFIG_HW_RANDOM is not set
 +# CONFIG_NVRAM is not set
@@ -1139,7 +1147,7 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +# CONFIG_USB_SERIAL_TI is not set
 +# CONFIG_USB_SERIAL_CYBERJACK is not set
 +# CONFIG_USB_SERIAL_XIRCOM is not set
-+# CONFIG_USB_SERIAL_OPTION is not set
++CONFIG_USB_SERIAL_OPTION=y
 +# CONFIG_USB_SERIAL_OMNINET is not set
 +# CONFIG_USB_SERIAL_DEBUG is not set
 +
@@ -1319,6 +1327,7 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +CONFIG_NFSD=y
 +# CONFIG_NFSD_V3 is not set
 +CONFIG_NFSD_TCP=y
++CONFIG_ROOT_NFS=y
 +CONFIG_LOCKD=y
 +CONFIG_LOCKD_V4=y
 +CONFIG_EXPORTFS=y
@@ -1465,18 +1474,15 @@ diff -Nuar linux-2.6.24/.cfg-fl2440 linux-2.6.24-fl2440/.cfg-fl2440
 +CONFIG_HAS_DMA=y
 diff -Nuar linux-2.6.24/do.sh linux-2.6.24-fl2440/do.sh
 --- linux-2.6.24/do.sh	1970-01-01 08:00:00.000000000 +0800
-+++ linux-2.6.24-fl2440/do.sh	2011-04-28 20:36:54.000000000 +0800
-@@ -0,0 +1,7 @@
++++ linux-2.6.24-fl2440/do.sh	2011-05-19 20:46:34.000000000 +0800
+@@ -0,0 +1,4 @@
 +#!/bin/sh
 +
 +make
-+#cp arch/arm/boot/zImage . -f
-+#mkimage -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
-+#rm -f zImage
-+cp uImage.gz /tftpboot/uImage-s3c.gz --reply=yes
++cp uImage.gz /tftpboot/uImage-fl2440.gz --reply=yes
 diff -Nuar linux-2.6.24/drivers/net/dm9000.c linux-2.6.24-fl2440/drivers/net/dm9000.c
 --- linux-2.6.24/drivers/net/dm9000.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/drivers/net/dm9000.c	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/drivers/net/dm9000.c	2011-05-18 21:42:48.000000000 +0800
 @@ -70,6 +70,7 @@
  #include <asm/delay.h>
  #include <asm/irq.h>
@@ -1495,7 +1501,7 @@ diff -Nuar linux-2.6.24/drivers/net/dm9000.c linux-2.6.24-fl2440/drivers/net/dm9
  
 diff -Nuar linux-2.6.24/drivers/serial/s3c2410.c linux-2.6.24-fl2440/drivers/serial/s3c2410.c
 --- linux-2.6.24/drivers/serial/s3c2410.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/drivers/serial/s3c2410.c	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/drivers/serial/s3c2410.c	2011-05-18 21:42:48.000000000 +0800
 @@ -147,7 +147,7 @@
  
  /* UART name and device definitions */
@@ -1516,7 +1522,7 @@ diff -Nuar linux-2.6.24/drivers/serial/s3c2410.c linux-2.6.24-fl2440/drivers/ser
  	.driver_name	= S3C24XX_SERIAL_NAME,
 diff -Nuar linux-2.6.24/include/asm-arm/elf.h linux-2.6.24-fl2440/include/asm-arm/elf.h
 --- linux-2.6.24/include/asm-arm/elf.h	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/include/asm-arm/elf.h	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/include/asm-arm/elf.h	2011-05-18 21:42:48.000000000 +0800
 @@ -29,6 +29,7 @@
  #define R_ARM_ABS32	2
  #define R_ARM_CALL	28
@@ -1527,7 +1533,7 @@ diff -Nuar linux-2.6.24/include/asm-arm/elf.h linux-2.6.24-fl2440/include/asm-ar
   * These are used to set parameters in the core dumps.
 diff -Nuar linux-2.6.24/init/initramfs.c linux-2.6.24-fl2440/init/initramfs.c
 --- linux-2.6.24/init/initramfs.c	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/init/initramfs.c	2011-04-28 22:29:22.000000000 +0800
++++ linux-2.6.24-fl2440/init/initramfs.c	2011-05-18 21:42:48.000000000 +0800
 @@ -551,6 +551,7 @@
  	if (initrd_start) {
  #ifdef CONFIG_BLK_DEV_RAM
@@ -1546,7 +1552,7 @@ diff -Nuar linux-2.6.24/init/initramfs.c linux-2.6.24-fl2440/init/initramfs.c
  			sys_write(fd, (char *)initrd_start,
 diff -Nuar linux-2.6.24/Makefile linux-2.6.24-fl2440/Makefile
 --- linux-2.6.24/Makefile	2008-01-25 06:58:37.000000000 +0800
-+++ linux-2.6.24-fl2440/Makefile	2011-04-28 20:36:54.000000000 +0800
++++ linux-2.6.24-fl2440/Makefile	2011-05-18 21:42:48.000000000 +0800
 @@ -142,9 +142,9 @@
  # but instead _all depend on modules
  PHONY += all

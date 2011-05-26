@@ -1,0 +1,540 @@
+-------------------------
+1. Create the root filesystem skeleton folders: 
+
+[guowenxue@localhost opt]$ pwd
+/opt
+[guowenxue@localhost opt]$ mkdir rootfs
+[guowenxue@localhost opt]$ cd rootfs/
+[guowenxue@localhost rootfs]$ ls
+[guowenxue@localhost rootfs]$ mkdir -p {apps,bin,data,dev,info,proc,root,sbin,sys,tmp,var,etc/{,init.d,dropbear},mnt/{,usb,sdc,nfs,dev},usr/{,bin,sbin,lib,share},lib/{,modules/{,2.6.24,2.6.38}}} 
+[guowenxue@localhost rootfs]$ tree -L 3 
+.
+|-- apps                Apps partition on nandflash mount point
+|-- bin
+|-- data                Data partition on nandflash mount point
+|-- dev
+|-- etc
+|   |-- dropbear        dropbear(ssh server) key files
+|   `-- init.d          System init shell script
+|-- info                Infor partition on nandflash mount point  
+|-- lib                 Shared library put here
+|   `-- modules         Sytem driver put here
+|       |-- 2.6.24      "insmod" command depends on the correspond Linux kernel version folder
+|       `-- 2.6.38
+|-- mnt                 Extern mount point
+|   |-- dev             Preserved
+|   |-- nfs             NFS mount point
+|   |-- sdc             SD card point
+|   `-- usb             USB storage mount point
+|-- proc                proc file system mount point
+|-- root                root user home
+|-- sbin
+|-- sys                 sys file system mount point
+|-- tmp                 tmpfs file system mount point
+|-- usr
+|   |-- bin
+|   |-- lib             User's shared library put here
+|   |-- sbin
+|   `-- share
+`-- var
+
+29 directories, 0 files
+
+
+-------------------------
+2. Create some critical device node in /dev: 
+
+When system bootup£¬init shell script depends on the two devices "/dev/console" and "/dev/null"
+to call mdev command to generate the device node in /dev . So we must create it previously£¬or 
+the system will throw Warning when system start£ºunable to open an initial console:
+
+[guowenxue@localhost rootfs]$ sudo mknod -m666 dev/null c 1 3  
+[guowenxue@localhost rootfs]$ sudo mknod -m666 dev/console c 5 1 
+[guowenxue@localhost rootfs]$ sudo mknod -m666 dev/ttyS0 c 4 64 
+[guowenxue@localhost rootfs]$ ls -l dev/*
+crwxr-xr-x  1 root root 5, 1 May 16 15:00 dev/console
+crwxr-xr-x  1 root root 1, 3 May 16 15:00 dev/null
+crwxr-xr-x  1 root root 4, 64 May 16 15:00 dev/ttyS0
+
+
+-------------------------
+3. Create some symbolic links in /var
+
+[guowenxue@localhost rootfs]$ ln -s /tmp var/lock
+[guowenxue@localhost rootfs]$ ln -s /tmp var/log
+[guowenxue@localhost rootfs]$ ln -s /tmp var/run
+[guowenxue@localhost rootfs]$ ln -s /tmp var/tmp
+
+
+-------------------------
+4. Copy the shared libraries from cross compiler to the root filesystem /lib path 
+
+[guowenxue@localhost rootfs]$ cp -af /opt/buildroot-2011.02/arm920t/usr/arm-linux/sysroot/lib/*so* lib/ 
+[guowenxue@localhost rootfs]$ cp -af /opt/buildroot-2011.02/arm920t/usr/arm-linux/lib/*so* lib/
+
+
+-------------------------
+5. Create mount configuer file /etc/fstab£º
+
+The fstab (/etc/fstab) (or file systems table) file is a system configuration file 
+commonly found on Unix systems. The fstab file typically lists all available disks 
+and disk partitions, and indicates how they are to be initialized or otherwise integrated
+into the overall system's file system. fstab is still used for basic system configuration, 
+notably of a system's main hard drive and startup file system, but for other uses has been 
+superseded in recent years by automatic mounting.
+
+The fstab file is most commonly used by the mount command, which reads the fstab file to 
+determine which options should be used when mounting the specified device. It is the duty
+ of the system administrator to properly create and maintain this file.
+
+[guowenxue@localhost etc]$ vim fstab 
+# /etc/fstab: static file system information.
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+#
+#<File system> <mount pt>     <type>   <options>         <dump> <pass>
+#devpts          /dev/pts       devpts   defaults          0      0
+#/dev/root       /              ext2     rw,noauto         0      1
+proc            /proc          proc     defaults          0      0
+tmpfs           /tmp           tmpfs    defaults          0      0
+tmpfs           /dev           tmpfs     defaults          0      0
+sysfs           /sys           sysfs    defaults          0      0
+
+
+-------------------------
+6. Create /etc/hostname,/etc/hosts,/etc/TZ,/etc/issue files
+
+/etc/hostname file set or print the name of the current host system
+/etc/hosts file contains information regarding the known hosts on the network.
+/etc/TZ specify the time zone
+/etc/issue 
+
+[guowenxue@localhost etc]$ echo "root" > hostname   
+[guowenxue@localhost etc]$ echo "127.0.0.1      localhost" >> hosts
+[guowenxue@localhost etc]$ echo "MST7MDT" >> TZ
+[guowenxue@localhost etc]$ echo "Copyright (C) 2011 GuoWenxue<guowenxue@gmail.com>" >> issue
+
+
+-------------------------
+7. Create /etc/profile file
+
+The /etc/profile file contains system wide environment stuff and startup programs. All 
+customizations that you put in this file will apply for the entire environment variable 
+on your system, so putting optimization flags in this file is a good choice.
+
+[guowenxue@localhost etc]$ vim profile
+# /etc/profile: system-wide .profile file for the Bourne shells.
+
+export PATH=\
+/bin:\
+/sbin:\
+/usr/bin:\
+/usr/sbin:\
+/usr/local/bin:\
+/apps/bin:\
+/apps/tools:\
+/apps/tslib/bin\
+
+# If running interactively, then:
+if [ "$PS1" ]; then
+
+    if [ "$BASH" ]; then
+        export PS1="[\u@\h \W]\\$ "
+        alias ll='/bin/ls --color=tty -laFh'
+        alias ls='/bin/ls --color=tty -F'
+        export LS_COLORS='no=00:fi=00:di=01;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;
+32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=0
+1;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35
+:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.d
+l=01;35:*.xcf=01;35:*.xwd=01;35:';
+    else
+      if [ "`id -u`" -eq 0 ]; then
+        export PS1='>: '
+      else
+        export PS1='>: '
+      fi
+    fi
+# System Setting
+    set -o vi
+    alias  ll='ls -l'
+    export USER=`id -un`
+    export LOGNAME=$USER
+    export HOSTNAME=`/bin/hostname`
+    export HISTSIZE=1000
+    export HISTFILESIZE=1000
+    export PAGER='/bin/more '
+    export EDITOR='/bin/vi'
+    export INPUTRC=/etc/inputrc
+    export DMALLOC_OPTIONS=debug=0x34f47d83,inter=100,log=logfile
+    export VAR1=
+    export VAR2=
+    export VAR3=
+    export VAR4=
+    export VAR5=
+    export LD_LIBRARY_PATH=/lib:/usr/lib/
+# QT Extendded 4.4.3 Setting
+    export QTDIR=/apps/qt-extended-4.4.3
+    export QWS_MOUSE_PROTO='TSLIB:/dev/event0'
+    export QWS_DISPLAY='LinuxFB:/dev/fb0'
+    export QWS_DISPLAY='LinuxFB:mmWidth240:mmHeight320:0'
+    export QWS_SIZE='240x320'
+    export QT_PLUGIN_PATH=$QTDIR/plugins/
+    export QT_QWS_FONTDIR=$QTDIR/lib/fonts
+    export PATH=$QTDIR/bin:$PATH
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$QTDIR/lib
+# Touch Scree tslib Setting
+    export TSLIB_ROOT=/apps/tslib
+    export TSLIB_CONFFILE=$TSLIB_ROOT/etc/ts.conf
+    export TSLIB_CALIBFILE=$TSLIB_ROOT/etc/pointercal
+    export TSLIB_TSDEVICE=/dev/event0
+    export TSLIB_CONSOLEDEVICE=none
+    export TSLIB_FBDEVICE=/dev/fb0
+fi;
+
+
+-------------------------
+8. Create the common protocal ports configure file /etc/protocols
+
+The /etc/protocols file contains information regarding the known protocols used in the 
+DARPA Internet. 
+
+[guowenxue@localhost etc]$ vim protocols
+# /etc/protocols:
+# $Id: protocols,v 1.1.1.1 2001/09/12 19:03:24 andersee Exp $
+#
+# Internet (IP) protocols
+#
+#       from: @(#)protocols     5.1 (Berkeley) 4/17/89
+#
+# Updated for NetBSD based on RFC 1340, Assigned Numbers (July 1992).
+
+ip      0       IP              # internet protocol, pseudo protocol number
+icmp    1       ICMP            # internet control message protocol
+igmp    2       IGMP            # Internet Group Management
+ggp     3       GGP             # gateway-gateway protocol
+ipencap 4       IP-ENCAP        # IP encapsulated in IP (officially ``IP'')
+st      5       ST              # ST datagram mode
+tcp     6       TCP             # transmission control protocol
+egp     8       EGP             # exterior gateway protocol
+pup     12      PUP             # PARC universal packet protocol
+udp     17      UDP             # user datagram protocol
+hmp     20      HMP             # host monitoring protocol
+xns-idp 22      XNS-IDP         # Xerox NS IDP
+rdp     27      RDP             # "reliable datagram" protocol
+iso-tp4 29      ISO-TP4         # ISO Transport Protocol class 4
+xtp     36      XTP             # Xpress Tranfer Protocol
+ddp     37      DDP             # Datagram Delivery Protocol
+idpr-cmtp       39      IDPR-CMTP       # IDPR Control Message Transport
+rspf    73      RSPF            #Radio Shortest Path First.
+vmtp    81      VMTP            # Versatile Message Transport
+ospf    89      OSPFIGP         # Open Shortest Path First IGP
+ipip    94      IPIP            # Yet Another IP encapsulation
+encap   98      ENCAP           # Yet Another IP encapsulation
+
+
+-------------------------
+9. Create mdev configure file:
+
+Mdev is a minimal clone of udev, which has to be selected when compiling BusyBox. And it 
+allows you to intercept the hotplug messagesfrom the kernel and do some actions (execute 
+scripts, create symlinks) in the user space.
+
+The config file /etc/mdev.conf defines what happens, when a device gets plugged in or out.
+When excute "mdev -s" command, it will find the /etc/mdev.conf file, if it dowsn't exit, 
+then the command will throw "Can not find mdev.conf" all the time. But we can create a empty
+ "/etc/mdev.conf" file(It means it will do nothing when plug in/out device). But in the follow 
+sample configure file, we will use it auto mount/umount USB storage and SD card.
+
+[guowenxue@localhost etc]$ vim mdev.conf 
+
+sd[a-z][0-9]      0:0 0777        @(mount /dev/$MDEV /mnt/usb)
+sd[a-z]           0:0 0777        $(umount /mnt/usb)
+ub[a-z][0-9]      0:0 0777        @(mount /dev/$MDEV /mnt/usb)
+ub[a-z]           0:0 0777        $(umount /mnt/usb)
+mmcblk[0-9]p[0-9] 0:0 0777        @(mount /dev/$MDEV /mnt/sdc)
+mmcblk[0-9]       0:0 0777        $(umount /mnt/sdc)
+
+
+-------------------------
+10. Create /etc/passwd file
+
+[guowenxue@localhost etc]$ vim passwd
+root:x:0:0:root:/:/bin/sh
+
+/etc/passwd file stores essential information, which is required during login 
+i.e. user account information. /etc/passwd is a text file, that contains a list 
+of the system's accounts, giving for each account some useful information like 
+user ID, group ID, home directory, shell, etc. It should have general read 
+permission as many utilities, like ls use it to map user IDs to user names, 
+but write access only for the superuser (root).
+
+The /etc/passwd contains one entry per line for each user (or user account) of 
+the system. All fields are separated by a colon (:) symbol. Total seven fields 
+as follows.
+
+Username:Password:UID:GID:User ID Info:Home Directory:Command/shell
+
+      Username:  It is used when user logs in. It should be between 1 and 32 
+                 characters in length.
+      Password:  An x character indicates that encrypted password is stored in 
+                 /etc/shadow file.If no character is present, no password has 
+                 been defined. Use of any other character is reserved and may 
+                 cause side-effects for the user.
+ User ID (UID):  Each user must be assigned a user ID (UID). UID 0 (zero) is 
+                 reserved for root and UIDs 1-99 are reserved for other predefined 
+                 accounts. Further UID 100-999 are reserved by system for administrative 
+                 and system accounts/groups.
+Group ID (GID):  The primary group ID (stored in /etc/group file)
+  User ID Info:  The comment field. It allow you to add extra information about the 
+                 users such as user's full name, phone number etc. This field use by 
+                 finger command.
+Home directory:  The absolute path to the directory the user will be in when they log in. 
+                 If this directory does not exists then users directory becomes /
+Command/shell:   The absolute path of a command or shell (/bin/bash). Typically, this is 
+                 a shell. Please note that it does not have to be a shell.
+
+
+-------------------------
+11. Create /etc/group file
+
+[guowenxue@localhost etc]$ vim group
+root:x:0:root
+
+/etc/group is a text file which defines the groups to which users belong under 
+Linux and UNIX operating system. Under Unix / Linux multiple users can be categorized
+ into groups. Unix file system permissions are organized into three classes, user, group, 
+and others. The use of groups allows additional abilities to be delegated in an organized 
+fashion, such as access to disks, printers, and other peripherals. This method, amongst
+others, also enables the Superuser to delegate some administrative tasks to normal users.
+
+It stores group information or defines the user groups i.e. it defines the groups to 
+which users belong. There is one entry per line, and each line has the following format
+(all fields are separated by a colon :)
+GroupName:Password:GroupID:GroupList
+
+    GroupName:  It is the name of group. If you run ls -l command, you will see this name 
+                printed in the group field.
+     Password:  Generally password is not used, hence it is empty/blank. It can store 
+                encrypted password. This is useful to implement privileged groups.
+GroupID (GID):  Each user must be assigned a group ID. You can see this number in your 
+                /etc/passwd file.
+    GroupList:  It is a list of user names of users who are members of the group. The user 
+                names, must be separated by commas.
+
+-------------------------
+12. Create /etc/shadow file
+
+Modify the PC root password to what you wanna set on your embedded system.
+[guowenxue@localhost ~]$ passwd root
+Changing password for user root.
+New UNIX password: 
+Retype new UNIX password: 
+passwd: all authentication tokens updated successfully.
+[guowenxue@localhost ~]$ cat /etc/shadow | grep root
+root:$1$jGZIHmtT$y8ZXoPllK12/wl51kMw4e/:0:0:99999:7:::
+
+[guowenxue@localhost etc]$ vim shadow
+root:$1$jGZIHmtT$y8ZXoPllK12/wl51kMw4e/:0:0:99999:7:::
+
+
+/etc/shadow file stores actual password in encrypted format for user's account with 
+additional properties related to user password i.e. it stores secure user account
+information. All fields are separated by a colon (:) symbol. It contains one entry 
+per line for each user listed in /etc/passwd file Generally, shadow file entry looks 
+as follows:
+
+Username:Password:Lastchanged:Minimum:Maximum:Warn:Inactive:Expire
+
+ User name : It is your login name
+   Password: It your encrypted password. The password should be minimum 6-8 characters 
+            long including special characters/digits
+Lastchanged: Last password change, Days since Jan 1, 1970 that password was last changed
+    Minimum: The minimum number of days required between password changes i.e. the number 
+             of days left before the user is allowed to change his/her password
+    Maximum: The maximum number of days the password is valid (after that user is forced 
+             to change his/her password)
+       Warn: The number of days before password is to expire that user is warned that 
+             his/her password must be changed
+   Inactive: The number of days after password expires that account is disabled
+     Expire: days since Jan 1, 1970 that account is disabled i.e. an absolute date 
+             specifying when the login may no longer be used
+
+The last 6 fields provides password aging and account lockout features (you need to use
+ chage command to setup password aging). According to man page of shadow - the password 
+field must be filled. The encrypted password consists of 13 to 24 characters from the 64 
+character alphabet a through z, A through Z, 0 through 9, \. and /. Optionally it can 
+start with a "$" character. This means the encrypted password was generated using another
+(not DES) algorithm. For example if it starts with "$1$" it means the MD5-based algorithm 
+was used.
+
+
+
+-------------------------
+13. Create /etc/inittab init shell script£º
+
+# /etc/inittab
+#
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+#
+# Note: BusyBox init doesn't support runlevels.  The runlevels field is
+# completely ignored by BusyBox init. If you want runlevels, use sysvinit.
+#
+# Format for each entry: <id>:<runlevels>:<action>:<process>
+#
+# id        == tty to run on, or empty for /dev/console. 
+#              If specified, then /dev/$id device must exist
+# runlevels == ignored, busybox doesn't support it
+# action    == one of sysinit, respawn, askfirst, wait, and once
+# process   == program to run
+
+# Startup the system
+# mount all the file systems specified in /etc/fstab 
+::sysinit:/bin/mount -a
+
+#Use mdev as hotplug to auto mount USB storage or SD card 
+::sysinit:/bin/echo /sbin/mdev > /proc/sys/kernel/hotplug
+
+#Use mdev to auto generate the device node in /dev path
+::sysinit:/sbin/mdev -s
+
+#make shm, pts support
+::sysinit:/bin/mkdir -p /dev/pts
+::sysinit:/bin/mkdir -p /dev/shm
+::sysinit:/bin/mount -t devpts devpts /dev/pts
+
+#Mount our "apps" "info" partition on nandflash
+null::wait:/bin/mount -o sync,noatime,ro -t jffs2 /dev/mtdblock6 /apps
+null::wait:/bin/mount -o sync,noatime,ro -t jffs2 /dev/mtdblock7 /info
+
+#Set hostname 
+null::sysinit:/bin/hostname -F /etc/hostname
+
+#Enable console logon
+null::respawn:/sbin/getty -L ttyS0 115200 vt100
+
+# now run any rc scripts
+null::wait:/etc/init.d/rcS
+
+# system daemon
+null::respawn:/sbin/syslogd -n
+null::respawn:/sbin/klogd -n
+
+# Stuff to do before rebooting
+null::shutdown:/bin/umount /apps
+null::shutdown:/bin/umount /info
+null::shutdown:/bin/killall klogd
+null::shutdown:/bin/killall syslogd
+null::shutdown:/bin/umount -a -r
+#null::shutdown:/sbin/swapoff -a
+
+-------------------------
+14. Create init shell scipts: /etc/init.d/rcS
+
+[guowenxue@localhost etc]$ vim init.d/rcS 
+
+#!/bin/sh
+
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+# Start all init scripts in /etc/init.d
+# executing them in numerical order.
+#                           
+
+for i in /etc/init.d/S??* ; do
+        $i
+done
+
+-------------------------
+15. Create network init shell script:
+
+[guowenxue@localhost etc]$ vim init.d/S01_network
+#!/bin/sh
+
+ifconfig eth0 192.168.1.244 netmask 255.255.255.0 up
+
+-------------------------
+16. Create init shell scripts in /apps/etc script:
+
+[guowenxue@localhost etc]$ vim init.d/S99_rcsApp 
+
+#!/bin/sh
+
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+#
+# Start all init scripts in /apps/etc/init.d
+# executing them in numerical order.
+#
+if (test -d /apps/etc/init.d)
+then
+     for i in /apps/etc/init.d/S??* ; do
+                 $i
+     done
+fi
+[guowenxue@localhost etc]$ chmod 777 init.d/*
+
+
+-------------------------
+17. Compile and install busybox£º
+
+[guowenxue@localhost opt]$ tar -xjf ~/winxp/apps_pack/busybox-1.18.4.tar.bz2 
+[guowenxue@localhost opt]$ cd busybox-1.18.4/
+[guowenxue@localhost busybox-1.18.4]$ vim Makefile
+Modify CROSS_COMPILER variable£º
+CROSS_COMPILE ?= /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
+[guowenxue@localhost busybox-1.18.4]$ ls ../rootfs/
+apps  bin  data  dev  etc  info  lib  mnt  proc  root  sbin  sys  tmp  usr  var
+[guowenxue@localhost busybox-1.18.4]$ make menuconfig
+
+Choose£º
+  Busybox Settings  --->
+       General Configuration  --->
+             [*] Don't use /usr
+       Installation Options ("make install" behavior)  --->
+             What kind of applet links to install (as soft-links)  --->
+             (../rootfs) BusyBox installation prefix
+             
+Other options as your requirements¡£             
+[guowenxue@localhost busybox-1.18.4]$ make     
+[guowenxue@localhost busybox-1.18.4]$ file busybox
+busybox: ELF 32-bit LSB executable, ARM, version 1 (SYSV), dynamically linked (uses shared libs), stripped
+[guowenxue@localhost busybox-1.18.4]$ make install
+[guowenxue@localhost busybox-1.18.4]$ ls ../rootfs/
+apps  bin  data  dev  etc  info  lib  linuxrc  mnt  proc  root  sbin  sys  tmp  usr  var
+        
+        
+        
+        
+             
+        
+-------------------------
+18. Compile and install SSH server dropbear:
+
+I. First, we compile it on our host PC(X86) and use dropbearkey to generate dropbear key:
+
+[guowenxue@localhost ~]$ wget http://matt.ucc.asn.au/dropbear/releases/dropbear-0.53.1.tar.bz2
+[guowenxue@localhost ~]$ tar -xjf dropbear-0.53.1.tar.bz2 
+[guowenxue@localhost ~]$ cd dropbear-0.53.1
+[guowenxue@localhost dropbear-0.53.1]$ ./configure && make  
+[guowenxue@localhost dropbear-0.53.1]$ ./dropbearkey -t rsa -f /opt/rootfs/etc/dropbear/dropbear_rsa_host_key 
+[guowenxue@localhost dropbear-0.53.1]$ ./dropbearkey -t dss -f /opt/rootfs/etc/dropbear/dropbear_dss_host_key 
+[guowenxue@localhost dropbear-0.53.1]$ chmod 666 /opt/rootfs/etc/dropbear/dropbear_* 
+
+II. Cross compile dropbear for ARM£º
+[guowenxue@localhost dropbear-0.53.1]$ make distclean
+[guowenxue@localhost dropbear-0.53.1]$ ./configure CC=/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-gcc --build=i686 --host=arm-linux --disable-zlib
+[guowenxue@localhost dropbear-0.53.1]$ make
+[guowenxue@localhost dropbear-0.53.1]$ file dropbear
+dropbear: ELF 32-bit LSB executable, ARM, version 1 (ARM), dynamically linked (uses shared libs), not stripped
+[guowenxue@localhost dropbear-0.53.1]$ file dbclient
+dbclient: ELF 32-bit LSB executable, ARM, version 1 (ARM), dynamically linked (uses shared libs), not stripped
+[guowenxue@localhost dropbear-0.53.1]$ mv dbclient ssh
+[guowenxue@localhost dropbear-0.53.1]$ /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-strip dropbear 
+[guowenxue@localhost dropbear-0.53.1]$ /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-strip ssh
+[guowenxue@localhost dropbear-0.53.1]$ cp ssh dropbear /opt/rootfs/usr/sbin/
+
+III. Add dropbear init shell script /vim etc/init.d/S04_dropbear£º
+
+[guowenxue@localhost rootfs]$ vim etc/init.d/S04_dropbear 
+#!/bin/sh
+/usr/sbin/dropbear
+[guowenxue@localhost rootfs]$ chmod 777 etc/init.d/S04_dropbear 
+
+       
