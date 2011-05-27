@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+# Start all init scripts in /etc/init.d and executing them in numerical order.
+#
+
+for i in /etc/init.d/S??* ;do
+        $i
+done

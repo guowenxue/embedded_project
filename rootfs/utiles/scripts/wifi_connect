@@ -1,0 +1,76 @@
+#!/bin/sh
+# This shell script used to connect to the WiFi AP
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+
+WIFI_INT=ra0
+
+Usage()
+{
+echo "$0 ESSID AuthMode EncrypType [Password]"
+echo "ESSID     : The Access Point ESSID"
+echo ""
+echo "AuthMode : OPEN, SHARED, WPAPSK, WPA, WPA2, WPA2PSK, WPAPSKWPA2PSK"
+echo "           OPEN           For open system"
+echo "           SHARED         For shared key system"
+echo "           WPA            Use WPA-Supplicant"
+echo "           WPA2              Use WPA-Supplicant"
+echo "           WPAPSK          For WPA pre-shared key"
+echo "           WPA2PSK         For WPA2 pre-shared key"
+echo "           WPAPSKWPA2PSK    WPAPSK/WPA2PSK mix mode"
+
+echo ""
+echo "EncrypType: NONE, WEP, TKIP, AES, TKIPAES"
+echo "           NONE        For AuthMode=OPEN"
+echo "           WEP        For AuthMode=OPEN or SHARED"
+echo "           TKIP        For AuthMode=WPAPSK or WPA2PSK"
+echo "           AES        For AuthMode=WPAPSK or WPA2PSK"
+echo "           TKIPAES        TKIP/AES Mixed"
+
+echo "Password : Depend on and EncrypType " 
+echo "           If EncrypType=NONE, no need such argument."
+echo "           Else, password should be set as the KEY or WPAPSK password."
+echo ""
+
+echo "Example:  sh wifi_connect.sh "Route_Kernel" WPA2PSK TKIP n3tacc355"
+
+echo "Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>"
+}
+
+
+if [ $# -ne 3 -a $# -ne 4 ] ; then 
+    Usage;
+    exit;
+fi
+
+ssid=$1
+AuthMode=$2
+EncrypType=$3
+
+# If get 4 arguments, the 4th argument is the password
+if [ $# -eq 4 ] ; then
+password=$4
+fi
+
+# EncrypType is not NONE, but without Password set. Then failure.
+if [ $EncrypType != "NONE" ] && [ -z $password ]; then 
+    echo "@@ERROR: Miss Password"
+    echo ""
+    exit;
+fi
+
+#All connect command need set them, so I put it here.
+iwpriv $WIFI_INT set NetworkType=Infra
+iwpriv $WIFI_INT set AuthMode=$AuthMode
+iwpriv $WIFI_INT set EncrypType=$EncrypType
+
+if [ $AuthMode = "OPEN" ]; then 
+    iwpriv $WIFI_INT set SSID=$ssid
+elif [ $AuthMode = "SHARED" ]; then
+    iwpriv $WIFI_INT set DefaultKeyID=1
+    iwpriv $WIFI_INT set Key1=$password
+    iwpriv $WIFI_INT set SSID=$ssid
+else
+    iwpriv $WIFI_INT set SSID=$ssid
+    iwpriv $WIFI_INT set WPAPSK=$password
+    iwpriv $WIFI_INT set SSID=$ssid
+fi

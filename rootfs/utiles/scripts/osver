@@ -1,0 +1,6 @@
+#!/bin/sh
+# This shell script used to get the Linux OS version
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+
+uname -rsv
+exit 0

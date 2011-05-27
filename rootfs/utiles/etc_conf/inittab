@@ -1,0 +1,55 @@
+# /etc/inittab
+#
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+#
+# Note: BusyBox init doesn't support runlevels.  The runlevels field is
+# completely ignored by BusyBox init. If you want runlevels, use sysvinit.
+#
+# Format for each entry: <id>:<runlevels>:<action>:<process>
+#
+# id        == tty to run on, or empty for /dev/console. 
+#              If specified, then /dev/$id device must exist
+# runlevels == ignored, busybox doesn't support it
+# action    == one of sysinit, respawn, askfirst, wait, and once
+# process   == program to run
+
+# Startup the system
+# mount all the file systems specified in /etc/fstab 
+::sysinit:/bin/mount -a
+
+#Use mdev as hotplug to auto mount USB storage or SD card 
+::sysinit:/bin/echo /sbin/mdev > /proc/sys/kernel/hotplug
+
+#Use mdev to auto generate the device node in /dev path
+::sysinit:/sbin/mdev -s
+
+#make shm, pts support
+::sysinit:/bin/mkdir -p /dev/pts
+::sysinit:/bin/mkdir -p /dev/shm
+::sysinit:/bin/mount -t devpts devpts /dev/pts
+
+#Mount our apps/info partition
+null::wait:/bin/mount -o sync,noatime,ro -t jffs2 /dev/mtdblock6 /apps
+null::wait:/bin/mount -o sync,noatime,ro -t jffs2 /dev/mtdblock7 /info
+
+#Set hostname 
+null::sysinit:/bin/hostname -F /etc/hostname
+
+#Enable console logon
+null::respawn:/sbin/getty -L ttyS0 115200 vt100
+
+# now run any rc scripts
+null::wait:/etc/init.d/rcS
+
+# system daemon
+null::respawn:/sbin/syslogd -n
+null::respawn:/sbin/klogd -n
+
+# Stuff to do before rebooting
+null::shutdown:/bin/umount /apps
+null::shutdown:/bin/umount /info
+null::shutdown:/bin/killall klogd
+null::shutdown:/bin/killall syslogd
+null::shutdown:/bin/umount -a -r
+#null::shutdown:/sbin/swapoff -a
+

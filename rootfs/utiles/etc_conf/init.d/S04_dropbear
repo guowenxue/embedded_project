@@ -1,0 +1,5 @@
+#!/bin/sh
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+# This shell script used to start SSH server dropbear
+
+/usr/sbin/dropbear

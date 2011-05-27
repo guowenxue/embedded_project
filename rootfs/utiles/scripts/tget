@@ -1,0 +1,21 @@
+#!/bin/sh
+# This shell script used to use tftp get file from the server
+
+if [ $# == 1 ]; then
+   file_name=$1
+   serverip=192.168.1.155
+elif [ $# == 2 ] ; then
+   file_name=$1
+   serverip=$2
+else
+   echo "  Usage: $0 filename [Serverip]"
+   echo "Example: $0 signpad"
+   echo "Example: $0 signpad 192.168.1.100"
+   echo "WARNING: If not specify the server IP address, then use the default \"10.78.28.15\""
+
+   echo "Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>"
+   exit;
+fi
+
+rm -f $file_name
+tftp -gr $1 $serverip && chmod 777 $1

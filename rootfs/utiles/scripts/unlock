@@ -1,0 +1,32 @@
+#!/bin/sh
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+# This shell script used to remount the specified partition as read only
+
+usage()
+{
+   echo "Usage: unlock [zone]"
+   echo "     zone: apps | info | data"
+
+   echo "Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>"
+   exit 1
+}
+
+if [ $# != 1 ] ; then
+   usage;
+fi
+
+zone=$1
+
+mounted=`mount | grep -c $zone`
+if [ 0 == $mounted ] ; then 
+   echo "ERROR: \"$zone\" partition is not mounted."
+   usage;
+fi
+
+if !(mount -w -o remount,sync,noatime /apps)
+then
+    echo "Failed to unlock zone $zone"
+    exit 1
+fi
+
+exit 0

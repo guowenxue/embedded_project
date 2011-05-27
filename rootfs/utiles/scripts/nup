@@ -1,0 +1,68 @@
+#!/bin/sh
+
+#Receive and execute NUP File
+
+nupfile=$1
+basename=`basename $nupfile`
+tmppath=/tmp/.$basename
+patchenvfile="$tmppath/patch.sh"
+rebootflag=/tmp/reboot.flag
+
+#Check argument pass in
+if (test -z "$nupfile")
+then
+	echo "Argument is empty"
+	exit 1
+fi
+
+#Check file exist
+if (test -f "$nupfile")
+then
+   mkdir -p "$tmppath"
+else
+   echo "$nupfile is not found..."
+   exit 1
+fi
+
+echo -n "Performing decompression             "
+if (unzip -q -o "$nupfile" -d $tmppath)
+then
+	rm -f $nupfile
+	echo "[  OK  ]"
+else
+	echo "[ FAIL ]"
+	exit 1
+fi
+
+echo -n "Check NUP patch file                 "
+
+if (test -e "$patchenvfile")
+then
+	echo "[  OK  ]"
+else
+	echo "[ MISS ]"
+	exit 1
+fi
+
+chmod 777 "$patchenvfile"
+
+if ("$patchenvfile" "$tmppath")
+then
+	echo "Applied NUP patch                    [  OK  ]"
+
+	echo -n "Checking reboot flag                 "
+
+	if (test -f "$rebootflag")
+	then
+		echo "[  OK  ]"
+		reboot -d 3 &
+	else
+		echo "[ SKIP ]"
+		exit 1
+	fi
+else
+	echo "Applied NUP patch                    [ FAIL ]"
+	exit 1
+fi
+
+exit 0

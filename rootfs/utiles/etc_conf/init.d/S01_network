@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+# This shell script used to parser the network configure file and setup the network
+
+network_awk="/etc/init.d/network.awk"
+network_cfg="/apps/etc/network.cfg"
+
+# If it's boot from NFS or network configure file doesn't exist, then use default IP address.
+dmesg | grep "Mounted root (nfs filesystem)"
+if [ 0 == $? -o ! -s $network_cfg ] ; then
+   ifconfig eth0 192.168.1.99 netmask 255.255.255.0 up
+   exit
+fi
+
+ifname=eth0
+
+init_network ( )
+{
+   intf=$1
+
+   #The line only contains string "$intf:", such as "eth0:"
+   START_LINE=`sed -n "/\s*\<$intf:\s*$/=" $network_cfg`
+
+   #The line contains string "/*End $intf*/", such as /*End eth0*/
+   END_LINE=`sed -n "/\/\*End $intf\*\//=" $network_cfg`
+
+   if [ "" == "$START_LINE" -o "" == "$END_LINE" ] ; then
+       echo "ERROR: Can't locate $intf configure scope in $network_cfg"
+       exit;
+   fi
+
+   #Sed command used to remove all the ";" in configure file
+   #awk command used to parser and configure the network interface 
+   sed -e  's/;//' $network_cfg | awk -v start_line=$START_LINE -v end_line=$END_LINE  -v ifname=$intf -f $network_awk
+   #awk '{ gsub(/;/,""); print }' $network_cfg | awk -v start_line=$START_LINE -v end_line=$END_LINE  -v ifname=$intf -f $network_awk
+}
+
+if [ $# -ne 0 ] ; then
+   ifname=$1
+fi
+
+if [ $ifname != "eth0" -a $ifname != "eth1" -a $ifname != "ra0" -a $ifname != "all" ] ; then
+   echo " ERROR: Unsupport network interface \"$ifname\""
+   echo "NOTICE: Valid network interface name: eth0 eth1 ra0 all" 
+   exit
+fi
+
+if [ $ifname == "all" ] ; then
+   init_network eth0
+   init_network eth1
+   init_network ra0
+else
+   init_network $ifname
+fi
+

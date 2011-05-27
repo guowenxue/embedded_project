@@ -1,0 +1,7 @@
+#!/bin/sh
+# This shell script used to get the file system version
+# Copyright (C) 2011 GuoWenxue <guowenxue@gmail.com>
+
+file=/etc/fs.fcfg
+awk '{split ($0,x,"="); print x[2];}' $file
+exit 0
