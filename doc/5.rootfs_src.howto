@@ -1,3 +1,16 @@
++-------------------------------------------------------------------------------------------------------
++    Author:  GuoWenxue   Wuhan. Hubei Province. China
++ Connect:
++     Email:  <guowenxue@gmail.com>
++        QQ:  281143292
++     Skype:  kkernel
++
++ ChangeLog:
++   Version: 1.0.0 (Fri May 26 15:11:13 CST 2011)
++        a, Introduce how to build the root filesystem tree for s3c2440, nearly same as at91sam9260
++           except install the cross compiler shared library
++-------------------------------------------------------------------------------------------------------
+
 -------------------------
 1. Create the root filesystem skeleton folders: 
 
