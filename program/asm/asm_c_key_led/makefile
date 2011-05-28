@@ -7,7 +7,7 @@
 # *
 # ***********************************************************************
 
-CROSS = arm-linux-
+CROSS = /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
 CFLAGS = 
 
 key.bin: start.S buzzer_led.c

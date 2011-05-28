@@ -1,19 +1,19 @@
-
 # ***********************************************************************
 # *        File:  makefile
 # *     Version:  1.0.0
 # *   Copyright:  2011 (c) Guo Wenxue <guowenxue@gmail.com>
-# * Description:  Makefile used to cross compile the ASM source code
-# *   ChangeLog:  1, Release initial version on "Sun Mar 20 18:41:04 CST 2011"
+# * Description:  Makefile used to cross compile the C source code
+# *   ChangeLog:  1, Release initial version on "Sun May 29 02:00:59 CST 2011"
 # *
 # ***********************************************************************
 
-CROSS=/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
+CROSS =/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
+CFLAGS = 
 
-led.bin: led.S
-	${CROSS}gcc led.S -c -o led.o
-	${CROSS}ld -Ttext=0x33000000 led.o -o led.elf
-	${CROSS}objcopy -O binary led.elf led.bin
+led.bin: led.c
+	${CROSS}gcc $(CFLAGS) -c -o led.o led.c
+	${CROSS}ld -Tled.lds led.o -o led.elf
+	${CROSS}objcopy -O binary -S led.elf led.bin
 	rm -f *.elf *.o
 
 install:

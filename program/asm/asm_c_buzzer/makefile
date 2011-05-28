@@ -7,7 +7,7 @@
 # *
 # ***********************************************************************
 
-CROSS = arm-linux-
+CROSS = /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
 CFLAGS = 
 
 beep.bin: start.S beep.c

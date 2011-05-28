@@ -7,14 +7,14 @@
 # *
 # ***********************************************************************
 
-CROSS = arm-linux-
+CROSS = /opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
 CFLAGS = 
 
 led.bin: start.S led.c
-	arm-linux-gcc $(CFLAGS) -c -o start.o start.S
-	arm-linux-gcc $(CFLAGS) -c -o led.o led.c
-	arm-linux-ld -Tled.lds start.o led.o -o led.elf
-	arm-linux-objcopy -O binary -S led.elf led.bin
+	${CROSS}gcc $(CFLAGS) -c -o start.o start.S
+	${CROSS}gcc $(CFLAGS) -c -o led.o led.c
+	${CROSS}ld -Tled.lds start.o led.o -o led.elf
+	${CROSS}objcopy -O binary -S led.elf led.bin
 	rm -f *.elf *.o
 
 install:
