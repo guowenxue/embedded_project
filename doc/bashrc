@@ -1,10 +1,4 @@
 # .bashrc
-#-------------------------------------------------------------------------------------------------------
-#    Author:  GuoWenxue   Wuhan. Hubei Province. China
-#     Email:  <guowenxue@gmail.com>
-#        QQ:  281143292
-#     Skype:  kkernel
-#-------------------------------------------------------------------------------------------------------
 
 # User specific aliases and functions
 
@@ -233,7 +227,6 @@ function mygrep ( )
 function ramdisk_init ()
 {
   RF_MNT=mnt
-  LOOPDEV=loop7
 
   if [ $# != 2 ] ; then
      echo "This function used to generate a ramdisk block device file"
@@ -256,9 +249,7 @@ function ramdisk_init ()
      mkdir $RF_MNT
   fi
 
-  $CMD_PREFIX losetup /dev/$LOOPDEV $RF_NAME
-  $CMD_PREFIX mke2fs -m 0 /dev/$LOOPDEV
-  $CMD_PREFIX losetup -d /dev/$LOOPDEV
+  $CMD_PREFIX mke2fs -F -v -m0 $RF_NAME
 
   $CMD_PREFIX mount -o loop $RF_NAME $RF_MNT
   $CMD_PREFIX rm -rf $RF_MNT/lost+found
