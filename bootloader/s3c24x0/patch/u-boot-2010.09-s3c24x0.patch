@@ -608,7 +608,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-s3c24x0/arch/arm/l
  static int display_banner (void)
  {
  	printf ("\n\n%s\n\n", version_string);
-+        printf("Modified by guowenxue for FL2440/SD2410 board.\n");
++        printf("Modified by guowenxue for s3c2440/s3c2410 board.\n");
  	debug ("U-Boot code: %08lX -> %08lX  BSS: -> %08lX\n",
  	       _armboot_start, _bss_start, _bss_end);
  #ifdef CONFIG_MODEM_SUPPORT
@@ -3547,7 +3547,7 @@ diff -Nuar u-boot-2010.09/include/configs/fl2440.h u-boot-2010.09-s3c24x0/includ
 + * Miscellaneous configurable options
 + */
 +#define	CONFIG_SYS_LONGHELP				/* undef to save memory		*/
-+#define	CONFIG_SYS_PROMPT		"[ fl2440@guowenxue ]# "	/* Monitor Command Prompt	*/
++#define	CONFIG_SYS_PROMPT		"[ s3c2440@guowenxue ]# "	/* Monitor Command Prompt	*/
 +#define	CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size	*/
 +#define	CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16) /* Print Buffer Size */
 +#define	CONFIG_SYS_MAXARGS		16		/* max number of command args	*/
@@ -3801,7 +3801,7 @@ diff -Nuar u-boot-2010.09/include/configs/sd2410.h u-boot-2010.09-s3c24x0/includ
 + * Miscellaneous configurable options
 + */
 +#define	CONFIG_SYS_LONGHELP				/* undef to save memory		*/
-+#define	CONFIG_SYS_PROMPT		"[ sd2410@guowenxue ]# "	/* Monitor Command Prompt	*/
++#define	CONFIG_SYS_PROMPT		"[ s3c2410@guowenxue ]# "	/* Monitor Command Prompt	*/
 +#define	CONFIG_SYS_CBSIZE		256		/* Console I/O Buffer Size	*/
 +#define	CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16) /* Print Buffer Size */
 +#define	CONFIG_SYS_MAXARGS		16		/* max number of command args	*/
