@@ -1,6 +1,6 @@
 diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-at91sam9260/board/atmel/at91sam9260ek/partition.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/partition.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/board/atmel/at91sam9260ek/partition.c	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/board/atmel/at91sam9260ek/partition.c	2011-06-01 17:25:37.000000000 +0800
 @@ -30,11 +30,11 @@
  	{CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1, 1}
  };
@@ -21,7 +21,7 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-a
  };
 diff -Nuar u-boot-2010.09/boards.cfg u-boot-2010.09-at91sam9260/boards.cfg
 --- u-boot-2010.09/boards.cfg	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/boards.cfg	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/boards.cfg	2011-06-01 17:25:37.000000000 +0800
 @@ -235,6 +235,7 @@
  eb_cpux9k2	arm	arm920t		-		BuS		at91
  at91rm9200dk	arm	arm920t		-		atmel		at91rm9200
@@ -30,9 +30,68 @@ diff -Nuar u-boot-2010.09/boards.cfg u-boot-2010.09-at91sam9260/boards.cfg
  sbc2410x	arm	arm920t		-		-		s3c24x0
  smdk2400	arm	arm920t		-		samsung		s3c24x0
  smdk2410	arm	arm920t		-		samsung		s3c24x0
+diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-at91sam9260/common/cmd_nand.c
+--- u-boot-2010.09/common/cmd_nand.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-at91sam9260/common/cmd_nand.c	2011-06-02 10:21:35.000000000 +0800
+@@ -483,6 +483,26 @@
+ 			else
+ 				ret = nand_write_skip_bad(nand, off, &size,
+ 							  (u_char *)addr);
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++        }else if ( s != NULL && (!strcmp(s, ".yaffs2")) ){
++            if(read)  
++            {
++                printf("nand read.yaffs2 is not provided");
++            }
++            else
++            {
++#if defined(CONFIG_CMD_NAND_YAFFS2_SKIPFB) 
++                nand->skipfirstblk = 1;
++#else
++                nand->skipfirstblk = 0;
++#endif
++                nand->rw_oob = 1;
++                ret = nand_write_skip_bad(nand,off,&size,(u_char *)addr);
++
++                nand->skipfirstblk = 0;
++                nand->rw_oob = 0;
++            }
++#endif
+ 		} else if (!strcmp(s, ".oob")) {
+ 			/* out-of-band data */
+ 			mtd_oob_ops_t ops = {
+@@ -590,6 +610,12 @@
+ 	"    to/from memory address 'addr', skipping bad blocks.\n"
+ 	"nand erase [clean] [off size] - erase 'size' bytes from\n"
+ 	"    offset 'off' (entire device if not specified)\n"
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue to support YAFFS*/
++	"nand read[.yaffs2] - is not provided!\n"
++	"nand write[.yaffs2] - addr off|partition size\n"
++	"    read/write 'size' bytes starting at offset 'off'\n"
++	"    to/from memory address 'addr', skipping bad blocks.\n"
++#endif
+ 	"nand bad - show bad blocks\n"
+ 	"nand dump[.oob] off - dump page\n"
+ 	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
+diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-at91sam9260/common/env_common.c
+--- u-boot-2010.09/common/env_common.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-at91sam9260/common/env_common.c	2011-06-02 10:14:34.000000000 +0800
+@@ -119,6 +119,12 @@
+ #ifdef	CONFIG_BOOTFILE
+ 	"bootfile="	MK_STR(CONFIG_BOOTFILE)		"\0"
+ #endif
++#ifdef  CONFIG_BURNKERNEL /*Add by guowenxue*/
++    "bkr="  CONFIG_BURNKERNEL           "\0"
++#endif
++#ifdef  CONFIG_BURNYAFFS2 /*Add by guowenxue*/
++    "byaffs2="  CONFIG_BURNYAFFS2           "\0"
++#endif
+ #ifdef	CONFIG_LOADADDR
+ 	"loadaddr="	MK_STR(CONFIG_LOADADDR)		"\0"
+ #endif
 diff -Nuar u-boot-2010.09/do.sh u-boot-2010.09-at91sam9260/do.sh
 --- u-boot-2010.09/do.sh	1970-01-01 08:00:00.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/do.sh	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/do.sh	2011-06-01 17:25:37.000000000 +0800
 @@ -0,0 +1,14 @@
 +#!/bin/sh
 +
@@ -50,7 +109,7 @@ diff -Nuar u-boot-2010.09/do.sh u-boot-2010.09-at91sam9260/do.sh
 +cp $BIN_NAME $INST_PATH
 diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-at91sam9260/drivers/mtd/dataflash.c
 --- u-boot-2010.09/drivers/mtd/dataflash.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/drivers/mtd/dataflash.c	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/drivers/mtd/dataflash.c	2011-06-01 17:25:37.000000000 +0800
 @@ -220,6 +220,7 @@
  				break;
  			}
@@ -67,9 +126,162 @@ diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-at91sam9260/dri
  		}
  	}
  }
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-at91sam9260/drivers/mtd/nand/nand_base.c
+--- u-boot-2010.09/drivers/mtd/nand/nand_base.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-at91sam9260/drivers/mtd/nand/nand_base.c	2011-06-02 10:22:14.000000000 +0800
+@@ -2098,6 +2098,30 @@
+ 	struct nand_chip *chip = mtd->priv;
+ 	int ret;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/ 
++	int oldopsmode = 0; 
++	if(mtd->rw_oob==1)  { 
++		size_t oobsize = mtd->oobsize; 
++		size_t datasize = mtd->writesize; 
++		int i = 0; 
++		uint8_t oobtemp[oobsize]; 
++		int datapages = 0; 
++		datapages = len/(datasize);
++
++		for(i=0;i<(datapages);i++)  { 
++			memcpy((void *)oobtemp, 
++				(void *)(buf+datasize*(i+1)), oobsize); 
++			memmove((void *)(buf+datasize*(i+1)), 
++				(void *)(buf+datasize*(i+1)+oobsize), 
++				(datapages-(i+1))*(datasize)+(datapages-1)*oobsize); 
++
++			memcpy((void *)(buf+(datapages)*(datasize+oobsize)-oobsize), 
++			(void *)(oobtemp), oobsize); 
++		} 
++	}
++#endif
++
+ 	/* Do not allow reads past end of device */
+ 	if ((to + len) > mtd->size)
+ 		return -EINVAL;
+@@ -2108,7 +2132,19 @@
+ 
+ 	chip->ops.len = len;
+ 	chip->ops.datbuf = (uint8_t *)buf;
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/ 
++	if(mtd->rw_oob!=1)  { 
++		chip->ops.oobbuf = NULL; 
++	} else  { 
++		chip->ops.oobbuf = (uint8_t *)(buf+len); 
++		chip->ops.ooblen = mtd->oobsize; 
++		oldopsmode = chip->ops.mode; 
++		chip->ops.mode = MTD_OOB_RAW; 
++	}
++#else
+ 	chip->ops.oobbuf = NULL;
++#endif
+ 
+ 	ret = nand_do_write_ops(mtd, to, &chip->ops);
+ 
+@@ -2116,6 +2152,10 @@
+ 
+ 	nand_release_device(mtd);
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/
++	chip->ops.mode = oldopsmode;
++#endif
+ 	return ret;
+ }
+ 
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-at91sam9260/drivers/mtd/nand/nand_util.c
+--- u-boot-2010.09/drivers/mtd/nand/nand_util.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-at91sam9260/drivers/mtd/nand/nand_util.c	2011-06-02 09:23:11.000000000 +0800
+@@ -477,6 +477,25 @@
+ 	size_t len_incl_bad;
+ 	u_char *p_buffer = buffer;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code*/
++
++	if(nand->rw_oob==1) {
++	size_t oobsize = nand->oobsize; 
++	size_t datasize = nand->writesize; 
++	int datapages = 0;
++
++	if (((*length)%(nand->oobsize+nand->writesize)) != 0) { 
++		printf ("Attempt to write error length data!\n"); 
++		return -EINVAL; 
++	}
++
++	datapages = *length/(datasize+oobsize); 
++	*length = datapages*datasize; 
++	left_to_write = *length; 
++    }
++#endif
++
+ 	/* Reject writes, which are not page aligned */
+ 	if ((offset & (nand->writesize - 1)) != 0 ||
+ 	    (*length & (nand->writesize - 1)) != 0) {
+@@ -491,6 +510,7 @@
+ 		return -EINVAL;
+ 	}
+ 
++#if !defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
+ 	if (len_incl_bad == *length) {
+ 		rval = nand_write (nand, offset, length, buffer);
+ 		if (rval != 0)
+@@ -499,6 +519,7 @@
+ 
+ 		return rval;
+ 	}
++#endif
+ 
+ 	while (left_to_write > 0) {
+ 		size_t block_offset = offset & (nand->erasesize - 1);
+@@ -513,11 +534,22 @@
+ 			continue;
+ 		}
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code*/ 
++	if(nand->skipfirstblk==1)   { 
++		nand->skipfirstblk=0; 
++		printf ("Skip the first good block %llx\n", 
++		offset & ~(nand->erasesize - 1)); 
++		offset += nand->erasesize - block_offset; 
++		continue;
++        }
++#endif
++
+ 		if (left_to_write < (nand->erasesize - block_offset))
+ 			write_size = left_to_write;
+ 		else
+ 			write_size = nand->erasesize - block_offset;
+-
++		printf("\rWriting at 0x%llx -- ",offset);   /*Thanks for hugerat's code*/
+ 		rval = nand_write (nand, offset, &write_size, p_buffer);
+ 		if (rval != 0) {
+ 			printf ("NAND write to offset %llx failed %d\n",
+@@ -527,8 +559,18 @@
+ 		}
+ 
+ 		left_to_write -= write_size;
++		printf("%d%% is complete.",100-(left_to_write/(*length/100)));/*Thanks for hugerat's code*/
+ 		offset        += write_size;
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++		/*Thanks for hugerat's code*/
++		if(nand->rw_oob==1) { 
++			p_buffer += write_size+(write_size/nand->writesize*nand->oobsize); 
++		} else  { 
++			p_buffer += write_size; 
++		}
++#else 
+ 		p_buffer      += write_size;
++#endif
+ 	}
+ 
+ 	return 0;
 diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-at91sam9260/drivers/net/macb.c
 --- u-boot-2010.09/drivers/net/macb.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/drivers/net/macb.c	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/drivers/net/macb.c	2011-06-01 17:25:37.000000000 +0800
 @@ -330,7 +330,7 @@
  
  	adv = ADVERTISE_CSMA | ADVERTISE_ALL;
@@ -104,19 +316,63 @@ diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-at91sam9260/drivers/
  	netdev->send = macb_send;
 diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-at91sam9260/include/configs/at91sam9260ek.h
 --- u-boot-2010.09/include/configs/at91sam9260ek.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/include/configs/at91sam9260ek.h	2011-06-01 10:50:27.000000000 +0800
-@@ -132,6 +132,8 @@
++++ u-boot-2010.09-at91sam9260/include/configs/at91sam9260ek.h	2011-06-02 11:05:13.000000000 +0800
+@@ -131,7 +131,13 @@
+ /* NOR flash - no real flash on this board */
  #define CONFIG_SYS_NO_FLASH			1
  
++/*Add by guowenxue to support YAFFS2 file system*/
++#define CONFIG_CMD_NAND_YAFFS2          1
++#define CONFIG_CMD_NAND_YAFFS2_SKIPFB   1
++/*Add by guowenxue end*/
++
  /* Ethernet */
-+#define CONFIG_OVERWRITE_ETHADDR_ONCE   1
-+#define CONFIG_ETHADDR      1
++#define CONFIG_OVERWRITE_ETHADDR_ONCE   1  /*Add by guowenxue to support Modify MAC address*/
  #define CONFIG_MACB			1
  #define CONFIG_RMII			1
  #define CONFIG_NET_MULTI		1
+@@ -162,11 +168,9 @@
+ #define CONFIG_ENV_OFFSET		0x4200
+ #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS0 + CONFIG_ENV_OFFSET)
+ #define CONFIG_ENV_SIZE		0x4200
+-#define CONFIG_BOOTCOMMAND	"cp.b 0xC0042000 0x22000000 0x210000; bootm"
+-#define CONFIG_BOOTARGS		"console=ttyS0,115200 "			\
+-				"root=/dev/mtdblock0 "			\
+-				"mtdparts=atmel_nand:-(root) "		\
+-				"rw rootfstype=jffs2"
++#define CONFIG_BOOTCOMMAND	"nand read 20000000 100000 500000;bootm 20000000"
++#define CONFIG_BOOTARGS		"noinitrd root=/dev/mtdblock4 rootfstype=yaffs2 "" \
++                            "init=/linuxrc console=ttyS0,115200 mem=64M loglevel=7 lpj=495616"
+ 
+ #elif CONFIG_SYS_USE_DATAFLASH_CS1
+ 
+@@ -176,11 +180,18 @@
+ #define CONFIG_ENV_OFFSET		0x4200
+ #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1 + CONFIG_ENV_OFFSET)
+ #define CONFIG_ENV_SIZE		0x4200
+-#define CONFIG_BOOTCOMMAND	"cp.b 0xD0042000 0x22000000 0x210000; bootm"
+-#define CONFIG_BOOTARGS		"console=ttyS0,115200 "			\
+-				"root=/dev/mtdblock0 "			\
+-				"mtdparts=atmel_nand:-(root) "		\
+-				"rw rootfstype=jffs2"
++#define CONFIG_BOOTCOMMAND	"nand read 20000000 100000 500000;bootm 20000000"
++#define CONFIG_BOOTARGS		"noinitrd root=/dev/mtdblock4 rootfstype=yaffs2 " \
++                            "init=/linuxrc console=ttyS0,115200 mem=64M loglevel=7 lpj=495616"
++#define CONFIG_ETHADDR      00:50:c2:bb:b7:6e
++#define CONFIG_IPADDR       192.168.200.113
++#define CONFIG_SERVERIP     192.168.200.15
++
++#define CONFIG_BURNKERNEL   "tftp 20000000 uImage.gz;" \
++                            "nand erase 100000 500000;nand write 20000000 100000 500000"
++
++#define CONFIG_BURNYAFFS2   "tftp 21100000 rootfs.yaffs2;nand erase 1a00000 1400000;" \
++                            "nand write.yaffs2 21100000 1a00000 $(filesize)"
+ 
+ #else /* CONFIG_SYS_USE_NANDFLASH */
+ 
 diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-at91sam9260/include/image.h
 --- u-boot-2010.09/include/image.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/include/image.h	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/include/image.h	2011-06-01 17:25:37.000000000 +0800
 @@ -166,7 +166,7 @@
  #define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
  #define IH_COMP_LZO		4	/* lzo   Compression Used	*/
@@ -126,9 +382,26 @@ diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-at91sam9260/include/ima
  #define IH_NMLEN		32	/* Image Name Length		*/
  
  /*
+diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-at91sam9260/include/linux/mtd/mtd.h
+--- u-boot-2010.09/include/linux/mtd/mtd.h	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-at91sam9260/include/linux/mtd/mtd.h	2011-06-01 17:35:13.000000000 +0800
+@@ -129,6 +129,13 @@
+ 	 */
+ 	u_int32_t writesize;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue to support YAFFS*/
++    u_char rw_oob;
++    /* Nandflash first block must be OK when product, so we need skip the 
++     * first blcok*/
++    u_char skipfirstblk; 
++#endif
++
+ 	u_int32_t oobsize;   /* Amount of OOB data per block (e.g. 16) */
+ 	u_int32_t oobavail;  /* Available OOB bytes per block */
+ 
 diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-at91sam9260/Makefile
 --- u-boot-2010.09/Makefile	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-at91sam9260/Makefile	2011-06-01 10:20:30.000000000 +0800
++++ u-boot-2010.09-at91sam9260/Makefile	2011-06-01 17:25:37.000000000 +0800
 @@ -154,6 +154,7 @@
  # load ARCH, BOARD, and CPU configuration
  include $(obj)include/config.mk
