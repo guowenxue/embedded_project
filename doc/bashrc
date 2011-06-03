@@ -244,12 +244,11 @@ function ramdisk_init ()
   fi
 
   dd if=/dev/zero of=$RF_NAME bs=1M count=$SIZE
+  $CMD_PREFIX mke2fs -F -v -m0 $RF_NAME
 
   if [ ! -d $RF_MNT ] ; then
      mkdir $RF_MNT
   fi
-
-  $CMD_PREFIX mke2fs -F -v -m0 $RF_NAME
 
   $CMD_PREFIX mount -o loop $RF_NAME $RF_MNT
   $CMD_PREFIX rm -rf $RF_MNT/lost+found
@@ -265,6 +264,8 @@ function ramdisk_init ()
   $CMD_PREFIX ln -s /tmp $RF_MNT/var/tmp
 
   $CMD_PREFIX umount $RF_NAME
+  $CMD_PREFIX tune2fs -i 0 -c 0 $RF_NAME
+
   rm -rf $RF_MNT
 }
 
