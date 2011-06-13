@@ -44,7 +44,6 @@ alias rmsvn='erm .svn'
 #      Author:  Guo Wenxue(guowenxue@gmail.com)
 #     Version:  1.0.0 (Release by guowenxue on 26th Fri. 2011)
 
-# Password List: dglwx420#  kernel123#  pwd?12345 kernel123!
 function mntwinxp ()
 {
 #  if [ -z $1 ] ; then
@@ -53,7 +52,7 @@ function mntwinxp ()
 #     return;
 #  fi
 
-  password="dglwx420#"
+  password="password"
   if [ ! -z $1 ] ; then
      password=$1
   fi
