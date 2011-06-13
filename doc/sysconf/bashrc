@@ -19,7 +19,6 @@ alias maek='make'
 alias myindent='indent -npro -kr -i4 -ts4 -bls -bl -bli0 -cli2 -ss -bap -sc -sob -l100 -ncs -nce -nut'
 alias tag='cscope -Rbq && ctags --c-kinds=+defglmnstuvx --langmap=c:.c.h.ho.hem.het.hec.hev.him.hit.hic.hiv -R .'
 alias tagclean='rm -f cscope.* tags'
-alias vim='/usr/.devices_group/guowenxue/vim/bin/vim'
 alias nocvim='mv ~/.vimrc ~/.vimrcb'
 alias cvim='mv ~/.vimrcb ~/.vimrc'
 
