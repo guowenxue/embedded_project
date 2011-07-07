@@ -41,6 +41,7 @@ _start:
     
     bl  led_init
 
+loop:
     mov r0,#LED0
     bl turn_led_on
 
@@ -53,7 +54,21 @@ _start:
     mov r0,#LED3
     bl turn_led_on
 
-    bl main
+    mov r0,#LED0
+    bl turn_led_off
+
+    mov r0,#LED1
+    bl turn_led_off
+
+    mov r0,#LED2
+    bl turn_led_off
+
+    mov r0,#LED3
+    bl turn_led_off
+
+    b loop
+
+    @bl main
 
 halt_loop:
     b halt_loop
