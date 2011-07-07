@@ -12,6 +12,12 @@
 #define INTMSK    0x4A000008  /* Interupt-Controller base addresses */
 #define INTSUBMSK 0x4A00001C
 
+#define LED0     5    /*LED0 use GPB5*/
+#define LED1     6    /*LED1 use GPB6*/
+#define LED2     8    /*LED2 use GPB8*/
+#define LED3     10   /*LED3 use GPB10*/
+
+
     .text
     .align 2
     .global _start
@@ -32,6 +38,20 @@ _start:
     ldr r0, =INTSUBMSK
     ldr r1, =0x7fff    /*There are 15 bits used in INTSUBMSK on S3C2440*/
     str r1, [r0]
+    
+    bl  led_init
+
+    mov r0,#LED0
+    bl turn_led_on
+
+    mov r0,#LED1
+    bl turn_led_on
+
+    mov r0,#LED2
+    bl turn_led_on
+
+    mov r0,#LED3
+    bl turn_led_on
 
     bl main
 

@@ -17,7 +17,7 @@
 #define LED2     8    /*LED2 use GPB8*/
 #define LED3     10   /*LED3 use GPB10*/
 
-#define DELAY_TIME   20000000
+#define DELAY_TIME   1000000
 
 static inline void delay (unsigned long loops)
 {
@@ -26,12 +26,18 @@ static inline void delay (unsigned long loops)
         "bne 1b":"=r" (loops):"0" (loops));
 }
 
-int main(void)
+void led_init(void)
 {
     /*  Set GPB5,GPB6,GPB8,GPB10 as GPIO mode(0x01) */ 
     GPBCON = (GPBCON|0x333C00)&0x111400;
     GPBUP = (GPBUP | 0x560);
+    /* Set GPB5,GPB6,GPB8,GPB10 as high level, to turn LED0,LED1,LED2,LED3 off */
+    GPBDAT = (GPBDAT | 0x560);
+}
 
+int main(void)
+{
+    led_init();
     while(1)
     {
         /* Set GPB5,GPB6,GPB8,GPB10 as high level, to turn LED0,LED1,LED2,LED3 off */
@@ -54,5 +60,18 @@ int main(void)
         GPBDAT = (GPBDAT & (~(1<<LED3)) );
         delay(DELAY_TIME);
     }
+}
+
+void turn_led_on(int led)
+{
+     GPBDAT = (GPBDAT & (~(1<<led)) );
+     delay(DELAY_TIME);     
+}
+
+void turn_led_off(int led)
+{
+     /* Turn LED0 on */
+     GPBDAT = (GPBDAT | (1<<led) );
+     delay(DELAY_TIME);     
 }
 
