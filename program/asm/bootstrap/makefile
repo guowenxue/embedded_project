@@ -12,6 +12,9 @@
 APP_NAME=bootstrap
 INST_PATH=~/winxp
 
+#CONFIG_PRINTF_DBG=y
+CONFIG_LED_BEEP_DBG=y
+
 BOARD=SMDK2440
 #BOARD=SMDK2416
 
@@ -27,9 +30,8 @@ ifeq ($(BOARD),SMDK2440)
 TEXT_BASE=0x33f80000
 CFLAGS+=-DTEXT_BASE=$(TEXT_BASE)
 CROSS_COMPILE=/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
-CFLAGS+= -fno-strict-aliasing  -fno-common -ffixed-r8 -msoft-float #-mfloat-abi=soft
+CFLAGS+= -fno-strict-aliasing  -fno-common -ffixed-r8 -msoft-float 
 CFLAGS+=-march=armv4t -Wall -Wstrict-prototypes -fno-stack-protector
-PLATFORM_LIBS += -lc -L/opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/
 endif
 
 ifeq ($(BOARD),SMDK2416)
@@ -61,11 +63,17 @@ AFLAGS := $(CFLAGS) -D__ASSEMBLY__
 
 export  CROSS_COMPILE AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP CFLAGS
 
-SOBJS   = start.o mem_init.o
-OBJS    = bootstrap.o board.o printf.o
+SOBJS   := start.o mem_init.o
+OBJS    := bootstrap.o led_beep.o interrupt.o serial.o 
 
+ifeq ($(CONFIG_PRINTF_DBG), y)
+CFLAGS+=-DCONFIG_PRINTF_DBG
+OBJS+=printf.o
+   ifeq ($(BOARD),SMDK2440)
+      PLATFORM_LIBS += -lc -L/opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/
+   endif
+endif
 
-		#
 ALL: .depend $(SOBJS) $(OBJS)
 	cd $(SRC_TOP) 
 	${LD} $(LDFLAGS) $(SOBJS) \

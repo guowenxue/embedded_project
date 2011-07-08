@@ -1,15 +1,14 @@
 #include <common.h>
 
-void disp_banner(void)
-{
-   printf("Bootstrap Version 0.0.1\n");
-}
 
 int bootstrap_main(void)
 {
    serial_init();
    init_led_beep();
-   disp_banner();
+
+#ifdef CONFIG_PRINTF_DBG
+   printf("GHL Bootstrap Version 0.0.1\n");
+#endif
 
    turn_led_on(LED0);
    beep(1);
