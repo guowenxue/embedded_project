@@ -101,18 +101,16 @@ start_code:
 	msr	cpsr, r0
 
 	/* Disable watchdog */
-	ldr	r0, =pWTCON
-	mov	r1, #0x0
-	str	r1, [r0]
+    ldr r0, =ELFIN_WATCHDOG_BASE
+    mov r1, #0
+    str r1, [r0]
 
 	/* Disable Interrupt */
-	mov	r1, #0xffffffff
-	ldr	r0, =INTMSK
-	str	r1, [r0]
-
-	ldr	r1, =0x7ff
-	ldr	r0, =INTSUBMSK
-	str	r1, [r0]
+    ldr r0, =ELFIN_INTERRUPT_BASE
+    mov r1, #0xffffffff
+    str r1, [r0, #INTMSK_OFFSET]
+    ldr r1, =0x000007ff
+    str r1, [r0, #INTSUBMSK_OFFSET]
 
 	/* flush v4 I/D caches */
 	mov	r0, #0
@@ -128,25 +126,63 @@ start_code:
 	mcr	p15, 0, r0, c1, c0, 0
 
 
-    /*Init system clock and power, FCLK:HCLK:PCLK = 1:4:8 */
-    ldr r0, =CLKDIVN
+ /*******************************************************************************************
+  * Init system clock and power, FCLK:HCLK:PCLK = 1:4:8 
+  * Reference to S3C2440 datasheet: Chap 7 Clock&Power Management
+  *
+  * Initialize System Clock FCLK=400MHz HCLK=100MHz PCLK=50MHz
+  * FCLK is used by ARM920T
+  * HCLK is used for AHB bus, which is used by the ARM920T, the memory controller,
+  *      the interrupt controller, the LCD controller, the DMA and USB host block.
+  * PCLK is is used for APB bus,which is used by the peripherals such as WDT,IIS,I2C,
+  *      PWM timer,MMC interface,ADC,UART,GPIO,RTC and SPI.
+  ******************************************************************************************/
+
+    /*Set LOCKTIME as default value 0x00ffffff*/
+    ldr r0, =ELFIN_CLOCK_POWER_BASE
+    ldr r1, =0x00ffffff
+    str r1, [r0, #LOCKTIME_OFFSET]  /*Set Clock Divider*/
+
+ /*******************************************************************************************
+  * Reference to S3C2440 datasheet: Chap 7-8 ~ Page 242
+  *
+  * Set the selection of Dividing Ratio between FCLK,HCLK and PCLK as FCLK:HCLK:PCLK = 1:4:8.
+  * This ratio is determined by HDIVN(here is 2) and PDIVN(here is 1) control register.
+  * Refer to the s3c2440 datasheet
+  *******************************************************************************************/
+    ldr r0, =ELFIN_CLOCK_POWER_BASE
     mov r1, #5
-    str r1, [r0]
+    str r1, [r0, #CLKDIVN_OFFSET]  /*Set Clock Divider*/
 
     mrc p15, 0, r1, c1, c0, 0 
     orr r1, r1, #0xc0000000
     mcr p15, 0, r1, c1, c0, 0 
 
-    /*Set FCLK=405MHz HCLK=100MHz PCLK=50MHz */
-    mov r1, #CLK_CTL_BASE
+ /***************************************************************************************
+  *  Reference to S3C2440 datasheet: Chap 7-20 ~ Page 254
+  *
+  *  Set MPLLCON(0x4C000004) register as:
+  *    [19:12]:  MDIV(Main Divider control)=0x7F (value set in MDIV_405)
+  *      [9:4]:  PDIV(Pre-devider control)=0x02  (value set in PSDIV_405)
+  *      [1:0]:  SDIV(Post divider control)=0x01 (value set in PSDIV_405)
+  *
+  *  MPLL(FCLK) = (2 * m * Fin)/(p * 2^s)
+  *  m=(MDIV+8), p=(PDIV+2), s=SDIV
+  *
+  *  So FCLK=((2*(127+8)*Fin)) / ((2+2)*2^1)
+  *         = (2*135*12MHz)/8
+  *         = 405MHz
+  *  For FCLK:HCLK:PCLK=1:4:8, so HCLK=100MHz, PCLK=50MHz
+  ***************************************************************************************/
+    mov r1, #ELFIN_CLOCK_POWER_BASE
     mov r2, #MDIV_405
     add r2, r2, #PSDIV_405
-    str r2, [r1, #0x04]   
+    str r2, [r1, #MPLLCON_OFFSET]
 
-    /*Init memory controller register*/
+    /* Go to mem_init.S to Init memory controller register */
 	bl	mem_init
 
-	/* Set up the stack						    */
+	/* Set up the stack	*/
 stack_setup:
 	ldr	r0, _TEXT_BASE		/* upper 128 KiB: relocated uboot   */
 	sub	r0, r0, #CONFIG_SYS_MALLOC_LEN	/* malloc area              */
@@ -164,9 +200,14 @@ clbss_l:str	r2, [r0]		/* clear loop...                    */
 	cmp	r0, r1
 	ble	clbss_l
 
-#if 0
+#if 0  /*Don't wanna init BEEP & LED here*/
     bl  init_led_beep
-    mov r0,#LED1
+
+    /*
+     * R0,R1,R2 are the 1st,2nd, 3rd argument passed to C function
+     * If need pass more than 3 arguments, then we need use stack.
+     */
+    mov r0,#LED1    
     bl  turn_led_on
 #endif
 

@@ -7,20 +7,42 @@
 /*GPHCON_REGS used to enable UART0/UART1/UART2 */
 #define GPHCON   (*(unsigned long volatile *)0x56000070)
 
+/*Watchdog and interrupt*/
+#define ELFIN_WATCHDOG_BASE 0x53000000 
+#define WTCON_OFFSET        0x00
+#define WTDAT_OFFSET        0x04
+#define WTCNT_OFFSET        0x08
+
+#define ELFIN_INTERRUPT_BASE    0x4a000000
+#define SRCPND_OFFSET       0x00
+#define INTMOD_OFFSET       0x04
+#define INTMSK_OFFSET       0x08
+#define PRIORITY_OFFSET     0x0c
+#define INTPND_OFFSET       0x10
+#define INTOFFSET_OFFSET    0x14
+#define SUBSRCPND_OFFSET    0x18
+#define INTSUBMSK_OFFSET    0x1c
+
+/*Clock and power*/
+#define ELFIN_CLOCK_POWER_BASE  0x4c000000
+  
+#define LOCKTIME_OFFSET     0x00
+#define MPLLCON_OFFSET      0x04
+#define UPLLCON_OFFSET      0x08
+#define CLKCON_OFFSET       0x0c
+#define CLKSLOW_OFFSET      0x10
+#define CLKDIVN_OFFSET      0x14
+#define CAMDIVN_OFFSET      0x18
+
+#define MDIV_405        0x7f << 12
+#define PSDIV_405       0x21
+
+/*LED & Beep */
 #define GPBCON   (*(unsigned long volatile *)0x56000010)
 #define GPBDAT   (*(unsigned long volatile *)0x56000014)
 #define GPBUP    (*(unsigned long volatile *)0x56000018)
 
-#define pWTCON    0x53000000
-#define INTMSK    0x4A000008  /* Interupt-Controller base addresses */
-#define INTSUBMSK 0x4A00001C
-#define CLKDIVN   0x4C000014  /* clock divisor register */
-
-#define CLK_CTL_BASE    0x4C000000  /* guowenxue */
-#define MDIV_405        0x7f << 12  /* guowenxue */
-#define PSDIV_405       0x21        /* guowenxue */
-
-#define BEEP     0    /*Buzzer us GPB0 */
+#define BEEP     0    /*Buzzer use GPB0 */
 #define LED0     5    /*LED0 use GPB5*/
 #define LED1     6    /*LED1 use GPB6*/
 #define LED2     8    /*LED2 use GPB8*/

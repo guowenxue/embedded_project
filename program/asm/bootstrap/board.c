@@ -62,7 +62,12 @@ void serial_init(void)
     uart->UFCON = 0x00;
     uart->UCON = 0x805; /*Enable FIFO*/
 
-    /*Our PCLK is 50MHz, 0x1A to Baudrate is 115200*/
+    /* 
+     * UBRDIV = (UART Clock)/(baudrate*16) -1 
+     *        = (50 000 000)/(115200*16) -1 
+     *        = 26 
+     *        = 0x1A
+     */
     uart->UBRDIV = 0x1A;  
 }
 
