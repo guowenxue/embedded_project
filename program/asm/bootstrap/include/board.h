@@ -1,3 +1,12 @@
+/********************************************************************************************
+ *        File:  board.h
+ *     Version:  1.0.0
+ *   Copyright:  2011 (c) Guo Wenxue <guowenxue@gmail.com>
+ * Description:  Head file for the board configure
+ *   ChangeLog:  1, Release initial version on "Tue Jul 12 16:43:18 CST 2011"
+ *
+ *******************************************************************************************/
+
 #ifndef __BOARD_H
 #define __BOARD_H
 

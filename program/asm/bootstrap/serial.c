@@ -1,3 +1,11 @@
+/********************************************************************************************
+ *        File:  serial.c
+ *     Version:  1.0.0
+ *   Copyright:  2011 (c) Guo Wenxue <guowenxue@gmail.com>
+ * Description:  The UART on board drivers/functions.
+ *   ChangeLog:  1, Release initial version on "Tue Jul 12 16:43:18 CST 2011"
+ *
+ *******************************************************************************************/
 
 #include <board.h>
 

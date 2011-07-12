@@ -1,3 +1,11 @@
+/********************************************************************************************
+ *        File:  led_beep.c
+ *     Version:  1.0.0
+ *   Copyright:  2011 (c) Guo Wenxue <guowenxue@gmail.com>
+ * Description:  LED & Beep operate funciton.
+ *   ChangeLog:  1, Release initial version on "Tue Jul 12 16:43:18 CST 2011"
+ *
+ *******************************************************************************************/
 
 #include <board.h>
 #define DELAY_TIME   1000000
