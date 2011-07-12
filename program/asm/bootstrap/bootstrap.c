@@ -19,7 +19,7 @@ int bootstrap_main(void)
 
 
 #ifdef CONFIG_PRINTF_DBG
-   printf("GHL Bootstrap Version 0.0.1\n");
+   printf("Bootstrap Version 0.0.1\n");
 #endif
 
    turn_led_on(LED0);
