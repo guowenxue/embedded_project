@@ -64,7 +64,7 @@ AFLAGS := $(CFLAGS) -D__ASSEMBLY__
 export  CROSS_COMPILE AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP CFLAGS
 
 SOBJS   := start.o mem_init.o
-OBJS    := bootstrap.o led_beep.o interrupt.o serial.o 
+OBJS    := bootstrap.o led_beep.o interrupt.o serial.o xmodem.o
 
 ifeq ($(CONFIG_PRINTF_DBG), y)
 CFLAGS+=-DCONFIG_PRINTF_DBG
@@ -107,7 +107,7 @@ clean:
 	@rm -f $(APP_NAME).bin
 	@rm -f $(APP_NAME).map
 
-clear: clean
+distclean clear: clean
 	@rm -f cscope.* tags
 
 

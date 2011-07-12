@@ -40,8 +40,11 @@ void turn_led_off(int led);
 void beep(int count);
 
 void serial_init(void);
-void serial_putc(char c);
+void serial_send_byte(char c);
+int serial_is_recv_enable(void);
+int serial_recv_byte(void);
 void serial_puts(const char *s);
+long xmodem_recv(char *buf);
 
 /*Define in printf.c*/
 void printf (const char *fmt, ...);

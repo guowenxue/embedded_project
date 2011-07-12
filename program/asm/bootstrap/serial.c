@@ -28,7 +28,7 @@ void serial_init(void)
     uart->UBRDIV = 0x1A;  
 }
 
-void serial_putc(char c)
+void serial_send_byte(char c)
 {
     S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
     /* wait for room in the tx FIFO */
@@ -37,13 +37,32 @@ void serial_putc(char c)
     uart->UTXH = c;
 
     if (c == '\n')   /* If \n, also do \r */
-        serial_putc('\r');
+        serial_send_byte('\r');
 }
+
+int serial_is_recv_enable(void)
+{
+    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+    return uart->UTRSTAT & 0x1;
+}
+
+int serial_recv_byte(void)
+{
+    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+
+    /* wait for character to arrive */
+    while (!(uart->UTRSTAT & 0x1));
+
+    return uart->URXH & 0xff;
+}
+
 
 void serial_puts(const char *s)
 {
      while (*s) {
-         serial_putc(*s++);
+         serial_send_byte(*s++);
      }
 }
+
+
 
