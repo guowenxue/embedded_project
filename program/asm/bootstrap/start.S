@@ -17,7 +17,7 @@
  *************************************************************************
  */
 
-#include <board.h>
+#include <config.h>
 
 .globl _start
 _start:	b	start_code

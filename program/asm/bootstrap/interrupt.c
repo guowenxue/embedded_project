@@ -7,7 +7,7 @@
  *
  *******************************************************************************************/
 
-#include <board.h>
+#include <common.h>
 
 void do_undefined_instruction(void)
 {

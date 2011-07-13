@@ -7,8 +7,13 @@
  *
  *******************************************************************************************/
 
-#include <board.h>
+#include <common.h>
 #define DELAY_TIME   1000000
+
+/*LED & Beep */
+#define GPBCON   (*(unsigned long volatile *)0x56000010)
+#define GPBDAT   (*(unsigned long volatile *)0x56000014)
+#define GPBUP    (*(unsigned long volatile *)0x56000018)
 
 inline void delay (unsigned long loops)
 {

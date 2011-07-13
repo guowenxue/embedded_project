@@ -11,6 +11,8 @@
 
 #include <common.h>
 
+#ifdef CONFIG_PRINTF_DBG
+
 size_t strnlen(const char * s, size_t count)
 {
       const char *sc;
@@ -339,4 +341,10 @@ int sprintf(char * buf, const char *fmt, ...)
 	va_end(args);
 	return i;
 }
+#else
+void printf (const char *fmt, ...)
+{
+
+}
+#endif /*Define CONFIG_PRINTF_DBG*/
 

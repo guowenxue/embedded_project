@@ -10,13 +10,24 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#ifdef BOARD_SMDK2440
+#include <s3c2440.h>
+#endif
+
+#define MDIV_405                    0x7f << 12
+#define PSDIV_405                   0x21
+
 #define CONFIG_LED_DEBUG            1
 
 #define CONFIG_SYS_MALLOC_LEN       (1024*1024)
 #define CONFIG_SYS_GBL_DATA_SIZE    128
 #define CONFIG_STACKSIZE            0x40000
 
-#define CFG_PBSIZE      384     /* Print Buffer Size */
+#define CFG_PBSIZE                  384     /* Print Buffer Size */
+
+#define CFG_MAX_NAND_DEVICE         1
+#define NAND_MAX_CHIPS              1
+#define CFG_NAND_BASE               0x4E000000 
 
 
 #endif

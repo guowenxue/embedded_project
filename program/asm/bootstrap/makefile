@@ -39,7 +39,7 @@ TEXT_BASE=0x33f80000
 CFLAGS+=-DTEXT_BASE=$(TEXT_BASE)
 CROSS_COMPILE=/opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
 CFLAGS+= -fno-strict-aliasing  -fno-common -ffixed-r8 -msoft-float -mfloat-abi=soft
-CFLAGS+=-march=armv4t -Wall -Wstrict-prototypes -fno-stack-protector
+CFLAGS+=-march=armv4t -Wstrict-prototypes -fno-stack-protector
 endif
 
 AS  = $(CROSS_COMPILE)as
@@ -64,11 +64,10 @@ AFLAGS := $(CFLAGS) -D__ASSEMBLY__
 export  CROSS_COMPILE AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP CFLAGS
 
 SOBJS   := start.o mem_init.o
-OBJS    := bootstrap.o led_beep.o interrupt.o serial.o xmodem.o
+OBJS    := bootstrap.o led_beep.o interrupt.o serial.o printf.o xmodem.o 
 
 ifeq ($(CONFIG_PRINTF_DBG), y)
 CFLAGS+=-DCONFIG_PRINTF_DBG
-OBJS+=printf.o
    ifeq ($(BOARD),SMDK2440)
       PLATFORM_LIBS += -lc -L/opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/
    endif

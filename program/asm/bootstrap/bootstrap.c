@@ -18,9 +18,7 @@ int bootstrap_main(void)
    init_led_beep();
 
 
-#ifdef CONFIG_PRINTF_DBG
    printf("Bootstrap Version 0.0.1\n");
-#endif
 
    turn_led_on(LED0);
 
@@ -48,13 +46,11 @@ int dbg_mode(void)
 
    beep(1);
 
-#ifdef CONFIG_PRINTF_DBG
    printf("Xmodem Receive now:\n");
-#endif
 
    size=xmodem_recv(buf);
 
-#ifdef CONFIG_PRINTF_DBG
-   printf("\tReceive File Size: %ld bytes\n", size);
-#endif
+   printf("\tBootstrap Receive File Size: %ld bytes\n", size);
+
+   return 0;
 }

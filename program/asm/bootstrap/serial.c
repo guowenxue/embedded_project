@@ -7,11 +7,12 @@
  *
  *******************************************************************************************/
 
-#include <board.h>
+#include <common.h>
+#define GPHCON   (*(unsigned long volatile *)0x56000070)
 
 void serial_init(void)
 {   
-    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+    S3C24X0_UART *const uart = (S3C24X0_UART *)ELFIN_UART_BASE;
 
     /*Enable UART0,UART1,UART2*/
     GPHCON = 0x0000aaaa; 
@@ -38,7 +39,7 @@ void serial_init(void)
 
 void serial_send_byte(char c)
 {
-    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+    S3C24X0_UART *const uart = (S3C24X0_UART *)ELFIN_UART_BASE;
     /* wait for room in the tx FIFO */
     while (!(uart->UTRSTAT & 0x2));
 
@@ -50,13 +51,13 @@ void serial_send_byte(char c)
 
 int serial_is_recv_enable(void)
 {
-    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+    S3C24X0_UART *const uart = (S3C24X0_UART *)ELFIN_UART_BASE;
     return uart->UTRSTAT & 0x1;
 }
 
 int serial_recv_byte(void)
 {
-    S3C24X0_UART *const uart = (S3C24X0_UART *)UART0_BASE;
+    S3C24X0_UART *const uart = (S3C24X0_UART *)ELFIN_UART_BASE;
 
     /* wait for character to arrive */
     while (!(uart->UTRSTAT & 0x1));
