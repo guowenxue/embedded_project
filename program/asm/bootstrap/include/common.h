@@ -16,13 +16,14 @@
 #include <asm/io.h>
 #include <linux/types.h>
 
-typedef unsigned char       uchar;
-typedef volatile unsigned long  vu_long;
+typedef unsigned char uchar;
+typedef volatile unsigned long vu_long;
 typedef volatile unsigned short vu_short;
-typedef volatile unsigned char  vu_char;
+typedef volatile unsigned char vu_char;
+typedef volatile unsigned int vu_int;
 
 /*Define in board.c*/
-inline void delay (unsigned long loops);
+inline void delay(unsigned long loops);
 void init_led_beep(void);
 void turn_led_on(int led);
 void turn_led_off(int led);
@@ -36,7 +37,7 @@ void serial_puts(const char *s);
 long xmodem_recv(char *buf);
 
 /*Define in printf.c*/
-void printf (const char *fmt, ...);
-int sprintf(char * buf, const char *fmt, ...);
+void printf(const char *fmt, ...);
+int sprintf(char *buf, const char *fmt, ...);
 
 #endif

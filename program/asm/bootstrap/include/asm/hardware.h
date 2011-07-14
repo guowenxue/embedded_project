@@ -8,6 +8,7 @@
 
 #define __REG(x)	(*(vu_long *)(x))
 #define __REGl(x)	(*(vu_long *)(x))
+#define __REGi(x)   (*(vu_int *)(x))
 #define __REGw(x)	(*(vu_short *)(x))
 #define __REGb(x)	(*(vu_char *)(x))
 #define __REG2(x,y)	(*(vu_long *)((x) + (y)))
@@ -16,6 +17,7 @@
 
 #define __REG(x)	(x)
 #define __REGl(x)	(x)
+#define __REGi(x)	(x)
 #define __REGw(x)	(x)
 #define __REGb(x)	(x)
 #define __REG2(x,y)	((x) + (y))
@@ -38,5 +40,4 @@
 #define FExtr(Data, Field) \
                 	((UData (Data) >> FShft (Field)) & FAlnMsk (Field))
 
-#endif /* _ARCH_HARDWARE_H_ */
-
+#endif                          /* _ARCH_HARDWARE_H_ */

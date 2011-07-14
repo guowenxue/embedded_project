@@ -9,48 +9,67 @@
  *******************************************************************************************/
 
 #include <common.h>
+#include <nand.h>
 
 static int dbg_mode(void);
 
+
+
 int bootstrap_main(void)
 {
-   serial_init();
-   init_led_beep();
+    struct boot_nand_t nand;
+    int i;
+    char    buf[0x20000];
+
+    serial_init();
+    init_led_beep();
+
+    printf("\bBootstrap Version 0.0.1\n");
+
+    turn_led_on(LED0);
 
 
-   printf("Bootstrap Version 0.0.1\n");
+    nand_init(&nand);
 
-   turn_led_on(LED0);
+    memset(buf, 0, sizeof(buf));
+    nand_read_ll(&nand, buf, 0, 0x20000);
+
+    printf("Nandflash Datas from 0x0000 0000~0x0000 0100:\n");
+    for(i=0; i<256; i++)
+    {
+        printf("%02x ", buf[i]); 
+    }
+    printf("\n");
 
 #if 0
-   nand_init();
-   if( 0==copy_launcher_to_ram() )
-   {
-        run_launcher();   
-   }
+    if (0 == copy_launcher_to_ram())
+    {
+        run_launcher();
+    }
 #endif
 
-   dbg_mode();
+#if 0
+    dbg_mode();
+#endif
 
-   while(1)
-      ;
+    while (1)
+        ;
 
-   return 0;
+    return 0;
 }
-
 
 int dbg_mode(void)
 {
-   long size;
-   char *buf = (char *)TEXT_BASE;
+    long size;
+    char *buf = (char *)TEXT_BASE;
 
-   beep(1);
+    beep(1);
 
-   printf("Xmodem Receive now:\n");
+    printf("Xmodem Receive now:\n");
 
-   size=xmodem_recv(buf);
+    size = xmodem_recv(buf);
 
-   printf("\tBootstrap Receive File Size: %ld bytes\n", size);
+    printf("\tBootstrap Receive File Size: %ld bytes\n", size);
 
-   return 0;
+    return 0;
 }

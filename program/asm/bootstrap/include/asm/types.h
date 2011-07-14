@@ -48,6 +48,6 @@ typedef u32 dma_addr_t;
 typedef unsigned long phys_addr_t;
 typedef unsigned long phys_size_t;
 
-#endif /* __KERNEL__ */
+#endif                          /* __KERNEL__ */
 
 #endif

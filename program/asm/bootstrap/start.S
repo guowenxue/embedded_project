@@ -168,7 +168,7 @@ start_code:
 
 	/* Set up the stack	*/
 stack_setup:
-	ldr	r0, _TEXT_BASE		/* upper 128 KiB: relocated uboot   */
+	ldr	r0, =STACK_BASE		/* upper 128 KiB: relocated uboot   */
 	sub	r0, r0, #CONFIG_SYS_MALLOC_LEN	/* malloc area              */
 	sub	r0, r0, #CONFIG_SYS_GBL_DATA_SIZE /* bdinfo                 */
 	sub	sp, r0, #12		/* leave 3 words for abort-stack    */

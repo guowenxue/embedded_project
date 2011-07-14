@@ -12,8 +12,6 @@ OUTPUT_ARCH(arm)
 ENTRY(_start)
 
 SECTIONS{
-    /*We will download this program to SDRAM address 0x33f80000 to running*/
-    . = 0x33f80000;
     . = ALIGN(4);
     .text   :
     {

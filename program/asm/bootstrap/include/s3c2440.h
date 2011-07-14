@@ -30,15 +30,13 @@
 #ifndef __S3C2440_H__
 #define __S3C2440_H__
 
-
 /*This is debug on FL2440 board*/
-#define BEEP     0    /*Buzzer use GPB0 */
-#define LED0     5    /*LED0 use GPB5*/
-#define LED1     6    /*LED1 use GPB6*/
-#define LED2     8    /*LED2 use GPB8*/
-#define LED3     10   /*LED3 use GPB10*/
+#define BEEP     0              /*Buzzer use GPB0 */
+#define LED0     5              /*LED0 use GPB5 */
+#define LED1     6              /*LED1 use GPB6 */
+#define LED2     8              /*LED2 use GPB8 */
+#define LED3     10             /*LED3 use GPB10 */
 /*FL2440 LED & Beep define end*/
-
 
 #define S3C24X0_UART_CHANNELS	3
 #define S3C24X0_SPI_CHANNELS	2
@@ -46,18 +44,19 @@
 #include <asm/hardware.h>
 
 #ifndef __ASSEMBLY__
-typedef enum {
-	S3C24X0_UART0,
-	S3C24X0_UART1,
+typedef enum
+{
+    S3C24X0_UART0,
+    S3C24X0_UART1,
 } S3C24X0_UARTS_NR;
 
 #include <s3c24x0.h>
 #endif
 
-#define ROM_BASE0		0x00000000      /* base address of rom bank 0 */
-#define ROM_BASE1		0x04000000      /* base address of rom bank 1 */
-#define DRAM_BASE0		0x30000000      /* base address of dram bank 0 */
-#define DRAM_BASE1		0x00000000      /* base address of dram bank 1 */
+#define ROM_BASE0		0x00000000  /* base address of rom bank 0 */
+#define ROM_BASE1		0x04000000  /* base address of rom bank 1 */
+#define DRAM_BASE0		0x30000000  /* base address of dram bank 0 */
+#define DRAM_BASE1		0x00000000  /* base address of dram bank 1 */
 
 /* S3C2440 only supports 512 Byte HW ECC */
 #define S3C2410_ECCSIZE		512
@@ -105,7 +104,6 @@ typedef enum {
 #define BANKSIZE_REG		__REG(0x48000028)
 #define MRSRB6_REG		__REG(0x4800002c)
 #define MRSRB7_REG		__REG(0x48000030)
-
 
 /*
  * USB Host Controller
@@ -160,7 +158,6 @@ typedef enum {
 #define HcRhPortSts1_REG	__REG(0x49000054)
 #define HcRhPortSts2_REG	__REG(0x49000058)
 
-
 /*
  * Interrupt
  */
@@ -184,7 +181,6 @@ typedef enum {
 #define SUBSRCPND_REG		__REG(0x4a000018)
 #define INTSUBMSK_REG		__REG(0x4a00001C)
 
-
 /*
  * Clock and power management
  */
@@ -206,7 +202,6 @@ typedef enum {
 #define CLKSLOW_REG		__REG(0x4c000010)
 #define CLKDIVN_REG		__REG(0x4c000014)
 #define CAMDIVN_REG		__REG(0x4c000018)
-
 
 /*
  * LCD Controller
@@ -412,7 +407,6 @@ typedef enum {
 #define WTDAT_REG		__REG(0x53000004)
 #define WTCNT_REG		__REG(0x53000008)
 
-
 /*
  * UART
  */
@@ -494,29 +488,29 @@ typedef enum {
 #define TCNTO4_REG		__REG(0x51000040)
 
 /* Fields */
-#define fTCFG0_DZONE		Fld(8,16)       /* the dead zone length (= timer 0) */
-#define fTCFG0_PRE1		Fld(8,8)        /* prescaler value for time 2,3,4 */
-#define fTCFG0_PRE0		Fld(8,0)        /* prescaler value for time 0,1 */
+#define fTCFG0_DZONE		Fld(8,16)   /* the dead zone length (= timer 0) */
+#define fTCFG0_PRE1		Fld(8,8)    /* prescaler value for time 2,3,4 */
+#define fTCFG0_PRE0		Fld(8,0)    /* prescaler value for time 0,1 */
 #define fTCFG1_MUX4		Fld(4,16)
 /* bits */
 #define TCFG0_DZONE(x)		FInsrt((x), fTCFG0_DZONE)
 #define TCFG0_PRE1(x)		FInsrt((x), fTCFG0_PRE1)
 #define TCFG0_PRE0(x)		FInsrt((x), fTCFG0_PRE0)
-#define TCON_4_AUTO		(1 << 22)       /* auto reload on/off for Timer 4 */
-#define TCON_4_UPDATE		(1 << 21)       /* manual Update TCNTB4 */
-#define TCON_4_ONOFF		(1 << 20)       /* 0: Stop, 1: start Timer 4 */
+#define TCON_4_AUTO		(1 << 22)   /* auto reload on/off for Timer 4 */
+#define TCON_4_UPDATE		(1 << 21)   /* manual Update TCNTB4 */
+#define TCON_4_ONOFF		(1 << 20)   /* 0: Stop, 1: start Timer 4 */
 #define COUNT_4_ON		(TCON_4_ONOFF*1)
 #define COUNT_4_OFF		(TCON_4_ONOFF*0)
-#define TCON_3_AUTO		(1 << 19)       /* auto reload on/off for Timer 3 */
+#define TCON_3_AUTO		(1 << 19)   /* auto reload on/off for Timer 3 */
 #define TIMER3_ATLOAD_ON	(TCON_3_AUTO*1)
 #define TIMER3_ATLAOD_OFF	FClrBit(TCON, TCON_3_AUTO)
-#define TCON_3_INVERT		(1 << 18)       /* 1: Inverter on for TOUT3 */
+#define TCON_3_INVERT		(1 << 18)   /* 1: Inverter on for TOUT3 */
 #define TIMER3_IVT_ON		(TCON_3_INVERT*1)
 #define TIMER3_IVT_OFF		(FClrBit(TCON, TCON_3_INVERT))
-#define TCON_3_MAN		(1 << 17)       /* manual Update TCNTB3,TCMPB3 */
+#define TCON_3_MAN		(1 << 17)   /* manual Update TCNTB3,TCMPB3 */
 #define TIMER3_MANUP		(TCON_3_MAN*1)
 #define TIMER3_NOP		(FClrBit(TCON, TCON_3_MAN))
-#define TCON_3_ONOFF		(1 << 16)       /* 0: Stop, 1: start Timer 3 */
+#define TCON_3_ONOFF		(1 << 16)   /* 0: Stop, 1: start Timer 3 */
 #define TIMER3_ON		(TCON_3_ONOFF*1)
 #define TIMER3_OFF		(FClrBit(TCON, TCON_3_ONOFF))
 /* macros */
@@ -550,79 +544,79 @@ typedef enum {
 
 /* include common stuff */
 #ifndef __ASSEMBLY__
-static inline S3C24X0_MEMCTL * S3C24X0_GetBase_MEMCTL(void)
+static inline S3C24X0_MEMCTL *S3C24X0_GetBase_MEMCTL(void)
 {
-	return (S3C24X0_MEMCTL *)(ELFIN_MEM_CON_BASE);
+    return (S3C24X0_MEMCTL *) (ELFIN_MEM_CON_BASE);
 }
-static inline S3C24X0_USB_HOST * S3C24X0_GetBase_USB_HOST(void)
+static inline S3C24X0_USB_HOST *S3C24X0_GetBase_USB_HOST(void)
 {
-	return (S3C24X0_USB_HOST *)ELFIN_USB_HOST_BASE;
+    return (S3C24X0_USB_HOST *) ELFIN_USB_HOST_BASE;
 }
-static inline S3C24X0_INTERRUPT * S3C24X0_GetBase_INTERRUPT(void)
+static inline S3C24X0_INTERRUPT *S3C24X0_GetBase_INTERRUPT(void)
 {
-	return (S3C24X0_INTERRUPT *)ELFIN_INTERRUPT_BASE;
+    return (S3C24X0_INTERRUPT *) ELFIN_INTERRUPT_BASE;
 }
-static inline S3C24X0_DMAS * S3C24X0_GetBase_DMAS(void)
+static inline S3C24X0_DMAS *S3C24X0_GetBase_DMAS(void)
 {
-	return (S3C24X0_DMAS *)ELFIN_DMA_BASE;
+    return (S3C24X0_DMAS *) ELFIN_DMA_BASE;
 }
-static inline S3C24X0_CLOCK_POWER * S3C24X0_GetBase_CLOCK_POWER(void)
+static inline S3C24X0_CLOCK_POWER *S3C24X0_GetBase_CLOCK_POWER(void)
 {
-	return (S3C24X0_CLOCK_POWER *)ELFIN_CLOCK_POWER_BASE;
+    return (S3C24X0_CLOCK_POWER *) ELFIN_CLOCK_POWER_BASE;
 }
-static inline S3C24X0_LCD * S3C24X0_GetBase_LCD(void)
+static inline S3C24X0_LCD *S3C24X0_GetBase_LCD(void)
 {
-	return (S3C24X0_LCD *)ELFIN_LCD_BASE;
+    return (S3C24X0_LCD *) ELFIN_LCD_BASE;
 }
-static inline S3C2410_NAND * S3C2410_GetBase_NAND(void)
+static inline S3C2410_NAND *S3C2410_GetBase_NAND(void)
 {
-	return (S3C2410_NAND *)ELFIN_NAND_BASE;
+    return (S3C2410_NAND *) ELFIN_NAND_BASE;
 }
-static inline S3C24X0_UART * S3C24X0_GetBase_UART(S3C24X0_UARTS_NR nr)
+static inline S3C24X0_UART *S3C24X0_GetBase_UART(S3C24X0_UARTS_NR nr)
 {
-	return (S3C24X0_UART *)(ELFIN_UART_BASE + (nr * 0x4000));
+    return (S3C24X0_UART *) (ELFIN_UART_BASE + (nr * 0x4000));
 }
-static inline S3C24X0_TIMERS * S3C24X0_GetBase_TIMERS(void)
+static inline S3C24X0_TIMERS *S3C24X0_GetBase_TIMERS(void)
 {
-	return (S3C24X0_TIMERS *)ELFIN_TIMER_BASE;
+    return (S3C24X0_TIMERS *) ELFIN_TIMER_BASE;
 }
-static inline S3C24X0_USB_DEVICE * S3C24X0_GetBase_USB_DEVICE(void)
+static inline S3C24X0_USB_DEVICE *S3C24X0_GetBase_USB_DEVICE(void)
 {
-	return (S3C24X0_USB_DEVICE *)ELFIN_USB_DEVICE_BASE;
+    return (S3C24X0_USB_DEVICE *) ELFIN_USB_DEVICE_BASE;
 }
-static inline S3C24X0_WATCHDOG * S3C24X0_GetBase_WATCHDOG(void)
+static inline S3C24X0_WATCHDOG *S3C24X0_GetBase_WATCHDOG(void)
 {
-	return (S3C24X0_WATCHDOG *)ELFIN_WATCHDOG_BASE;
+    return (S3C24X0_WATCHDOG *) ELFIN_WATCHDOG_BASE;
 }
-static inline S3C24X0_I2C * S3C24X0_GetBase_I2C(void)
+static inline S3C24X0_I2C *S3C24X0_GetBase_I2C(void)
 {
-	return (S3C24X0_I2C *)ELFIN_I2C_BASE;
+    return (S3C24X0_I2C *) ELFIN_I2C_BASE;
 }
-static inline S3C24X0_I2S * S3C24X0_GetBase_I2S(void)
+static inline S3C24X0_I2S *S3C24X0_GetBase_I2S(void)
 {
-	return (S3C24X0_I2S *)ELFIN_I2S_BASE;
+    return (S3C24X0_I2S *) ELFIN_I2S_BASE;
 }
-static inline S3C24X0_GPIO * S3C24X0_GetBase_GPIO(void)
+static inline S3C24X0_GPIO *S3C24X0_GetBase_GPIO(void)
 {
-	return (S3C24X0_GPIO *)ELFIN_GPIO_BASE;
+    return (S3C24X0_GPIO *) ELFIN_GPIO_BASE;
 }
-static inline S3C24X0_RTC * S3C24X0_GetBase_RTC(void)
+static inline S3C24X0_RTC *S3C24X0_GetBase_RTC(void)
 {
-	return (S3C24X0_RTC *)ELFIN_RTC_BASE;
+    return (S3C24X0_RTC *) ELFIN_RTC_BASE;
 }
-static inline S3C2410_ADC * S3C2410_GetBase_ADC(void)
+static inline S3C2410_ADC *S3C2410_GetBase_ADC(void)
 {
-	return (S3C2410_ADC *)ELFIN_ADC_BASE;
+    return (S3C2410_ADC *) ELFIN_ADC_BASE;
 }
-static inline S3C24X0_SPI * S3C24X0_GetBase_SPI(void)
+static inline S3C24X0_SPI *S3C24X0_GetBase_SPI(void)
 {
-	return (S3C24X0_SPI *)ELFIN_SPI_BASE;
+    return (S3C24X0_SPI *) ELFIN_SPI_BASE;
 }
-static inline S3C2410_SDI * S3C2410_GetBase_SDI(void)
+static inline S3C2410_SDI *S3C2410_GetBase_SDI(void)
 {
-	return (S3C2410_SDI *)ELFIN_SDI_BASE;
+    return (S3C2410_SDI *) ELFIN_SDI_BASE;
 }
-#else /* #ifndef __ASSEMBLY__ */
+#else                           /* #ifndef __ASSEMBLY__ */
 
 /* watchdog */
 #define WTCON_OFFSET		0x00
@@ -630,7 +624,7 @@ static inline S3C2410_SDI * S3C2410_GetBase_SDI(void)
 /* LCD controller */
 #define LCDBGCON_OFFSET		0x5c
 
-#endif /* #ifndef __ASSEMBLY__ */
+#endif                          /* #ifndef __ASSEMBLY__ */
 
 /* PENDING BIT */
 #define BIT_EINT0		(0x1)

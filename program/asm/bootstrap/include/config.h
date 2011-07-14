@@ -12,6 +12,7 @@
 
 #ifdef BOARD_SMDK2440
 #include <s3c2440.h>
+#define CONFIG_S3C2440
 #endif
 
 #define MDIV_405                    0x7f << 12
@@ -23,11 +24,10 @@
 #define CONFIG_SYS_GBL_DATA_SIZE    128
 #define CONFIG_STACKSIZE            0x40000
 
-#define CFG_PBSIZE                  384     /* Print Buffer Size */
+#define CFG_PBSIZE                  384 /* Print Buffer Size */
 
 #define CFG_MAX_NAND_DEVICE         1
 #define NAND_MAX_CHIPS              1
-#define CFG_NAND_BASE               0x4E000000 
-
+#define CFG_NAND_BASE               0x4E000000
 
 #endif

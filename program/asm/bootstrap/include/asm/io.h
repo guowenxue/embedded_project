@@ -38,10 +38,9 @@ static inline void sync(void)
 #define MAP_WRBACK	(0)
 #define MAP_WRTHROUGH	(0)
 
-static inline void *
-map_physmem(phys_addr_t paddr, unsigned long len, unsigned long flags)
+static inline void *map_physmem(phys_addr_t paddr, unsigned long len, unsigned long flags)
 {
-	return (void *)paddr;
+    return (void *)paddr;
 }
 
 /*
@@ -105,9 +104,9 @@ extern void __raw_readsl(unsigned int addr, void *data, int longlen);
 /*
  * Now, pick up the machine-defined IO definitions
  */
-#if 0	/* XXX###XXX */
+#if 0                           /* XXX###XXX */
 #include <asm/arch/io.h>
-#endif	/* XXX###XXX */
+#endif                          /* XXX###XXX */
 
 /*
  *  IO port access primitives
@@ -172,7 +171,7 @@ extern void __raw_readsl(unsigned int addr, void *data, int longlen);
  * linux/Documentation/IO-mapping.txt.  If you want a
  * physical address, use __ioremap instead.
  */
-extern void * __ioremap(unsigned long offset, size_t size, unsigned long flags);
+extern void *__ioremap(unsigned long offset, size_t size, unsigned long flags);
 extern void __iounmap(void *addr);
 
 /*
@@ -205,7 +204,7 @@ extern void __iounmap(void *addr);
  * devices.  This is the "generic" version.  The PCI specific version
  * is in pci.h
  */
-extern void *consistent_alloc(int gfp, size_t size, dma_addr_t *handle);
+extern void *consistent_alloc(int gfp, size_t size, dma_addr_t * handle);
 extern void consistent_free(void *vaddr, size_t size, dma_addr_t handle);
 extern void consistent_sync(void *vaddr, size_t size, int rw);
 
@@ -240,21 +239,21 @@ extern void __readwrite_bug(const char *fn);
 #define eth_io_copy_and_sum(s,c,l,b) \
 				eth_copy_and_sum((s),__mem_pci(c),(l),(b))
 
-static inline int
-check_signature(unsigned long io_addr, const unsigned char *signature,
-		int length)
+static inline int check_signature(unsigned long io_addr, const unsigned char *signature, int length)
 {
-	int retval = 0;
-	do {
-		if (readb(io_addr) != *signature)
-			goto out;
-		io_addr++;
-		signature++;
-		length--;
-	} while (length);
-	retval = 1;
-out:
-	return retval;
+    int retval = 0;
+    do
+    {
+        if (readb(io_addr) != *signature)
+            goto out;
+        io_addr++;
+        signature++;
+        length--;
+    }
+    while (length);
+    retval = 1;
+  out:
+    return retval;
 }
 
 #elif !defined(readb)
@@ -270,7 +269,7 @@ out:
 
 #define check_signature(io,sig,len)	(0)
 
-#endif	/* __mem_pci */
+#endif                          /* __mem_pci */
 
 /*
  * If this architecture has ISA IO, then define the isa_read/isa_write
@@ -292,23 +291,24 @@ out:
 				eth_copy_and_sum((a),__mem_isa(b),(c),(d))
 
 static inline int
-isa_check_signature(unsigned long io_addr, const unsigned char *signature,
-		    int length)
+isa_check_signature(unsigned long io_addr, const unsigned char *signature, int length)
 {
-	int retval = 0;
-	do {
-		if (isa_readb(io_addr) != *signature)
-			goto out;
-		io_addr++;
-		signature++;
-		length--;
-	} while (length);
-	retval = 1;
-out:
-	return retval;
+    int retval = 0;
+    do
+    {
+        if (isa_readb(io_addr) != *signature)
+            goto out;
+        io_addr++;
+        signature++;
+        length--;
+    }
+    while (length);
+    retval = 1;
+  out:
+    return retval;
 }
 
-#else	/* __mem_isa */
+#else                           /* __mem_isa */
 
 #define isa_readb(addr)			(__readwrite_bug("isa_readb"),0)
 #define isa_readw(addr)			(__readwrite_bug("isa_readw"),0)
@@ -325,6 +325,6 @@ out:
 
 #define isa_check_signature(io,sig,len)	(0)
 
-#endif	/* __mem_isa */
-#endif	/* __KERNEL__ */
-#endif	/* __ASM_ARM_IO_H */
+#endif                          /* __mem_isa */
+#endif                          /* __KERNEL__ */
+#endif                          /* __ASM_ARM_IO_H */

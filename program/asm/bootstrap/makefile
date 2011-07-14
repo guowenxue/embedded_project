@@ -12,8 +12,11 @@
 APP_NAME=bootstrap
 INST_PATH=~/winxp
 
-#CONFIG_PRINTF_DBG=y
-CONFIG_LED_BEEP_DBG=y
+# Enable "printf" function for help, don't enable it for production to save about 2K size
+CONFIG_PRINTF_DBG=y
+
+# When wanna burn the image to nandflash and start from it, then commont follow option
+RAM_DEBUG=y
 
 BOARD=SMDK2440
 #BOARD=SMDK2416
@@ -27,8 +30,13 @@ CFLAGS+=-Os -D__KERNEL__ -DCONFIG_ARM -D__ARM__ -DBOARD_$(BOARD)
 PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
 
 ifeq ($(BOARD),SMDK2440)
-TEXT_BASE=0x33f80000
-CFLAGS+=-DTEXT_BASE=$(TEXT_BASE)
+  ifeq ($(RAM_DEBUG),y)
+       TEXT_BASE=0x33f80000
+  else
+       TEXT_BASE=0x00000000
+  endif
+# Set the stack top base address here
+CFLAGS+=-DTEXT_BASE=$(TEXT_BASE) -DSTACK_BASE=0x33f80000
 CROSS_COMPILE=/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
 CFLAGS+= -fno-strict-aliasing  -fno-common -ffixed-r8 -msoft-float 
 CFLAGS+=-march=armv4t -Wall -Wstrict-prototypes -fno-stack-protector
@@ -64,7 +72,7 @@ AFLAGS := $(CFLAGS) -D__ASSEMBLY__
 export  CROSS_COMPILE AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP CFLAGS
 
 SOBJS   := start.o mem_init.o
-OBJS    := bootstrap.o led_beep.o interrupt.o serial.o printf.o xmodem.o 
+OBJS    := bootstrap.o led_beep.o interrupt.o serial.o printf.o xmodem.o nand.o
 
 ifeq ($(CONFIG_PRINTF_DBG), y)
 CFLAGS+=-DCONFIG_PRINTF_DBG
@@ -97,6 +105,7 @@ sinclude .depend
 
 install: $(APP_NAME).bin
 	cp $(APP_NAME).bin $(INST_PATH) -f --reply=yes
+	cp $(APP_NAME).bin /tftpboot -f --reply=yes
 
 clean:
 	@find $(OBJTREE) -type f \
