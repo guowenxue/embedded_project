@@ -37,6 +37,7 @@ void serial_puts(const char *s);
 long xmodem_recv(char *buf);
 
 /*Define in printf.c*/
+void * memset(void * s,int c,size_t count);
 void printf(const char *fmt, ...);
 int sprintf(char *buf, const char *fmt, ...);
 

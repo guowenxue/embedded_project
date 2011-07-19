@@ -19,6 +19,7 @@
 #define __LINUX_MTD_NAND_H
 
 #include <common.h>
+#include <linux/bitops.h>
 
 #define NAND_K9F2G08      0xecda
 
@@ -49,23 +50,24 @@
 /*
  * Standard NAND flash commands
  */
-#define NAND_CMD_READ0		0
+#define NAND_CMD_READ0		0x00        /*Page read period 1*/
+#define NAND_CMD_READSTART	0x30        /*Page read period 2, for large page*/
+#define NAND_CMD_READID		0x90        /*Read production ID*/
+#define NAND_CMD_SEQIN		0x80        /*Page write period 1*/
+#define NAND_CMD_PAGEPROG	0x10        /*Page write period 2*/
+#define NAND_CMD_ERASE1		0x60        /*Block erase period 1*/
+#define NAND_CMD_ERASE2		0xd0        /*Block erase period 2*/
+#define NAND_CMD_STATUS		0x70        /*Read status command*/
+#define NAND_CMD_RESET		0xff        /*Nandflash reset command*/
 #define NAND_CMD_READ1		1
-#define NAND_CMD_RNDOUT		5
-#define NAND_CMD_PAGEPROG	0x10
+#define NAND_CMD_RNDOUT		0x05        /*Page random read period 1*/
+#define NAND_CMD_RNDOUTSTART	0xE0    /*Page random read period 2*/
+#define NAND_CMD_RNDIN		0x85        /*Page random write*/
+
 #define NAND_CMD_READOOB	0x50
-#define NAND_CMD_ERASE1		0x60
-#define NAND_CMD_STATUS		0x70
 #define NAND_CMD_STATUS_MULTI	0x71
-#define NAND_CMD_SEQIN		0x80
-#define NAND_CMD_RNDIN		0x85
-#define NAND_CMD_READID		0x90
-#define NAND_CMD_ERASE2		0xd0
-#define NAND_CMD_RESET		0xff
 
 /* Extended commands for large page devices */
-#define NAND_CMD_READSTART	0x30
-#define NAND_CMD_RNDOUTSTART	0xE0
 #define NAND_CMD_CACHEDPROG	0x15
 
 /* Extended commands for AG-AND device */
@@ -213,9 +215,11 @@ typedef enum
 #define REG_NFDATA      __REGb(ELFIN_NAND_BASE + 0xc)
 #define REG_NFSTAT      __REGb(ELFIN_NAND_BASE + 0x10)
 #define NFSTAT_BUSY 1
-#define nand_select()   (REG_NFCONF &= ~0x800)
+#define nand_select()   (REG_NFCONF &= ~0x800)   /*Clear bit 11*/
 #define nand_deselect() (REG_NFCONF |= 0x800)
-#define nand_clear_RnB()    do {} while (0)
+#define nand_clear_RnB()    do {} while (0)  
+#define nand_detect_RnB()    do {} while (0)  
+#define nand_wait_RnB()    do {} while (0)  
 
 #elif defined(CONFIG_S3C2440) || defined(CONFIG_S3C2442)
 
@@ -230,20 +234,30 @@ typedef enum
 #define nand_select()   (REG_NFCONT &= ~(1 << 1))
 #define nand_deselect() (REG_NFCONT |= (1 << 1))
 #define nand_clear_RnB()    (REG_NFSTAT |= (1 << 2))
+#define nand_detect_RnB()   {while(!(REG_NFSTAT&(1<<2)));}   /*Wait Read & Busy signal goto high(not busy)*/ 
+#define nand_wait_RnB()   {while(!(REG_NFSTAT&(1<<0)));}   /*Wait nand flash not busy, wait bit[0] goes to 1*/ 
 
 #endif
-
 
 struct boot_nand_t
 {
     int page_size; 
+    int spare_size; 
     int block_size; 
     int bad_block_offset; 
+    int id;
     //  unsigned long size;
 };
 
 
 int nand_init(struct boot_nand_t *nand);
-int nand_read_ll(struct boot_nand_t *nand, unsigned char *buf, unsigned long start_addr, int size);
+int nand_read_page(struct boot_nand_t *nand, ulong page_num, char *data);
+int nand_random_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
+int nand_write_page(struct boot_nand_t *nand, ulong page_num, char *data);
+
+int is_bad_block(struct boot_nand_t *nand, unsigned long addr);
+
+int nand_read_block(struct boot_nand_t *nand, ulong start_addr, int size, char *buf);
+int nand_erase(struct boot_nand_t *nand, ulong start_addr, int size);
 
 #endif                          /* __LINUX_MTD_NAND_H */

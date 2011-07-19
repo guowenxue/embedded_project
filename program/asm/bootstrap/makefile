@@ -72,7 +72,7 @@ AFLAGS := $(CFLAGS) -D__ASSEMBLY__
 export  CROSS_COMPILE AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP CFLAGS
 
 SOBJS   := start.o mem_init.o
-OBJS    := bootstrap.o led_beep.o interrupt.o serial.o printf.o xmodem.o nand.o
+OBJS    := bootstrap.o led_beep.o interrupt.o serial.o common.o xmodem.o k9f2g08.o 
 
 ifeq ($(CONFIG_PRINTF_DBG), y)
 CFLAGS+=-DCONFIG_PRINTF_DBG
