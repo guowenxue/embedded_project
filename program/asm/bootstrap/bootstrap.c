@@ -48,56 +48,28 @@ int bootstrap_main(void)
         return -1;
     }
 
-#if 1
-    printf("Nandflash Datas from 0x0000 0000~0x0000 0100:\n");
-    memset(buf, 0, sizeof(buf));
-    nand_read_block(&nand, 0, 0x20000, buf);
-    print_buf("Block 0 data:", buf, 64);
-#endif
-
-    memset(buf, 0, sizeof(buf));
-    nand_read_page(&nand, 0, buf);
-    print_buf("Page 0 data:", buf, 64);
-
-    printf("Erase 0x0~0x20000\n");
-    nand_erase(&nand, 0, 0x20000);
 
 #if 0
-    nand_read_page(&nand, 0, buf);
-    print_buf("Page 0 data:", buf, 256);
+    nand_erase(&nand, 0x00000, 0x20000);
 
-    printf("Write 0x33 to first page\n");
-    memset(buf, 0x33, 0x800);
-    nand_write_page(&nand, 0, buf);
+    memset(buf,0x44,sizeof(buf));
+    nand_write(&nand, 0x0, nand.page_size, buf);
+
+    memset(buf,0x00, sizeof(buf));
+    nand_read(&nand, 0x00000, nand.page_size, buf);
+    print_buf("Whole page Write:", buf, nand.page_size);
 
 
-    memset(buf, 0x88, sizeof(buf));
-    nand_random_write_page(&nand, 0, 0x800, buf, 64);
+    nand_erase(&nand, 0x1860000, 0x20000);
+
+    memset(buf,0x44, sizeof(buf));
+    nand_write(&nand, 0x1860000, nand.page_size>>1, buf);
+
+    memset(buf,0x00, sizeof(buf));
+    nand_read(&nand, 0x1860000, nand.page_size, buf);
+    print_buf("Whole page read:", buf, nand.page_size);
 #endif
 
-    memset(buf, 0, sizeof(buf));
-    nand_random_read_page(&nand, 0, 0x800, buf, 64);
-    print_buf("Ramdom Read Page:", buf, 64);
-
-
-#if 0
-    memset(buf, 0, sizeof(buf));
-    printf("Nandflash Datas from 0x0186 0000~0x0186 0100:\n");
-    nand_read_block(&nand, 0x01860000, 0x20000, buf);
-    print_buf("Read block 0x01860000 data:", buf, 64);
-#endif
-
-
-#if 0
-    if (0 == copy_launcher_to_ram())
-    {
-        run_launcher();
-    }
-#endif
-
-#if 0
-    dbg_mode();
-#endif
 
     while (1)
         ;

@@ -46,7 +46,7 @@ static inline void nand_wait(void)
     /*NFSTAG register bit[0] is RnB:  0->Nandflash Busy  1->Nandflash Ready to operate */
     while (!(REG_NFSTAT & NFSTAT_BUSY))  /*bit[0]*/
     {
-//        printf("Nandflash is busy.\n");
+        dbg_print("Nandflash is busy.\n");
         for (i = 0; i < 10; i++) ;
     }
 }
@@ -91,9 +91,9 @@ static void nand_reset(void)
 }
 #endif
 
-#define TACLS       1//7    // 1-clk(0ns) 
-#define TWRPH0      4//7    // 3-clk(25ns)
-#define TWRPH1      1//7    // 1-clk(10ns)  //TACLS+TWRPH0+TWRPH1>=50ns
+#define TACLS       3//1    // 1-clk(0ns) 
+#define TWRPH0      7//4    // 3-clk(25ns)
+#define TWRPH1      7//1    // 1-clk(10ns)  //TACLS+TWRPH0+TWRPH1>=50ns
 
 /**
  * nand_init - Initial the Nandflash controller and nand flash information structure "nand"
@@ -136,65 +136,21 @@ int nand_init(struct boot_nand_t *nand)
     return ret;
 }
 
-
 /**
- * nand_read_page - Read the page main area data, don't include the 64 bytes spare date.
- * @nand:      Nandflash information
- * @page_num:  The page number in the whole nand flash address space, it should can get by:
- *               addr>>11 (For page size is 2K)
- * @data:      The page read data output buffer
- */
-int nand_read_page(struct boot_nand_t *nand, ulong page_num, char *data)
-{
-    unsigned short *ptr16 = (unsigned short *)data;
-    unsigned int i;
-
-    if(NAND_K9F2G08 != nand->id )
-        return -1;
-
-    nand_select();
-    nand_clear_RnB();
-
-    REG_NFCMD = NAND_CMD_READ0;
-
-    /* Write Address */
-    REG_NFADDR = 0;
-    REG_NFADDR = 0;
-    REG_NFADDR = page_num & 0xff;
-    REG_NFADDR = (page_num >> 8) & 0xff;
-    REG_NFADDR = (page_num >> 16) & 0xff;
-    REG_NFCMD = NAND_CMD_READSTART;
-
-    nand_detect_RnB();
-
-    for (i=0; i < (nand->page_size >> 1); i++)
-    {
-        /* For NFDATA register is 16bit in Nand flash controller in MUC, so we can read by 16 bits
-         * although the nandflash's width is 8 bytes, most work done by the Nandflash controller*/
-        *ptr16 = REG_NFDATA16; 
-        ptr16++;
-    }
-
-    nand_deselect();
-    return nand->page_size;
-}
-
-/**
- * nand_random_read_page - Random read the data from a page 
+ * nand_read_page - Read the data from a page main data area 
  * @nand:       The nand flash information
  * @page_num:   The read page number
  * @offset:     The read data start offset address in the page
- * @size:       The read data length
- * @data:       The read data output buffer
+ * @size:       The request read data length
+ * @data:       The read data  output buffer
  */
-
-int nand_random_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)
+int nand_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)
 {
-    uchar  *ptr8 = (uchar *)data;
+    uchar  *ptr = (uchar *)data;
     ulong  i, bytes;
 
     /*Avoid the offset+size larger than a page size(include main data and spare data size) */
-    bytes = ((nand->page_size+nand->spare_size-offset)>size ? size : (nand->page_size+nand->spare_size)-offset);
+    bytes = ((nand->page_size+nand->spare_size-offset)>=size ? size : (nand->page_size+nand->spare_size)-offset);
 
     nand_select();
     nand_clear_RnB();
@@ -208,92 +164,46 @@ int nand_random_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset
     REG_NFADDR = (page_num >> 16) & 0xff;
     REG_NFCMD = NAND_CMD_READSTART;
 
+    /* 
+     * After give NAND_CMD_READSTART command, when the RnB get a rising edge signal, it 
+     * will set(Read S3C2440 datasheet about NFCONT register) the NFSTAT register bit[2] 
+     * in nandflash controller. After get this signal, then we can read the data or send  
+     * followed command
+     */
     nand_detect_RnB();
 
+    /* If the offset address in the page is 0 and need read a whole page, 
+     * then we read the whole page, or use the random page read */
+    if(0==offset && nand->page_size==size)
+            goto START_READ;
+
+    /*Page Random Read will come here*/
     REG_NFCMD = NAND_CMD_RNDOUT;
     REG_NFADDR = offset & 0xff;
     REG_NFADDR = (offset >> 8) & 0xff;
     REG_NFCMD = NAND_CMD_RNDOUTSTART;
 
+START_READ:
     for(i=0; i<bytes; i++)
     {
-       *ptr8 = REG_NFDATA;
-        ptr8++;
+       *ptr = REG_NFDATA;
+        ptr++;
     }
 
     nand_deselect();
-
     return bytes;
 }
 
 
 /**
- * nand_write_page - Write the data to main area data in the page
- * @nand:      Nandflash information
- * @page_num:  The page number which will be written
- * @data:      The data needs to be written 
- */
-int nand_write_page(struct boot_nand_t *nand, ulong page_num, char *data)
-{
-    uchar  *ptr8 = (uchar *)data;
-    uchar  stat;
-    uint    i;
-    int     ret = nand->page_size;
-
-    if(NAND_K9F2G08 != nand->id )
-            return -1;
-
-    nand_select();
-    nand_clear_RnB();
-
-    REG_NFCMD = NAND_CMD_SEQIN;
-
-    /* Write Address */ 
-    REG_NFADDR = 0; 
-    REG_NFADDR = 0; 
-    REG_NFADDR = page_num & 0xff; 
-    REG_NFADDR = (page_num >> 8) & 0xff; 
-    REG_NFADDR = (page_num >> 16) & 0xff; 
-
-    for (i=0; i<nand->page_size; i++)
-    {
-        /* For NFDATA register is 16bit in Nand flash controller in MCU, so we can read by 16 bits
-         * although the nandflash's width is 8 bytes, most work done by the Nandflash controller*/
-        REG_NFDATA = *ptr8; 
-        ptr8++;
-    }
-
-    REG_NFCMD = NAND_CMD_PAGEPROG;
-
-    /* We can detect the RnB or the Status register bit[6] as follow like, 
-     * to indicate the program is completed or not*/
-    nand_wait();  /*Wait for RnB bit goes to high means Nandflash Ready*/
-
-    /* When program operation is completed, the Write Status register Bit[I/O] 0 maybe checked, 
-     * bit[0]=0 means pass, or bit[0]=1 means Fail. Refer the top table definition  */
-    REG_NFCMD = NAND_CMD_STATUS;
-    stat = REG_NFDATA;
-    if(stat & 0x01)   
-    {
-        printf("Program page number @%lu failure\n", page_num);
-        ret = -1; /*Program failure*/
-    }
-
-    nand_deselect();
-    return ret;
-}
-
-
-/**
- * nand_random_write_page - Random write the data to a page 
+ * nand_write_page - Write the data to a page main data area 
  * @nand:       The nand flash information
  * @page_num:   The written page number
  * @offset:     The written data start offset address in the page
  * @size:       The written data length
  * @data:       The written data 
  */
-
-int nand_random_write_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)
+int nand_write_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)
 {
     uchar  *ptr8 = (uchar *)data;
     uchar  stat;
@@ -314,22 +224,30 @@ int nand_random_write_page(struct boot_nand_t *nand, ulong page_num, ulong offse
     REG_NFADDR = (page_num >> 8) & 0xff;
     REG_NFADDR = (page_num >> 16) & 0xff;
 
-    REG_NFCMD = NAND_CMD_RNDIN;
+    /* If the offset address in the page is 0 and need write a whole page data, 
+     * then we read the whole page, or use the random page program */
+    if(0==offset && nand->page_size==size)
+            goto START_PROG;
 
+    /*Random page program will come here*/
+    REG_NFCMD = NAND_CMD_RNDIN;
     REG_NFADDR = offset & 0xff;
     REG_NFADDR = (offset >> 8) & 0xff;
 
+START_PROG:
     for(i=0; i<bytes; i++)
     {
         REG_NFDATA = *ptr8; 
         ptr8++;
     }
-
     REG_NFCMD = NAND_CMD_PAGEPROG;
 
-    /* We can detect the RnB or the Status register bit[6] as follow like, 
-     * to indicate the program is completed or not*/
-    nand_wait();  /*Wait for RnB bit goes to high means Nandflash Ready*/
+    /* 
+     * After give NAND_CMD_PAGEPROG command, when the RnB get a rising edge signal, it 
+     * will set(Read S3C2440 datasheet about NFCONT register) the NFSTAT register bit[2] 
+     * in nandflash controller. After get this signal, then we can send followed command.
+     */
+    nand_detect_RnB();
 
     /* When program operation is completed, the Write Status register Bit[I/O] 0 maybe checked, 
      * bit[0]=0 means pass, or bit[0]=1 means Fail. Refer the top table definition  */
@@ -337,7 +255,7 @@ int nand_random_write_page(struct boot_nand_t *nand, ulong page_num, ulong offse
     stat = REG_NFDATA;
     if(stat & 0x01)   
     {
-        printf("Random Program page number @%lu failure\n", page_num);
+        dbg_print("Random Program page number @%lu failure\n", page_num);
         ret = -1; /*Program failure*/
     }
     else
@@ -353,27 +271,27 @@ int nand_random_write_page(struct boot_nand_t *nand, ulong page_num, ulong offse
 /**
  * is_bad_block - check the block which the "addr" in is valid or not
  * @nand:  Nandflash information
- * @addr:  The offset address in whole nandflash, must make sure it's block alignment
+ * @addr:  The offset address in whole nandflash, no need block alignment
  */
-int is_bad_block(struct boot_nand_t *nand, unsigned long addr)
+int is_bad_block(struct boot_nand_t *nand, ulong addr)
 {
     char data;
     ulong page_num;
+    ulong block_start;
     int  page_shift = generic_ffs(nand->page_size)-1;
 
-    /*Make sure the address is block alignment*/
-    if ((NAND_K9F2G08!=nand->id) || (addr & (nand->block_size-1)) ) 
-            return -1;
+    /*Get start address of the block wherre the "addr" in*/
+    block_start = addr & (~(nand->block_size-1)); 
 
-    /* Get the page number from "addr", for addr is block alignment, 
-     * so it should be the first page in the block*/
-    page_num = addr >> page_shift;     
+    /* Get the first page number in the block, the Bad Block Tag is set in  
+     * the first bit in the first page spare area in the block */
+    page_num = block_start >> page_shift;     
 
-    nand_random_read_page(nand, page_num, nand->bad_block_offset, &data, 1);
+    nand_read_page(nand, page_num, nand->bad_block_offset, &data, 1);
 
     if (data != 0xff)
     {
-        printf("Bad Block @%08lx\n", addr);
+        printf("Bad Block @%08lx by address @%08lx\n",block_start, addr);
         nand_deselect();
         return 1;
     }
@@ -385,26 +303,26 @@ int is_bad_block(struct boot_nand_t *nand, unsigned long addr)
 /**
  * mark_bad_block - Mark the block as bad block
  * @nand:  Nandflash information
- * @addr:  The offset address in whole nandflash, must make sure it's block alignment
+ * @addr:  The offset address in whole nandflash, no need block alignment
  */
-int mark_bad_block(struct boot_nand_t *nand, unsigned long addr)
+int mark_bad_block(struct boot_nand_t *nand, ulong addr)
 {
     char data = 0xEE;
-    ulong page_num;
     int  page_shift = generic_ffs(nand->page_size)-1;
+    ulong page_num;
+    ulong block_start;
     int  ret;
 
-    /*Make sure the address is block alignment*/
-    if ((NAND_K9F2G08!=nand->id) || (addr & (nand->block_size-1)) ) 
-            return -1;
+    /*Get start address of the block wherre the "addr" in*/
+    block_start = addr & (~(nand->block_size-1)); 
 
-    /* Get the page number from "addr", for addr is block alignment, 
-     * so it should be the first page in the block*/
-    page_num = addr >> page_shift;     
+    /* Get the first page number in the block, the Bad Block Tag is set in  
+     * the first bit in the first page spare area in the block */
+    page_num = block_start >> page_shift;     
 
-    ret = nand_random_write_page(nand, page_num, nand->bad_block_offset, &data, 1);
+    ret = nand_write_page(nand, page_num, nand->bad_block_offset, &data, 1);
 
-    printf("Mark bad Block @%08lx", addr);
+    printf("Mark bad Block @%08lx for address @%08lx ", block_start, addr);
     if (ret < 0)
     {
         printf("Fail.\n");
@@ -417,102 +335,242 @@ int mark_bad_block(struct boot_nand_t *nand, unsigned long addr)
     return 0;
 }
 
-
-
 /**
- * nand_read_block - Read some blocks data 
+ * mark_erase - Erase some blocks from start_addr
  * @nand:        Nandflash information
- * @start_addr:  The read start address in nandflash, which should be block alignment
- * @size:        The need read data length, which should be block alignment
- * @buf:         The read data output data
- *
+ * @start_addr:  The erase start address, it must be aligment 
+ * @size:        The erase block size, it must be  n*block_size
  */
-int nand_read_block(struct boot_nand_t *nand, ulong start_addr, int size, char *buf)
-{
-    ulong addr, len=0;
-    ulong page_num;
-    int  page_shift = generic_ffs(nand->page_size)-1;
-
-    /*Make sure start_addr and size is block aligment*/
-    if ( (start_addr & (nand->block_size-1)) || (size & ((nand->block_size-1))) )
-    {
-        return -1;  
-    }
-
-    addr=start_addr;
-
-    while ( len < size )
-    {
-        /*If it's a block start address, then check this block validation*/
-        if ((addr & (nand->block_size-1) )== 0)  
-        {
-            if ( is_bad_block(nand, addr) )
-            {
-                /* Bad block and goto next block */
-                addr += nand->block_size;
-                printf("Skip bad block @0x%08lx\n", addr);
-                continue;
-            }
-        }
-
-        page_num = addr >> page_shift; 
-        //printf("addr=0x%08lx page_num=%lu\n", addr, page_num);
-        nand_read_page(nand, page_num, buf);
-
-        addr += nand->page_size;   /*Address go to next page*/
-        buf += nand->page_size;    /*buffer point increase a page size*/
-        len+= nand->page_size;       /*Already read size increase a page size*/
-    }
-
-    return 0;
-}
-
-int nand_erase(struct boot_nand_t *nand, ulong start_addr, int size)
+int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size)
 {
     uchar   stat;
     int     block_num, ret=0;
     ulong   addr;
     int     block_shift = generic_ffs(nand->block_size)-1;
 
-    if ( (start_addr & (nand->block_size-1)) || (size & ((nand->block_size-1))) )
+    if ( (start_addr & (nand->block_size-1)) || (size & (nand->block_size-1)) )
     {
-        return -1;              /* invalid alignment */
+        printf("nand erase address @0x%08lx or size $%lu not block aligment.\n", start_addr, size);
+        return -1;       /* invalid alignment */
     }
 
-    nand_select(); 
-
-    for(addr=start_addr; addr<(start_addr+size); )
+    addr=start_addr; 
+    while( addr<(start_addr+size) )
     {
+        /*Skip the bad block*/
+        if(is_bad_block(nand, addr))
+        {
+             dbg_print("Erase skip bad block @0x%08lx.\n",addr);
+             addr+=nand->block_size; 
+             size+=nand->block_size;  
+             continue;
+        }
 
-        block_num = start_addr>>block_shift; 
+        block_num = addr>>block_shift; 
+
+        nand_select(); 
         nand_clear_RnB();
 
         REG_NFCMD = NAND_CMD_ERASE1; 
-        REG_NFADDR = block_num & 0xff; 
-        REG_NFADDR = (block_num >> 8) & 0xff; 
-        REG_NFADDR = (block_num >> 16) & 0xff; 
+        REG_NFADDR = (block_num<<6) & 0xff;      /*Row address A18~A19*/
+        REG_NFADDR = (block_num >> 2) & 0xff;    /*Row address A20~A27*/
+        REG_NFADDR = (block_num >> 10) & 0xff;   /*Row address A28*/
         REG_NFCMD = NAND_CMD_ERASE2; 
-        
-        /* We can detect the RnB or the Status register bit[6] as follow like, 
-         * to indicate the program is completed or not*/
-        nand_wait();  /*Wait for RnB bit goes to high means Nandflash Ready*/
+
+        delay(1000);
+
+       /* 
+        * After give NAND_CMD_ERASE2 command, when the RnB get a rising edge signal, it 
+        * will set(Read S3C2440 datasheet about NFCONT register) the NFSTAT register bit[2] 
+        * in nandflash controller. After get this signal, then we can send next command.
+        */
+        nand_detect_RnB();
 
         /* When erase operation is completed, the Write Status register Bit[I/O] 0 maybe checked, 
          * bit[0]=0 means pass, or bit[0]=1 means Fail. Refer the top table definition  */
         REG_NFCMD = NAND_CMD_STATUS;
+
         stat = REG_NFDATA;
+
         if( stat&(1<<0) )
         {
-             printf("Erase block @0x%08lx failed.\n", addr); 
+             printf("Erase block @0x%08lx [$%lu] failed.\n",addr,block_num);
+             mark_bad_block(nand, addr);
              ret = -2;
+             goto RET;
         }
+        dbg_print("Erase block @0x%08lx [$%lu] success.\n",addr,block_num);
+        nand_deselect();
 
         addr+=nand->block_size;
     }
 
-    nand_deselect();
+RET:
 
     return ret;    
 }
 
+/**
+ * nand_read -   Read some datas in the main data area in the page
+ * @nand:        Nandflash information
+ * @start_addr:  The read start address, it must be page alignment 
+ * @size:        The request read data size, no need alignment
+ * @buf:         The read data output buffer
+ */
+int nand_read(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf)
+{
+    ulong addr;
+    ulong page_num;
+    ulong page_offset;
+    ulong page_mask = nand->page_size-1;
+    ulong bytes;
+    ulong left;
+    int  page_shift = generic_ffs(nand->page_size)-1;
+
+    left = size;
+    addr = start_addr;
+
+    /* The address must be page alignment*/
+    if( (addr & page_mask) )
+    {
+          printf("nand read address @0x%08lx not alignment.\n", addr);
+          return -1;  
+    }
+
+    while(left > 0)
+    {
+         /*If the addr is block alignment, then we check this block is valid or not*/
+         if ( ((addr&(nand->block_size-1))==0) && is_bad_block(nand, addr) )   
+         {
+                /*Skip Bad block and goto next block */
+                dbg_print("Skip bad block @0x%08lx\n", addr);
+                addr += nand->block_size;
+                continue;
+         }
+
+         page_num = addr >> page_shift;   /*The page number in the whole Nandflash*/
+         page_offset = addr & page_mask;     /*The offset address in the page*/
+
+         if( left >= nand->page_size)
+         {
+             bytes = nand_read_page(nand, page_num, page_offset, buf, nand->page_size);
+             dbg_print("Read whole page: addr=%08lx page_num=%d page_offset=%08lx, bytes=%lu \n", 
+                             addr, page_num, page_offset, bytes);
+         }
+         else
+         {
+             bytes = nand_read_page(nand, page_num, page_offset, buf, size%nand->page_size);
+             printf("Read part page: addr=%08lx page_num=%d page_offset=%d, bytes=%lu \n", 
+                             addr, page_num, page_offset, size%nand->page_size);
+         }
+
+         addr+=bytes;
+         buf += bytes;
+         left-=bytes;
+    }
+
+    return 0;
+}
+
+/* nand_read_spare - Read some bytes from the spare first byte
+ * @page_addr:  The page address in the whole Nand flash, no need page alignment
+ * @size:       The spare area request read size, which start from the spare first byte
+ * @buf:        The output data buffer
+ */
+int nand_read_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf)
+{
+    ulong page_num;
+    ulong bytes;
+    int  page_shift = generic_ffs(nand->page_size)-1;
+
+    size = size > nand->spare_size ? nand->spare_size : size;
+
+    page_num = page_addr >> page_shift;   /*The page number in the whole Nandflash*/
+
+    bytes = nand_read_page(nand, page_num, nand->bad_block_offset, buf, size);
+
+    return bytes;
+}
+
+/* nand_write_spare - Write some bytes to the spare first byte
+ * @page_addr:  The page address in the whole Nand flash, no need page alignment
+ * @size:       The write data size
+ * @buf:        The write data
+ */
+int nand_write_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf)
+{
+    ulong page_num;
+    ulong bytes;
+    int  page_shift = generic_ffs(nand->page_size)-1;
+
+    size = size > nand->spare_size ? nand->spare_size : size;
+
+    page_num = page_addr >> page_shift;   /*The page number in the whole Nandflash*/
+
+    bytes = nand_write_page(nand, page_num, nand->bad_block_offset, buf, size);
+
+    return bytes;
+}
+
+/**
+ * nand_write -  Write some datas to the main data area in the page
+ * @nand:        Nandflash information
+ * @start_addr:  The write start address, it must be page alignment 
+ * @size:        The write data size, no need alignment
+ * @buf:         The write data 
+ */
+int nand_write(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf)
+{
+    ulong addr;
+    ulong page_num;
+    ulong page_offset;
+    ulong page_mask = nand->page_size-1;
+    ulong bytes;
+    ulong left;
+    int  page_shift = generic_ffs(nand->page_size)-1;
+
+    left = size;
+    addr = start_addr;
+
+    /* The address must be page alignment*/
+    if( (addr & page_mask) )
+    {
+          printf("nand read address @0x%08lx not alignment.\n", addr);
+          return -1;  
+    }
+
+    while(left > 0)
+    {
+         /*If the addr is block alignment, then we check this block is valid or not*/
+         if ( ((addr&(nand->block_size-1))==0) && is_bad_block(nand, addr) )   
+         {
+                /*Skip Bad block and goto next block */
+                dbg_print("Skip bad block @0x%08lx\n", addr);
+                addr += nand->block_size;
+                continue;
+         }
+
+         page_num = addr >> page_shift;   /*The page number in the whole Nandflash*/
+         page_offset = addr & page_mask;     /*The offset address in the page*/
+
+         if( left >= nand->page_size)
+         {
+             bytes = nand_write_page(nand, page_num, page_offset, buf, nand->page_size);
+             dbg_print("Write whole page: addr=%08lx page_num=%d page_offset=%08lx, bytes=%lu \n", 
+                             addr, page_num, page_offset, bytes);
+         }
+         else
+         {
+             bytes = nand_write_page(nand, page_num, page_offset, buf, size%nand->page_size);
+             dbg_print("Write part page: addr=%08lx page_num=%d page_offset=%d, bytes=%lu \n", 
+                             addr, page_num, page_offset, size%nand->page_size);
+         }
+
+         addr+=bytes;
+         buf += bytes;
+         left-=bytes;
+    }
+
+    return 0;
+}
 

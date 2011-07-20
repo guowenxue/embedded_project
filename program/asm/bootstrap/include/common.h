@@ -16,6 +16,13 @@
 #include <asm/io.h>
 #include <linux/types.h>
 
+//#define DEBUG
+#ifdef DEBUG
+#define dbg_print(format,args...) printf(format, ##args)
+#else
+#define dbg_print(format,args...) do{} while(0);
+#endif
+
 typedef unsigned char uchar;
 typedef volatile unsigned long vu_long;
 typedef volatile unsigned short vu_short;
@@ -40,5 +47,6 @@ long xmodem_recv(char *buf);
 void * memset(void * s,int c,size_t count);
 void printf(const char *fmt, ...);
 int sprintf(char *buf, const char *fmt, ...);
+
 
 #endif

@@ -251,13 +251,13 @@ struct boot_nand_t
 
 
 int nand_init(struct boot_nand_t *nand);
-int nand_read_page(struct boot_nand_t *nand, ulong page_num, char *data);
-int nand_random_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
-int nand_write_page(struct boot_nand_t *nand, ulong page_num, char *data);
+int nand_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
+int nand_write_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
+int is_bad_block(struct boot_nand_t *nand, ulong addr);
+int mark_bad_block(struct boot_nand_t *nand, ulong addr);
+int nand_read(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf);
+int nand_write(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf);
+int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size);
 
-int is_bad_block(struct boot_nand_t *nand, unsigned long addr);
-
-int nand_read_block(struct boot_nand_t *nand, ulong start_addr, int size, char *buf);
-int nand_erase(struct boot_nand_t *nand, ulong start_addr, int size);
 
 #endif                          /* __LINUX_MTD_NAND_H */
