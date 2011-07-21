@@ -34,6 +34,7 @@ int bootstrap_main(void)
 {
     struct boot_nand_t nand;
     char    buf[0x20000];
+    ulong  test_block = 0x0;  /*0x1860000 is bad block*/
 
     serial_init();
     init_led_beep();
@@ -49,25 +50,30 @@ int bootstrap_main(void)
     }
 
 
+    nand_scrub(&nand);
 #if 0
-    nand_erase(&nand, 0x00000, 0x20000);
-
-    memset(buf,0x44,sizeof(buf));
-    nand_write(&nand, 0x0, nand.page_size, buf);
+    nand_erase(&nand, test_block, 0x20000, SKIP_BAD_BLOCK);
 
     memset(buf,0x00, sizeof(buf));
-    nand_read(&nand, 0x00000, nand.page_size, buf);
+    nand_read_spare(&nand, test_block, 64, buf);
+    print_buf("Spare area read:", buf, 64);
+
+    nand_read(&nand, test_block, nand.page_size, buf);
+    print_buf("Whole page Write:", buf, nand.page_size);
+#endif
+
+#if 0
+    /*Write spare area*/
+    memset(buf,0x44,sizeof(buf));
+
+    nand_write(&nand, test_block, nand.page_size, buf);
+    nand_read(&nand, test_block, nand.page_size, buf);
     print_buf("Whole page Write:", buf, nand.page_size);
 
 
-    nand_erase(&nand, 0x1860000, 0x20000);
-
-    memset(buf,0x44, sizeof(buf));
-    nand_write(&nand, 0x1860000, nand.page_size>>1, buf);
-
-    memset(buf,0x00, sizeof(buf));
-    nand_read(&nand, 0x1860000, nand.page_size, buf);
-    print_buf("Whole page read:", buf, nand.page_size);
+    nand_write_spare(&nand, 0x0000, 64, buf);
+    nand_read_spare(&nand, test_block, 64, buf);
+    print_buf("Spare area read:", buf, 64);
 #endif
 
 

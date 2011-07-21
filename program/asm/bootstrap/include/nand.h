@@ -239,25 +239,33 @@ typedef enum
 
 #endif
 
+#define SKIP_BAD_BLOCK       1
+#define NOT_SKIP_BAD_BLOCK   0
+
 struct boot_nand_t
 {
     int page_size; 
     int spare_size; 
     int block_size; 
+    int block_num;
     int bad_block_offset; 
     int id;
     //  unsigned long size;
 };
-
 
 int nand_init(struct boot_nand_t *nand);
 int nand_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
 int nand_write_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size);
 int is_bad_block(struct boot_nand_t *nand, ulong addr);
 int mark_bad_block(struct boot_nand_t *nand, ulong addr);
+int nand_erase_block(struct boot_nand_t *nand, ulong block_num);
+int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size, int skip_bad);
+void nand_scrub(struct boot_nand_t *nand);
+int nand_read_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf);
+int nand_write_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf);
 int nand_read(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf);
 int nand_write(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf);
-int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size);
+
 
 
 #endif                          /* __LINUX_MTD_NAND_H */

@@ -30,6 +30,7 @@ CFLAGS+=-Os -D__KERNEL__ -DCONFIG_ARM -D__ARM__ -DBOARD_$(BOARD)
 PLATFORM_LIBS += -L $(shell dirname `$(CC) $(CFLAGS) -print-libgcc-file-name`) -lgcc
 
 ifeq ($(BOARD),SMDK2440)
+  PLATFORM_LIBS += -lc -L/opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/
   ifeq ($(RAM_DEBUG),y)
        TEXT_BASE=0x33f80000
   else
@@ -76,9 +77,6 @@ OBJS    := bootstrap.o led_beep.o interrupt.o serial.o common.o xmodem.o k9f2g08
 
 ifeq ($(CONFIG_PRINTF_DBG), y)
 CFLAGS+=-DCONFIG_PRINTF_DBG
-   ifeq ($(BOARD),SMDK2440)
-      PLATFORM_LIBS += -lc -L/opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/
-   endif
 endif
 
 ALL: .depend $(SOBJS) $(OBJS)
