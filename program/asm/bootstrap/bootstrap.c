@@ -11,7 +11,8 @@
 #include <common.h>
 #include <nand.h>
 
-//static int dbg_mode(void);
+int dbg_mode(struct boot_nand_t *nand);
+unsigned long do_go_exec (ulong (*entry)(int, char * const []), int argc, char * const argv[]);
 
 void print_buf(char *prompt, char *buf, int len)
 {
@@ -35,6 +36,8 @@ int bootstrap_main(void)
     struct boot_nand_t nand;
     char    buf[0x20000];
     ulong  test_block = 0x0;  /*0x1860000 is bad block*/
+//    char *addr = (char *)TEXT_BASE;
+    char *addr = (char *)0x36000000;
 
     serial_init();
     init_led_beep();
@@ -50,8 +53,9 @@ int bootstrap_main(void)
     }
 
 
-    nand_scrub(&nand);
 #if 0
+    nand_scrub(&nand);
+
     nand_erase(&nand, test_block, 0x20000, SKIP_BAD_BLOCK);
 
     memset(buf,0x00, sizeof(buf));
@@ -76,6 +80,10 @@ int bootstrap_main(void)
     print_buf("Spare area read:", buf, 64);
 #endif
 
+    dbg_mode(&nand);
+
+    nand_read(&nand, LAUNCHER_NAND_ADDR, 1024, addr);
+    do_go_exec((void *)addr, 0, NULL);
 
     while (1)
         ;
@@ -83,20 +91,32 @@ int bootstrap_main(void)
     return 0;
 }
 
-#if 0
-int dbg_mode(void)
+
+__attribute__((weak))
+unsigned long do_go_exec (ulong (*entry)(int, char * const []), int argc, char * const argv[])
+{
+     printf ("## Starting application at 0x%08lX ...\n", entry);
+     return entry (argc, argv);
+}
+
+int dbg_mode(struct boot_nand_t *nand)
 {
     long size;
-    char *buf = (char *)TEXT_BASE;
+    char *addr = (char *)TEXT_BASE;
+    ulong erase_size;
+
+    dbg_print("Comes into bootstrap debug mode and Xmodem wait for receive new launcher:\n");
 
     beep(1);
 
-    printf("Xmodem Receive now:\n");
+    size = xmodem_recv(addr);
+    dbg_print("\tBootstrap Receive Launcher file size: %ld bytes\n", size);
 
-    size = xmodem_recv(buf);
+    erase_size = (size/nand->block_size + 1)*nand->block_size;
 
-    printf("\tBootstrap Receive File Size: %ld bytes\n", size);
+    nand_erase(nand, LAUNCHER_NAND_ADDR, erase_size, SKIP_BAD_BLOCK);
+    nand_write(nand, LAUNCHER_NAND_ADDR, size, addr);
 
     return 0;
 }
-#endif
+

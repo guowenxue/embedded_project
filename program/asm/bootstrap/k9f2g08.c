@@ -342,16 +342,16 @@ int nand_erase_block(struct boot_nand_t *nand, ulong block_num)
 
     stat = REG_NFDATA;
 
+    block_start = block_num<<(generic_ffs(nand->block_size)-1);
     if( stat&(1<<0) )
     {
-         block_start = block_num<<(generic_ffs(nand->block_size)-1);
-         printf("Erase bad block index [$%lu] address @0x%08lx failed.\n", block_num, block_start);
+         printf("Erase block index [$%lu] address @0x%08lx failed.\n", block_num, block_start);
          mark_bad_block(nand, block_start);
          ret = -1;
          goto OUT;
     }
 
-    dbg_print("Erase bad block index [$%lu] address @0x%08lx success.\n", block_num, block_start);
+    dbg_print("Erase block index [$%lu] address @0x%08lx success.\n", block_num, block_start);
 
 OUT:
     nand_deselect();
@@ -385,8 +385,6 @@ int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size, int skip_
     while( addr<(start_addr+size) )
     {
         block_num = addr>> block_shift;
-
-        printf("erase block $%lu\n", block_num);
         ret = nand_erase_block(nand, block_num);
         if(ret < 0)
         {
@@ -513,14 +511,18 @@ int nand_read(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf)
          if( left >= nand->page_size)
          {
              bytes = nand_read_page(nand, page_num, page_offset, buf, nand->page_size);
+#if 1
              dbg_print("Read whole page: addr=%08lx page_num=%d page_offset=%08lx, bytes=%lu \n", 
                              addr, page_num, page_offset, bytes);
+#endif
          }
          else
          {
              bytes = nand_read_page(nand, page_num, page_offset, buf, size%nand->page_size);
+#if 1
              printf("Read part page: addr=%08lx page_num=%d page_offset=%d, bytes=%lu \n", 
                              addr, page_num, page_offset, size%nand->page_size);
+#endif
          }
 
          addr+=bytes;
@@ -577,14 +579,18 @@ int nand_write(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf
          if( left >= nand->page_size)
          {
              bytes = nand_write_page(nand, page_num, page_offset, buf, nand->page_size);
+#if 1
              dbg_print("Write whole page: addr=%08lx page_num=%d page_offset=%08lx, bytes=%lu \n", 
                              addr, page_num, page_offset, bytes);
+#endif
          }
          else
          {
              bytes = nand_write_page(nand, page_num, page_offset, buf, size%nand->page_size);
+#if 1
              dbg_print("Write part page: addr=%08lx page_num=%d page_offset=%d, bytes=%lu \n", 
                              addr, page_num, page_offset, size%nand->page_size);
+#endif
          }
 
          addr+=bytes;

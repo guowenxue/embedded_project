@@ -30,4 +30,7 @@
 #define NAND_MAX_CHIPS              1
 #define CFG_NAND_BASE               0x4E000000
 
+#define BOOTLOADER_ENV_ADDR       0x20000   /*Bootloader enviroment start address*/
+#define LAUNCHER_NAND_ADDR        0x40000   /*Laucher save in Nandflash address*/
+
 #endif

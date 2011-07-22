@@ -16,7 +16,7 @@
 #include <asm/io.h>
 #include <linux/types.h>
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define dbg_print(format,args...) printf(format, ##args)
 #else
