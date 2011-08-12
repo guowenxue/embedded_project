@@ -1,0 +1,900 @@
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/at91/led.c
+--- u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/at91/led.c	2011-08-12 15:50:41.000000000 +0800
+@@ -28,6 +28,7 @@
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/io.h>
+ 
++#if 0 /*Comment by guowenxue*/
+ #ifdef CONFIG_RED_LED
+ void red_LED_on(void)
+ {
+@@ -63,3 +64,4 @@
+ 	at91_set_gpio_value(CONFIG_YELLOW_LED, 1);
+ }
+ #endif
++#endif /*Comment by guowenxue*/
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/start.S
+--- u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/start.S	2011-08-12 15:50:41.000000000 +0800
+@@ -209,8 +209,8 @@
+ 	cmp	r0, r1
+ 	ble	clbss_l
+ 
+-	bl coloured_LED_init
+-	bl red_LED_on
++	@bl coloured_LED_init /*Comment by guowenxue*/
++	@bl red_LED_on   
+ #endif /* CONFIG_PRELOADER */
+ 
+ 	ldr	pc, _start_armboot
+diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/lib/board.c
+--- u-boot-2010.09/arch/arm/lib/board.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/arch/arm/lib/board.c	2011-08-12 15:54:26.000000000 +0800
+@@ -50,6 +50,15 @@
+ #include <onenand_uboot.h>
+ #include <mmc.h>
+ 
++/*Add by guowenxue*/
++#include <asm/arch/at91sam9260.h>
++#include <asm/arch/at91_pmc.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/io.h>
++#include <asm/arch/hardware.h>
++#include <asm/arch/at91_pio.h>
++/*Add end*/
++
+ #ifdef CONFIG_BITBANGMII
+ #include <miiphy.h>
+ #endif
+@@ -92,6 +101,7 @@
+  ************************************************************************
+  * May be supplied by boards if desired
+  */
++#if 0 /*Comment by guowenxue*/
+ void inline __coloured_LED_init (void) {}
+ void coloured_LED_init (void) __attribute__((weak, alias("__coloured_LED_init")));
+ void inline __red_LED_on (void) {}
+@@ -110,6 +120,7 @@
+ void blue_LED_on(void) __attribute__((weak, alias("__blue_LED_on")));
+ void inline __blue_LED_off(void) {}
+ void blue_LED_off(void) __attribute__((weak, alias("__blue_LED_off")));
++#endif /*Comment by guowenxue*/
+ 
+ /************************************************************************
+  * Init Utilities							*
+@@ -133,6 +144,79 @@
+ 	return (0);
+ }
+ 
++/*LED and Beep add by guowenxue*/
++#define AT91_TC_CCR             0x00            /* Channel Control Register */
++#define AT91_TC_CMR             0x04            /* Channel Mode Register */
++#define AT91_TC_RA              0x14            /* Register A */
++#define AT91_TC_RB              0x18            /* Register B */ 
++#define AT91_TC_RC              0x1c            /* Register C */
++#ifdef CONFIG_RUN_LED  
++int run_LED_init(void)
++{
++    at91_set_A_periph (CONFIG_RUN_LED, 0);
++    at91_sys_write (AT91_PMC_PCER, 1 << AT91SAM9260_ID_TC0);
++
++    __raw_writel (0x0009C004, AT91SAM9260_BASE_TC0 + AT91_TC_CMR);
++    __raw_writel (32768/2,  AT91SAM9260_BASE_TC0 + AT91_TC_RC);    // frequence=4hz 
++    __raw_writel (32768/4,  AT91SAM9260_BASE_TC0 + AT91_TC_RA);    // pulse width = 1/2 
++    __raw_writel (0x05, AT91SAM9260_BASE_TC0 + AT91_TC_CCR);       // enable tc0 clock
++    return 0;
++}
++#endif
++
++#define GPRS_38V_ON_PIN             AT91_PIN_PA10 /* GPRS module 3.8V power supply Pin, 1->On 0->off */
++static int turn_gprs_off(void)
++{
++   at91_set_gpio_output (GPRS_38V_ON_PIN, 0);  /*Disable 3.8V power for GPRS module*/
++}
++
++int beep_init(void)
++{
++    at91_set_B_periph(CONFIG_BEEP, 0);
++    /*PMC_SCDR[9] is PCK1, 0: No effect  1: Disables the PCK1 out put*/
++    at91_sys_write(AT91_PMC_SCDR, at91_sys_read(AT91_PMC_SCDR) | (0x1 << 9));
++    /*
++     * PMC_PCK1: 
++     * CSS<=>bit[1:0]:  00:Use Slow Clock 01:Use Main Clock 10:Use PLL A Clock 11:USe PLL B Clock
++     * PRES<=>bit[4:2]: 000:Clock/1  001:Clock/2   010:Clock/4 011:clcok/8 
++     *                  100:Clock/16 101: Clock/32 110:Clck/64 111: Reserved
++     */
++    at91_sys_write(AT91_PMC_PCKR(1), ((0x5 & 0xff) << 2)); /*Set the beep frequence*/
++
++    /*PMC_SR[9] is PCKRDY1, 0->Programmable Clock 1 is not ready  1-> read, wait PCK1 not ready*/
++    while ((0x1 << 9) != ((at91_sys_read(AT91_PMC_SR)) & (0x1 << 9)));
++
++    return 0;
++}
++
++static void beep_on(void)
++{
++    /*PMC_SCER[9] is PCK1, 0: No effect  1: Enables the PCK1 out put*/
++    at91_sys_write(AT91_PMC_SCER, at91_sys_read(AT91_PMC_SCER) | (0x1 << 9));
++}
++
++static void beep_off(void)
++{
++    /*PMC_SCDR[9] is PCK1, 0: No effect  1: Disables the PCK1 out put*/
++    at91_sys_write(AT91_PMC_SCDR, at91_sys_read(AT91_PMC_SCDR) | (0x1 << 9));
++}
++
++void beep_alarm(unsigned int count, unsigned int pres)
++{
++    if(count <= 0)
++            return ;
++
++    while(count--)
++    {
++        beep_on(); 
++        udelay(100000/pres);
++        beep_off();
++        udelay(100000/pres);
++    }
++}
++
++/*LED and Beep add by guowenxue End*/
++
+ static int display_banner (void)
+ {
+ 	printf ("\n\n%s\n\n", version_string);
+@@ -238,6 +322,7 @@
+ #if defined(CONFIG_ARCH_CPU_INIT)
+ 	arch_cpu_init,		/* basic arch cpu dependent setup */
+ #endif
++    turn_gprs_off,   /*add by guowenxue*/
+ 	board_init,		/* basic board dependent setup */
+ #if defined(CONFIG_USE_IRQ)
+ 	interrupt_init,		/* set up exceptions */
+@@ -250,6 +335,10 @@
+ 	init_baudrate,		/* initialze baudrate settings */
+ 	serial_init,		/* serial communications setup */
+ 	console_init_f,		/* stage 1 init of console */
++#if defined(CONFIG_RUN_LED) /*Add by guowenxue*/
++    run_LED_init,
++#endif
++    beep_init,          /*Add by guowenxue*/
+ 	display_banner,		/* say that we are here */
+ #if defined(CONFIG_DISPLAY_CPUINFO)
+ 	print_cpuinfo,		/* display cpu info (and speed) */
+@@ -295,6 +384,8 @@
+ 		}
+ 	}
+ 
++    beep_alarm(3, 1); /*Add by guowenxue*/
++
+ 	/* armboot_start is defined in the board-specific linker script */
+ 	mem_malloc_init (_armboot_start - CONFIG_SYS_MALLOC_LEN,
+ 			CONFIG_SYS_MALLOC_LEN);
+@@ -429,6 +520,9 @@
+ 	board_late_init ();
+ #endif
+ 
++/*Comment by guowenxue, instead DM9161 by DM9000, and intialize 
++ * network only when go to u-boot debug mode*/
++#if 0 
+ #ifdef CONFIG_BITBANGMII
+ 	bb_miiphy_init();
+ #endif
+@@ -442,6 +536,7 @@
+ 	reset_phy();
+ #endif
+ #endif
++#endif  /*Comment by guowenxue*/
+ 	/* main_loop() can return to retry autoboot, if so just run it again. */
+ 	for (;;) {
+ 		main_loop ();
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/at91sam9260ek.c
+--- u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/at91sam9260ek.c	2011-08-12 15:50:41.000000000 +0800
+@@ -32,7 +32,7 @@
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/io.h>
+ #include <asm/arch/hardware.h>
+-#if defined(CONFIG_RESET_PHY_R) && defined(CONFIG_MACB)
++#if defined(CONFIG_RESET_PHY_R) && defined(CONFIG_DRIVER_DM9000) /*Modify by guowenxue*/
+ #include <net.h>
+ #endif
+ #include <netdev.h>
+@@ -106,7 +106,7 @@
+ 	       pin_to_mask(AT91_PIN_PA15) |
+ 	       pin_to_mask(AT91_PIN_PA17) |
+ 	       pin_to_mask(AT91_PIN_PA25) |
+-	       pin_to_mask(AT91_PIN_PA26) |
++//	       pin_to_mask(AT91_PIN_PA26) |   /*Comment by guowenxue, conflict with RUN LED*/
+ 	       pin_to_mask(AT91_PIN_PA28),
+ 	       pin_to_controller(AT91_PIN_PA0) + PIO_PUDR);
+ 
+@@ -132,7 +132,7 @@
+ 	       pin_to_mask(AT91_PIN_PA15) |
+ 	       pin_to_mask(AT91_PIN_PA17) |
+ 	       pin_to_mask(AT91_PIN_PA25) |
+-	       pin_to_mask(AT91_PIN_PA26) |
++//	       pin_to_mask(AT91_PIN_PA26) | /*Comment by guowenxue, conflict with RUN LED*/
+ 	       pin_to_mask(AT91_PIN_PA28),
+ 	       pin_to_controller(AT91_PIN_PA0) + PIO_PUER);
+ 
+@@ -140,6 +140,43 @@
+ }
+ #endif
+ 
++/*DM9000 add by guowenxue*/
++#ifdef CONFIG_DRIVER_DM9000
++static void at91sam9260ek_dm9000_hw_init(void)
++{
++    /* Configure SMC CS4 for DM9000 */
++    at91_sys_write(AT91_SMC_SETUP(4),
++            AT91_SMC_NWESETUP_(2) | AT91_SMC_NCS_WRSETUP_(0) |
++            AT91_SMC_NRDSETUP_(2) | AT91_SMC_NCS_RDSETUP_(0));
++    at91_sys_write(AT91_SMC_PULSE(4),
++            AT91_SMC_NWEPULSE_(4) | AT91_SMC_NCS_WRPULSE_(8) |
++            AT91_SMC_NRDPULSE_(4) | AT91_SMC_NCS_RDPULSE_(8));
++    at91_sys_write(AT91_SMC_CYCLE(4),
++            AT91_SMC_NWECYCLE_(16) | AT91_SMC_NRDCYCLE_(16));
++            at91_sys_write(AT91_SMC_MODE(4),
++            AT91_SMC_READMODE | AT91_SMC_WRITEMODE |
++            AT91_SMC_EXNWMODE_DISABLE |
++            AT91_SMC_BAT_WRITE | AT91_SMC_DBW_16 |
++            AT91_SMC_TDF_(1));
++
++    /* Wait for end hardware reset */
++    while (!(at91_sys_read(AT91_RSTC_SR) & AT91_RSTC_NRSTL));
++    /* Restore NRST value */
++    at91_sys_write(AT91_RSTC_MR, AT91_RSTC_KEY |
++            (AT91_RSTC_ERSTL & (0x0 << 8)) |
++             AT91_RSTC_URSTEN);
++
++    /* Configure Reset signal as output */
++    /* at91_set_gpio_output(AT91_PIN_PC10, 0); */
++
++    /* Configure NCS4 pin as cs, pull-up */
++    at91_set_A_periph(AT91_PIN_PC8, 1);
++
++    /* Configure Interrupt pin as input, no pull-up */
++    at91_set_gpio_input(AT91_PIN_PC15, 0);
++}
++#endif
++
+ int board_init(void)
+ {
+ 	/* Enable Ctrlc */
+@@ -165,6 +202,9 @@
+ #ifdef CONFIG_MACB
+ 	at91sam9260ek_macb_hw_init();
+ #endif
++#ifdef CONFIG_DRIVER_DM9000 /*Add by guowenxue*/
++    at91sam9260ek_dm9000_hw_init();
++#endif
+ 
+ 	return 0;
+ }
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/led.c
+--- u-boot-2010.09/board/atmel/at91sam9260ek/led.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/led.c	2011-08-12 15:50:41.000000000 +0800
+@@ -28,6 +28,7 @@
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/io.h>
+ 
++#if 0 /*Comment by guowenxue*/
+ void coloured_LED_init(void)
+ {
+ 	/* Enable clock */
+@@ -39,3 +40,4 @@
+ 	at91_set_gpio_value(CONFIG_RED_LED, 0);
+ 	at91_set_gpio_value(CONFIG_GREEN_LED, 1);
+ }
++#endif
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/partition.c
+--- u-boot-2010.09/board/atmel/at91sam9260ek/partition.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/partition.c	2011-08-12 15:50:41.000000000 +0800
+@@ -30,11 +30,11 @@
+ 	{CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1, 1}
+ };
+ 
+-/*define the area offsets*/
++/*define the area offsets, modify by guowenxue for SAM9260/SAM9G20 plat*/
+ dataflash_protect_t area_list[NB_DATAFLASH_AREA] = {
+-	{0x00000000, 0x000041FF, FLAG_PROTECT_SET,   0, "Bootstrap"},
+-	{0x00004200, 0x000083FF, FLAG_PROTECT_CLEAR, 0, "Environment"},
+-	{0x00008400, 0x00041FFF, FLAG_PROTECT_SET,   0, "U-Boot"},
+-	{0x00042000, 0x00251FFF, FLAG_PROTECT_CLEAR, 0,	"Kernel"},
+-	{0x00252000, 0xFFFFFFFF, FLAG_PROTECT_CLEAR, 0,	"FS"},
++	{0x00000000, 0x00003FFF, FLAG_PROTECT_SET,   0, "Bootstrap 16K"},
++	{0x00004000, 0x000083FF, FLAG_PROTECT_CLEAR, 0, "Environment 17K"},
++	{0x00008400, 0x0003FFFF, FLAG_PROTECT_SET,   0, "U-Boot 223K"},
++	{0x00040000, 0x001FFFFF, FLAG_PROTECT_CLEAR, 0,	"Kernel 1.75M"},
++	{0x00200000, 0x003FFFFF, FLAG_PROTECT_CLEAR, 0,	"Rootfs 2M"},
+ };
+diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-l200v5/common/cmd_bootm.c
+--- u-boot-2010.09/common/cmd_bootm.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/cmd_bootm.c	2011-08-12 16:26:53.000000000 +0800
+@@ -67,6 +67,10 @@
+ #define CONFIG_SYS_BOOTM_LEN	0x800000	/* use 8MByte as default max gunzip size */
+ #endif
+ 
++#ifdef CONFIG_BEEP_ALARM
++extern void beep_alarm(unsigned int count, unsigned int pres);
++#endif
++
+ #ifdef CONFIG_BZIP2
+ extern void bz_internal_error(int);
+ #endif
+@@ -216,13 +220,38 @@
+ 
+ 	bootm_start_lmb();
+ 
++    /*Before start Linux kernel, we must make sure the Rootfs is valide, add by guowenxue*/
++    {
++        image_header_t *fs_hdr = NULL;
++        fs_hdr = image_get_kernel (0x21100000, images.verify); 
++        if(NULL == fs_hdr) 
++        {
++#ifdef CONFIG_BEEP_ALARM
++                beep_alarm(1, 1);
++#endif
++                return 1;
++        }
++
++    }
++
+ 	/* get kernel image header, start address and length */
+ 	os_hdr = boot_get_kernel (cmdtp, flag, argc, argv,
+ 			&images, &images.os.image_start, &images.os.image_len);
++#if 0 /*Comment by guowenxue*/
+ 	if (images.os.image_len == 0) {
+ 		puts ("ERROR: can't get kernel image!\n");
+ 		return 1;
+ 	}
++#else
++    if(NULL == os_hdr) 
++    {
++#ifdef CONFIG_BEEP_ALARM
++        beep_alarm(2, 1);
++#endif
++        return 1;
++    }
++#endif
++
+ 
+ 	/* get image parameters */
+ 	switch (genimg_get_format (os_hdr)) {
+diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nand.c
+--- u-boot-2010.09/common/cmd_nand.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/cmd_nand.c	2011-08-12 17:27:26.000000000 +0800
+@@ -148,6 +148,7 @@
+ #if defined(CONFIG_CMD_MTDPARTS)
+ out:
+ #endif
++    *size = (*size / nand->writesize + 1) * nand->writesize; /*Add by guowenxue, fix write must page align bug*/
+ 	printf("device %d ", idx);
+ 	if (*size == nand->size)
+ 		puts("whole chip\n");
+@@ -474,6 +475,7 @@
+ 		if (arg_off_size(argc - 3, argv + 3, nand, &off, &size) != 0)
+ 			return 1;
+ 
++    
+ 		s = strchr(cmd, '.');
+ 		if (!s || !strcmp(s, ".jffs2") ||
+ 		    !strcmp(s, ".e") || !strcmp(s, ".i")) {
+@@ -483,6 +485,26 @@
+ 			else
+ 				ret = nand_write_skip_bad(nand, off, &size,
+ 							  (u_char *)addr);
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++        }else if ( s != NULL && (!strcmp(s, ".yaffs2")) ){
++            if(read)  
++            {
++                printf("nand read.yaffs2 is not provided");
++            }
++            else
++            {
++#if defined(CONFIG_CMD_NAND_YAFFS2_SKIPFB) 
++                nand->skipfirstblk = 1;
++#else
++                nand->skipfirstblk = 0;
++#endif
++                nand->rw_oob = 1;
++                ret = nand_write_skip_bad(nand,off,&size,(u_char *)addr);
++
++                nand->skipfirstblk = 0;
++                nand->rw_oob = 0;
++            }
++#endif
+ 		} else if (!strcmp(s, ".oob")) {
+ 			/* out-of-band data */
+ 			mtd_oob_ops_t ops = {
+@@ -590,6 +612,12 @@
+ 	"    to/from memory address 'addr', skipping bad blocks.\n"
+ 	"nand erase [clean] [off size] - erase 'size' bytes from\n"
+ 	"    offset 'off' (entire device if not specified)\n"
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue to support YAFFS*/
++	"nand read[.yaffs2] - is not provided!\n"
++	"nand write[.yaffs2] - addr off|partition size\n"
++	"    read/write 'size' bytes starting at offset 'off'\n"
++	"    to/from memory address 'addr', skipping bad blocks.\n"
++#endif
+ 	"nand bad - show bad blocks\n"
+ 	"nand dump[.oob] off - dump page\n"
+ 	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
+diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-l200v5/common/console.c
+--- u-boot-2010.09/common/console.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/console.c	2011-08-12 15:50:41.000000000 +0800
+@@ -525,7 +525,7 @@
+ 	gd->have_console = 1;
+ 
+ #ifdef CONFIG_SILENT_CONSOLE
+-	if (getenv("silent") != NULL)
++//	if (getenv("silent") != NULL) /*Comment by guowenxue, default don't enable console output*/
+ 		gd->flags |= GD_FLG_SILENT;
+ #endif
+ 
+diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-l200v5/common/env_common.c
+--- u-boot-2010.09/common/env_common.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/env_common.c	2011-08-12 15:50:41.000000000 +0800
+@@ -119,6 +119,18 @@
+ #ifdef	CONFIG_BOOTFILE
+ 	"bootfile="	MK_STR(CONFIG_BOOTFILE)		"\0"
+ #endif
++#ifdef  CONFIG_BURNKERNEL /*Add by guowenxue, burn kernel*/
++    "bkr="  CONFIG_BURNKERNEL           "\0"
++#endif
++#ifdef  CONFIG_BURNFS /*Add by guowenxue, burn filesystem*/
++    "bfs="  CONFIG_BURNFS           "\0"
++#endif
++#ifdef CONFIG_TFTPBOOT /*Add by guowenxue, Use tftp boot*/
++    "tpb="  CONFIG_TFTPBOOT           "\0"
++#endif
++#ifdef CONFIG_BURNBL /*Add by guowenxue, burn bootloader*/
++    "bbl="  CONFIG_BURNBL           "\0"
++#endif
+ #ifdef	CONFIG_LOADADDR
+ 	"loadaddr="	MK_STR(CONFIG_LOADADDR)		"\0"
+ #endif
+diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-l200v5/common/env_nand.c
+--- u-boot-2010.09/common/env_nand.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/env_nand.c	2011-08-12 16:13:13.000000000 +0800
+@@ -265,6 +265,12 @@
+ 
+ 	u_char *char_ptr;
+ 
++    /* Add by guowenxue, skip loop restart uboot is NAND can not find */
++    if (NULL == nand_info[0].name)
++    {
++       return 1; 
++    }
++
+ 	blocksize = nand_info[0].erasesize;
+ 	if (!blocksize)
+ 		return 1;
+diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-l200v5/common/main.c
+--- u-boot-2010.09/common/main.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/common/main.c	2011-08-12 15:50:41.000000000 +0800
+@@ -429,6 +429,13 @@
+ #endif /* CONFIG_MENUKEY */
+ #endif /* CONFIG_BOOTDELAY */
+ 
++    /* Add by guowenxue, only when comes to u-boot debug mode 
++     * will enable the console output the network*/
++    gd->flags &= ~GD_FLG_SILENT;
++#if defined(CONFIG_DRIVER_DM9000)  && defined(CONFIG_CMD_NET) 
++    dm9000_initialize(gd->bd);  /* DM900 ethert init */
++#endif
++
+ 	/*
+ 	 * Main Loop for Monitor Command Processing
+ 	 */
+diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-l200v5/drivers/mtd/dataflash.c
+--- u-boot-2010.09/drivers/mtd/dataflash.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/drivers/mtd/dataflash.c	2011-08-12 15:50:41.000000000 +0800
+@@ -220,6 +220,7 @@
+ 				break;
+ 			}
+ 
++#ifdef CONFIG_DATAFLASH_DEBUG  /*Add by guowenxue*/
+ 			printf("Nb pages: %6d\n"
+ 				"Page Size: %6d\n"
+ 				"Size=%8d bytes\n"
+@@ -243,6 +244,7 @@
+ 					break;
+ 				}
+ 			}
++#endif  /*CONFIG_DATAFLASH_DEBUG*/
+ 		}
+ 	}
+ }
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-l200v5/drivers/mtd/nand/nand_base.c
+--- u-boot-2010.09/drivers/mtd/nand/nand_base.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/drivers/mtd/nand/nand_base.c	2011-08-12 17:05:30.000000000 +0800
+@@ -2098,6 +2098,30 @@
+ 	struct nand_chip *chip = mtd->priv;
+ 	int ret;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/ 
++	int oldopsmode = 0; 
++	if(mtd->rw_oob==1)  { 
++		size_t oobsize = mtd->oobsize; 
++		size_t datasize = mtd->writesize; 
++		int i = 0; 
++		uint8_t oobtemp[oobsize]; 
++		int datapages = 0; 
++		datapages = len/(datasize);
++
++		for(i=0;i<(datapages);i++)  { 
++			memcpy((void *)oobtemp, 
++				(void *)(buf+datasize*(i+1)), oobsize); 
++			memmove((void *)(buf+datasize*(i+1)), 
++				(void *)(buf+datasize*(i+1)+oobsize), 
++				(datapages-(i+1))*(datasize)+(datapages-1)*oobsize); 
++
++			memcpy((void *)(buf+(datapages)*(datasize+oobsize)-oobsize), 
++			(void *)(oobtemp), oobsize); 
++		} 
++	}
++#endif
++
+ 	/* Do not allow reads past end of device */
+ 	if ((to + len) > mtd->size)
+ 		return -EINVAL;
+@@ -2108,7 +2132,19 @@
+ 
+ 	chip->ops.len = len;
+ 	chip->ops.datbuf = (uint8_t *)buf;
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/ 
++	if(mtd->rw_oob!=1)  { 
++		chip->ops.oobbuf = NULL; 
++	} else  { 
++		chip->ops.oobbuf = (uint8_t *)(buf+len); 
++		chip->ops.ooblen = mtd->oobsize; 
++		oldopsmode = chip->ops.mode; 
++		chip->ops.mode = MTD_OOB_RAW; 
++	}
++#else
+ 	chip->ops.oobbuf = NULL;
++#endif
+ 
+ 	ret = nand_do_write_ops(mtd, to, &chip->ops);
+ 
+@@ -2116,6 +2152,10 @@
+ 
+ 	nand_release_device(mtd);
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code!*/
++	chip->ops.mode = oldopsmode;
++#endif
+ 	return ret;
+ }
+ 
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-l200v5/drivers/mtd/nand/nand_util.c
+--- u-boot-2010.09/drivers/mtd/nand/nand_util.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/drivers/mtd/nand/nand_util.c	2011-08-12 17:22:58.000000000 +0800
+@@ -477,6 +477,25 @@
+ 	size_t len_incl_bad;
+ 	u_char *p_buffer = buffer;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code*/
++
++	if(nand->rw_oob==1) {
++	size_t oobsize = nand->oobsize; 
++	size_t datasize = nand->writesize; 
++	int datapages = 0;
++
++	if (((*length)%(nand->oobsize+nand->writesize)) != 0) { 
++		printf ("Attempt to write error length data!\n"); 
++		return -EINVAL; 
++	}
++
++	datapages = *length/(datasize+oobsize); 
++	*length = datapages*datasize; 
++	left_to_write = *length; 
++    }
++#endif
++
+ 	/* Reject writes, which are not page aligned */
+ 	if ((offset & (nand->writesize - 1)) != 0 ||
+ 	    (*length & (nand->writesize - 1)) != 0) {
+@@ -491,6 +510,7 @@
+ 		return -EINVAL;
+ 	}
+ 
++#if !defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
+ 	if (len_incl_bad == *length) {
+ 		rval = nand_write (nand, offset, length, buffer);
+ 		if (rval != 0)
+@@ -499,6 +519,7 @@
+ 
+ 		return rval;
+ 	}
++#endif
+ 
+ 	while (left_to_write > 0) {
+ 		size_t block_offset = offset & (nand->erasesize - 1);
+@@ -513,11 +534,22 @@
+ 			continue;
+ 		}
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++	/*Thanks for hugerat's code*/ 
++	if(nand->skipfirstblk==1)   { 
++		nand->skipfirstblk=0; 
++		printf ("Skip the first good block %llx\n", 
++		offset & ~(nand->erasesize - 1)); 
++		offset += nand->erasesize - block_offset; 
++		continue;
++        }
++#endif
++
+ 		if (left_to_write < (nand->erasesize - block_offset))
+ 			write_size = left_to_write;
+ 		else
+ 			write_size = nand->erasesize - block_offset;
+-
++//		printf("\rWriting at 0x%llx -- ",offset);   /*Thanks for hugerat's code*/
+ 		rval = nand_write (nand, offset, &write_size, p_buffer);
+ 		if (rval != 0) {
+ 			printf ("NAND write to offset %llx failed %d\n",
+@@ -527,8 +559,18 @@
+ 		}
+ 
+ 		left_to_write -= write_size;
++//		printf("%d%% is complete.",100-(left_to_write/(*length/100)));/*Thanks for hugerat's code*/
+ 		offset        += write_size;
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue*/
++		/*Thanks for hugerat's code*/
++		if(nand->rw_oob==1) { 
++			p_buffer += write_size+(write_size/nand->writesize*nand->oobsize); 
++		} else  { 
++			p_buffer += write_size; 
++		}
++#else 
+ 		p_buffer      += write_size;
++#endif
+ 	}
+ 
+ 	return 0;
+diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-l200v5/drivers/net/macb.c
+--- u-boot-2010.09/drivers/net/macb.c	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/drivers/net/macb.c	2011-08-12 15:50:41.000000000 +0800
+@@ -330,7 +330,7 @@
+ 
+ 	adv = ADVERTISE_CSMA | ADVERTISE_ALL;
+ 	macb_mdio_write(macb, MII_ADVERTISE, adv);
+-	printf("%s: Starting autonegotiation...\n", netdev->name);
++//	printf("%s: Starting autonegotiation...\n", netdev->name);  /*Comment by guowenxue*/
+ 	macb_mdio_write(macb, MII_BMCR, (BMCR_ANENABLE
+ 					 | BMCR_ANRESTART));
+ 
+@@ -341,11 +341,13 @@
+ 		udelay(100);
+ 	}
+ 
++#if 0 /*Comment by guowenxue*/
+ 	if (status & BMSR_ANEGCOMPLETE)
+ 		printf("%s: Autonegotiation complete\n", netdev->name);
+ 	else
+ 		printf("%s: Autonegotiation timed out (status=0x%04x)\n",
+ 		       netdev->name, status);
++#endif
+ }
+ 
+ #ifdef CONFIG_MACB_SEARCH_PHY
+@@ -555,7 +557,7 @@
+ 	macb->regs = regs;
+ 	macb->phy_addr = phy_addr;
+ 
+-	sprintf(netdev->name, "macb%d", id);
++	sprintf(netdev->name, "DM9161"); /*Change macb0 to DM9161 by guowenxue*/
+ 	netdev->init = macb_init;
+ 	netdev->halt = macb_halt;
+ 	netdev->send = macb_send;
+diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/include/configs/at91sam9260ek.h
+--- u-boot-2010.09/include/configs/at91sam9260ek.h	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/include/configs/at91sam9260ek.h	2011-08-12 17:33:07.000000000 +0800
+@@ -63,10 +63,14 @@
+ 
+ /* LED */
+ #define CONFIG_AT91_LED
+-#define	CONFIG_RED_LED		AT91_PIN_PA9	/* this is the power led */
+-#define	CONFIG_GREEN_LED	AT91_PIN_PA6	/* this is the user led */
++//#define	CONFIG_RED_LED		AT91_PIN_PA9	/* this is the power led */
++//#define	CONFIG_GREEN_LED	AT91_PIN_PA6	/* this is the user led */
++#define CONFIG_RUN_LED      AT91_PIN_PA26   /* Add by guowenxue, 2011.08.11*/
++#define CONFIG_BEEP         AT91_PIN_PC2    /*Add by guowenxue, 2011.08.11*/
++#define CONFIG_BEEP_ALARM   
++#define CONFIG_SILENT_CONSOLE          /*Add by guowenxue*/ 
+ 
+-#define CONFIG_BOOTDELAY	3
++#define CONFIG_BOOTDELAY	1
+ 
+ /*
+  * BOOTP options
+@@ -90,7 +94,7 @@
+ #define CONFIG_CMD_PING		1
+ #define CONFIG_CMD_DHCP		1
+ #define CONFIG_CMD_NAND		1
+-#define CONFIG_CMD_USB		1
++//#define CONFIG_CMD_USB		1  /*Comment by guowenxue*/
+ 
+ /* SDRAM */
+ #define CONFIG_NR_DRAM_BANKS		1
+@@ -131,14 +135,28 @@
+ /* NOR flash - no real flash on this board */
+ #define CONFIG_SYS_NO_FLASH			1
+ 
++/*Add by guowenxue to support YAFFS2 file system*/
++#define CONFIG_CMD_NAND_YAFFS2          1
++#define CONFIG_CMD_NAND_YAFFS2_SKIPFB   1
++/*Add by guowenxue end*/
++
+ /* Ethernet */
++#define CONFIG_OVERWRITE_ETHADDR_ONCE   1  /*Add by guowenxue to support Modify MAC address*/
+ #define CONFIG_MACB			1
+-#define CONFIG_RMII			1
++#undef  CONFIG_RMII			/*undef by guowenxue*/
+ #define CONFIG_NET_MULTI		1
+ #define CONFIG_NET_RETRY_COUNT		20
+ #define CONFIG_RESET_PHY_R		1
++/*Add DM9000 support by guowenxue*/
++#define CONFIG_DRIVER_DM9000        1          /* Enable DM9000 define and disable DM9161*/
++#define CONFIG_DM9000_BASE      0x50000000     /* CS4    */
++#define DM9000_IO           CONFIG_DM9000_BASE
++#define DM9000_DATA         (CONFIG_DM9000_BASE + 4)     /*  A2-->CMD*/
++#define CONFIG_DM9000_USE_16BIT     1
++#define CONFIG_DM9000_NO_SROM       1
+ 
+ /* USB */
++#if 0 /*Comment by guowenxue, don't enable USB interface*/
+ #define CONFIG_USB_ATMEL
+ #define CONFIG_USB_OHCI_NEW		1
+ #define CONFIG_DOS_PARTITION		1
+@@ -148,6 +166,7 @@
+ #define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	2
+ #define CONFIG_USB_STORAGE		1
+ #define CONFIG_CMD_FAT			1
++#endif
+ 
+ #define CONFIG_SYS_LOAD_ADDR			0x22000000	/* load address */
+ 
+@@ -162,25 +181,31 @@
+ #define CONFIG_ENV_OFFSET		0x4200
+ #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS0 + CONFIG_ENV_OFFSET)
+ #define CONFIG_ENV_SIZE		0x4200
+-#define CONFIG_BOOTCOMMAND	"cp.b 0xC0042000 0x22000000 0x210000; bootm"
+-#define CONFIG_BOOTARGS		"console=ttyS0,115200 "			\
+-				"root=/dev/mtdblock0 "			\
+-				"mtdparts=atmel_nand:-(root) "		\
+-				"rw rootfstype=jffs2"
++#define CONFIG_BOOTCOMMAND	"nand read 20000000 100000 500000;bootm 20000000"
++#define CONFIG_BOOTARGS		"noinitrd root=/dev/mtdblock4 rootfstype=yaffs2 "" \
++                            "init=/linuxrc console=ttyS0,115200 mem=64M loglevel=7 lpj=495616"
+ 
+ #elif CONFIG_SYS_USE_DATAFLASH_CS1
+ 
+ /* bootstrap + u-boot + env + linux in dataflash on CS1 */
+ #define CONFIG_ENV_IS_IN_DATAFLASH	1
+ #define CONFIG_SYS_MONITOR_BASE	(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1 + 0x8400)
+-#define CONFIG_ENV_OFFSET		0x4200
++#define CONFIG_ENV_OFFSET		0x4000
+ #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1 + CONFIG_ENV_OFFSET)
+-#define CONFIG_ENV_SIZE		0x4200
+-#define CONFIG_BOOTCOMMAND	"cp.b 0xD0042000 0x22000000 0x210000; bootm"
+-#define CONFIG_BOOTARGS		"console=ttyS0,115200 "			\
+-				"root=/dev/mtdblock0 "			\
+-				"mtdparts=atmel_nand:-(root) "		\
+-				"rw rootfstype=jffs2"
++#define CONFIG_ENV_SIZE		0x4400
++#define CONFIG_BOOTCOMMAND	"nand read 20000000 a0000 0x500000;nand read 21100000 5a0000 500000;bootm 20000000"
++#define CONFIG_BOOTARGS		"console=/dev/ttyS0,115200 initrd=0x21100040,5M root=/dev/ram0 rw time" 
++#define CONFIG_ETHADDR      CONFIG_MAC_ADDR
++#define CONFIG_IPADDR       192.168.200.120
++#define CONFIG_SERVERIP     192.168.200.15
++
++#define CONFIG_BURNKERNEL   "tftp 20000000 uImage-sam9g20.gz;" \
++                            "nand erase 000a0000 500000;nand write 20000000 000a0000 $(filesize)"
++#define CONFIG_BURNFS       "tftp 21100000 ramdisk-sam9g20.gz;nand erase 5a0000 500000;" \
++                            "nand write 21100000 5a0000 $(filesize)"
++#define CONFIG_BURNBL       "tftp 20000000 u-boot-sam9g20.bin;protect off 0xD0008400 0xD003FFFF;" \
++                            "erase 0xD0008400 0xD003FFFF;cp.b 20000000 d0008400 $(filesize)"
++#define CONFIG_TFTPBOOT     "tftp 20000000 uImage-sam9g20.gz;tftp 21100000 ramdisk-sam9g20.gz;bootm 20000000"
+ 
+ #else /* CONFIG_SYS_USE_NANDFLASH */
+ 
+diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-l200v5/include/image.h
+--- u-boot-2010.09/include/image.h	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/include/image.h	2011-08-12 15:50:41.000000000 +0800
+@@ -166,7 +166,7 @@
+ #define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
+ #define IH_COMP_LZO		4	/* lzo   Compression Used	*/
+ 
+-#define IH_MAGIC	0x27051956	/* Image Magic Number		*/
++#define IH_MAGIC	0x534C4847	/* Image Magic Number,SLHG, modify by guowenxue	*/
+ #define IH_NMLEN		32	/* Image Name Length		*/
+ 
+ /*
+diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-l200v5/include/linux/mtd/mtd.h
+--- u-boot-2010.09/include/linux/mtd/mtd.h	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/include/linux/mtd/mtd.h	2011-08-12 15:50:41.000000000 +0800
+@@ -129,6 +129,13 @@
+ 	 */
+ 	u_int32_t writesize;
+ 
++#if defined(CONFIG_CMD_NAND_YAFFS2) /*Add by guowenxue to support YAFFS*/
++    u_char rw_oob;
++    /* Nandflash first block must be OK when product, so we need skip the 
++     * first blcok*/
++    u_char skipfirstblk; 
++#endif
++
+ 	u_int32_t oobsize;   /* Amount of OOB data per block (e.g. 16) */
+ 	u_int32_t oobavail;  /* Available OOB bytes per block */
+ 
+diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-l200v5/include/status_led.h
+--- u-boot-2010.09/include/status_led.h	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/include/status_led.h	2011-08-12 15:50:41.000000000 +0800
+@@ -383,6 +383,7 @@
+ # include <asm/status_led.h>
+ #endif
+ 
++#if 0 /*Comment by guowenxue*/
+ /*
+  * Coloured LEDs API
+  */
+@@ -407,6 +408,7 @@
+ 	.extern blue_LED_on
+ 	.extern blue_LED_off
+ #endif
++#endif
+ 
+ #endif	/* CONFIG_STATUS_LED	*/
+ 
+diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-l200v5/Makefile
+--- u-boot-2010.09/Makefile	2010-09-29 05:20:55.000000000 +0800
++++ u-boot-2010.09-l200v5/Makefile	2011-08-12 15:50:41.000000000 +0800
+@@ -155,6 +155,7 @@
+ include $(obj)include/config.mk
+ export	ARCH CPU BOARD VENDOR SOC
+ 
++CROSS_COMPILE = /opt/buildroot_350/build_arm/staging_dir/bin/arm-linux-
+ # set default to nothing for native builds
+ ifeq ($(HOSTARCH),$(ARCH))
+ CROSS_COMPILE ?=
+@@ -477,6 +478,13 @@
+ 	$(MAKE) -C tools HOST_TOOLS_ALL=y
+ endif	# config.mk
+ 
++# Add by guowenxue for GHL L200v5 production, which use AT91SAM9G20
++l200v5_sam9g20:
++	make at91sam9g20ek_dataflash_cs1_config
++	make
++	cp u-boot.bin u-boot-sam9g20.bin
++	cp -f u-boot-sam9g20.bin /tftpboot --reply=yes
++
+ .PHONY : CHANGELOG
+ CHANGELOG:
+ 	git log --no-merges U-Boot-1_1_5.. | \
+@@ -1917,6 +1925,7 @@
+ 	else \
+ 		echo "#define CONFIG_SYS_USE_DATAFLASH_CS1 1"	>>$(obj)include/config.h ; \
+ 	fi;
++	@echo "#define CONFIG_MAC_ADDR 00:50:C2:$(shell date +%y):$(shell date +%m):$(shell date +%d)" >>$(obj)include/config.h
+ 	@$(MKCONFIG) -n $@ -a at91sam9260ek arm arm926ejs at91sam9260ek atmel at91
+ 
+ at91sam9xeek_nandflash_config \
+@@ -2479,7 +2488,7 @@
+ 		-o -name '*.srec' -o -name '*.bin' -o -name u-boot.img \) \
+ 		-print0 \
+ 		| xargs -0 rm -f
+-	@rm -f $(OBJS) $(obj)*.bak $(obj)ctags $(obj)etags $(obj)TAGS \
++	@rm -f $(OBJS) $(obj)*.bak $(obj)ctags $(obj)tags $(obj)etags $(obj)TAGS \
+ 		$(obj)cscope.* $(obj)*.*~
+ 	@rm -f $(obj)u-boot $(obj)u-boot.map $(obj)u-boot.hex $(ALL)
+ 	@rm -f $(obj)u-boot.kwb
