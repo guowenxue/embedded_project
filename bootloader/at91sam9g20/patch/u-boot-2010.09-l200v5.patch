@@ -1,6 +1,6 @@
-diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/at91/led.c
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/at91/led.c
 --- u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/at91/led.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/at91/led.c	2011-08-12 15:50:41.000000000 +0800
 @@ -28,6 +28,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -14,9 +14,9 @@ diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-l200v
  }
  #endif
 +#endif /*Comment by guowenxue*/
-diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/start.S
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/start.S
 --- u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/arch/arm/cpu/arm926ejs/start.S	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/start.S	2011-08-12 15:50:41.000000000 +0800
 @@ -209,8 +209,8 @@
  	cmp	r0, r1
  	ble	clbss_l
@@ -28,9 +28,9 @@ diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-l200v5/a
  #endif /* CONFIG_PRELOADER */
  
  	ldr	pc, _start_armboot
-diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/lib/board.c
+diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-sam9g20/arch/arm/lib/board.c
 --- u-boot-2010.09/arch/arm/lib/board.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/arch/arm/lib/board.c	2011-08-12 15:54:26.000000000 +0800
++++ u-boot-2010.09-sam9g20/arch/arm/lib/board.c	2011-08-15 17:04:28.000000000 +0800
 @@ -50,6 +50,15 @@
  #include <onenand_uboot.h>
  #include <mmc.h>
@@ -63,7 +63,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  
  /************************************************************************
   * Init Utilities							*
-@@ -133,6 +144,79 @@
+@@ -133,6 +144,89 @@
  	return (0);
  }
  
@@ -96,6 +96,10 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
 +int beep_init(void)
 +{
 +    at91_set_B_periph(CONFIG_BEEP, 0);
++
++    at91_sys_write(AT91_PMC_PCER, 1 << AT91SAM9260_ID_PIOB);
++    udelay(100);
++
 +    /*PMC_SCDR[9] is PCK1, 0: No effect  1: Disables the PCK1 out put*/
 +    at91_sys_write(AT91_PMC_SCDR, at91_sys_read(AT91_PMC_SCDR) | (0x1 << 9));
 +    /*
@@ -110,6 +114,12 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
 +    while ((0x1 << 9) != ((at91_sys_read(AT91_PMC_SR)) & (0x1 << 9)));
 +
 +    return 0;
++}
++
++int detect_init_key(void)
++{
++    at91_set_gpio_input(CONFIG_RESTORE_KEY, 0); /*Disable pullup resister*/
++    return at91_get_gpio_value (CONFIG_RESTORE_KEY);
 +}
 +
 +static void beep_on(void)
@@ -143,7 +153,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  static int display_banner (void)
  {
  	printf ("\n\n%s\n\n", version_string);
-@@ -238,6 +322,7 @@
+@@ -238,6 +332,7 @@
  #if defined(CONFIG_ARCH_CPU_INIT)
  	arch_cpu_init,		/* basic arch cpu dependent setup */
  #endif
@@ -151,7 +161,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  	board_init,		/* basic board dependent setup */
  #if defined(CONFIG_USE_IRQ)
  	interrupt_init,		/* set up exceptions */
-@@ -250,6 +335,10 @@
+@@ -250,6 +345,10 @@
  	init_baudrate,		/* initialze baudrate settings */
  	serial_init,		/* serial communications setup */
  	console_init_f,		/* stage 1 init of console */
@@ -162,7 +172,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  	display_banner,		/* say that we are here */
  #if defined(CONFIG_DISPLAY_CPUINFO)
  	print_cpuinfo,		/* display cpu info (and speed) */
-@@ -295,6 +384,8 @@
+@@ -295,6 +394,8 @@
  		}
  	}
  
@@ -171,7 +181,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  	/* armboot_start is defined in the board-specific linker script */
  	mem_malloc_init (_armboot_start - CONFIG_SYS_MALLOC_LEN,
  			CONFIG_SYS_MALLOC_LEN);
-@@ -429,6 +520,9 @@
+@@ -429,6 +530,9 @@
  	board_late_init ();
  #endif
  
@@ -181,7 +191,7 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  #ifdef CONFIG_BITBANGMII
  	bb_miiphy_init();
  #endif
-@@ -442,6 +536,7 @@
+@@ -442,6 +546,7 @@
  	reset_phy();
  #endif
  #endif
@@ -189,9 +199,9 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-l200v5/arch/arm/li
  	/* main_loop() can return to retry autoboot, if so just run it again. */
  	for (;;) {
  		main_loop ();
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/at91sam9260ek.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/at91sam9260ek.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/at91sam9260ek.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/at91sam9260ek.c	2011-08-12 15:50:41.000000000 +0800
 @@ -32,7 +32,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -273,9 +283,9 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.
  
  	return 0;
  }
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/led.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/led.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/led.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/led.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/led.c	2011-08-12 15:50:41.000000000 +0800
 @@ -28,6 +28,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -289,9 +299,9 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-l200v5/
  	at91_set_gpio_value(CONFIG_GREEN_LED, 1);
  }
 +#endif
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/partition.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/partition.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/partition.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/board/atmel/at91sam9260ek/partition.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/partition.c	2011-08-12 15:50:41.000000000 +0800
 @@ -30,11 +30,11 @@
  	{CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1, 1}
  };
@@ -310,14 +320,14 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-l
 +	{0x00040000, 0x001FFFFF, FLAG_PROTECT_CLEAR, 0,	"Kernel 1.75M"},
 +	{0x00200000, 0x003FFFFF, FLAG_PROTECT_CLEAR, 0,	"Rootfs 2M"},
  };
-diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-l200v5/common/cmd_bootm.c
+diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-sam9g20/common/cmd_bootm.c
 --- u-boot-2010.09/common/cmd_bootm.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/cmd_bootm.c	2011-08-12 16:26:53.000000000 +0800
++++ u-boot-2010.09-sam9g20/common/cmd_bootm.c	2011-08-12 16:26:53.000000000 +0800
 @@ -67,6 +67,10 @@
  #define CONFIG_SYS_BOOTM_LEN	0x800000	/* use 8MByte as default max gunzip size */
  #endif
  
-+#ifdef CONFIG_BEEP_ALARM
++#ifdef CONFIG_BEEP_ALARM /*Add by guowenxue*/
 +extern void beep_alarm(unsigned int count, unsigned int pres);
 +#endif
 +
@@ -363,9 +373,9 @@ diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-l200v5/common/cmd_bo
  
  	/* get image parameters */
  	switch (genimg_get_format (os_hdr)) {
-diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nand.c
+diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-sam9g20/common/cmd_nand.c
 --- u-boot-2010.09/common/cmd_nand.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/cmd_nand.c	2011-08-12 17:27:26.000000000 +0800
++++ u-boot-2010.09-sam9g20/common/cmd_nand.c	2011-08-15 11:02:58.000000000 +0800
 @@ -148,6 +148,7 @@
  #if defined(CONFIG_CMD_MTDPARTS)
  out:
@@ -374,7 +384,98 @@ diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nan
  	printf("device %d ", idx);
  	if (*size == nand->size)
  		puts("whole chip\n");
-@@ -474,6 +475,7 @@
+@@ -291,6 +292,90 @@
+ 	       nand->name, nand->erasesize >> 10);
+ }
+ 
++/*Add by guowenxue, used to update the bootm environemnt*/
++#define ENV_IMAGE_KERNEL  0x01
++#define ENV_IMAGE_ROOTFS  0x02
++void update_bootcmd(unsigned char type, uint32_t img_size)
++{
++    char *read_kernel = NULL;
++    char *read_rootfs = NULL;
++    char *bootm = NULL;
++    char *env = NULL;
++    char bootcmd[512];
++
++    memset(bootcmd, 0, 512);
++    env = getenv("bootcmd");
++
++    if(NULL != env)
++    {
++       char tmp[256] = {0};
++       strncpy(tmp, env, 256);
++       if( ! (read_kernel=strtok(tmp, ";")) )
++       {
++               printf("kernel miss\n");
++               goto DEFAULTENV;
++       }
++
++       if( ! (read_rootfs=strtok(NULL, ";")) )
++       {
++               printf("rootfs miss\n");
++               goto DEFAULTENV;
++       }
++
++       if( ! (bootm=strtok(NULL, ";")) )
++       {
++               printf("bootm miss\n");
++               goto DEFAULTENV;
++       }
++
++       /*Original environment is all right, then update it now. Or use the default one*/
++       if(ENV_IMAGE_KERNEL == type)
++       {
++            sprintf(bootcmd, "nand read 20000000 %x 0x%0x;%s;%s",
++                    CONFIG_KERNEL_NAND_ADDR, img_size, read_rootfs, bootm);
++       }
++       else if (ENV_IMAGE_ROOTFS == type)
++       {
++            sprintf(bootcmd, "%s;nand read 21100000 %x 0x%0x;%s",
++                  read_kernel, CONFIG_ROOTFS_NAND_ADDR, img_size, bootm);
++       }
++       goto SETENV;
++    }
++
++DEFAULTENV:
++    if(ENV_IMAGE_KERNEL == type)
++    {
++       sprintf(bootcmd, "nand read 20000000 %x 0x%x;nand read 21100000 %x 500000;bootm 20000000",
++                      CONFIG_KERNEL_NAND_ADDR, img_size, CONFIG_ROOTFS_NAND_ADDR);
++    }
++    else if (ENV_IMAGE_ROOTFS == type)
++    {
++       sprintf(bootcmd, "nand read 20000000 %x 500000;nand read 21100000 %x 0x%x;bootm 20000000",
++                      CONFIG_KERNEL_NAND_ADDR, CONFIG_ROOTFS_NAND_ADDR, img_size);
++    }
++SETENV:
++    setenv("bootcmd", bootcmd);
++    saveenv();
++}
++
++/*
++ * Input value: img_addr --The firmware image in RAM address, such as 20000000 for kernel
++ * Return value: The firmware image size
++ * Description:  This function use the first 64bytes uImage head to get the image file size.
++ */
++uint32_t get_image_filesize(ulong img_addr)
++{
++    image_header_t  *hdr;
++    uint32_t        img_size;
++
++    hdr = (image_header_t *)img_addr;
++    img_size = image_get_data_size(hdr);
++    img_size += 64; /*for the 64 bytes image head*/
++    return img_size;
++}
++
++/*Add by guowenxue end*/
++
+ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ {
+ 	int i, dev, ret = 0;
+@@ -474,6 +559,7 @@
  		if (arg_off_size(argc - 3, argv + 3, nand, &off, &size) != 0)
  			return 1;
  
@@ -382,7 +483,7 @@ diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nan
  		s = strchr(cmd, '.');
  		if (!s || !strcmp(s, ".jffs2") ||
  		    !strcmp(s, ".e") || !strcmp(s, ".i")) {
-@@ -483,6 +485,26 @@
+@@ -483,6 +569,26 @@
  			else
  				ret = nand_write_skip_bad(nand, off, &size,
  							  (u_char *)addr);
@@ -409,7 +510,32 @@ diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nan
  		} else if (!strcmp(s, ".oob")) {
  			/* out-of-band data */
  			mtd_oob_ops_t ops = {
-@@ -590,6 +612,12 @@
+@@ -503,6 +609,24 @@
+ 		printf(" %zu bytes %s: %s\n", size,
+ 		       read ? "read" : "written", ret ? "ERROR" : "OK");
+ 
++/*Add by guowenxue, used to update the bootm environemnt*/
++        if(0 == ret)
++        {
++           if( 0==read && off==CONFIG_KERNEL_NAND_ADDR ) /*Nand write linux kernel*/
++           {
++              uint32_t        img_size;
++              img_size = get_image_filesize(addr);
++              update_bootcmd(ENV_IMAGE_KERNEL, img_size);
++           }
++           else if (0==read && off==CONFIG_ROOTFS_NAND_ADDR )
++           {
++              uint32_t        img_size;
++              img_size = get_image_filesize(addr);
++              update_bootcmd(ENV_IMAGE_ROOTFS, img_size);
++           }
++        }
++/*Add end*/
++
+ 		return ret == 0 ? 0 : 1;
+ 	}
+ 
+@@ -590,6 +714,12 @@
  	"    to/from memory address 'addr', skipping bad blocks.\n"
  	"nand erase [clean] [off size] - erase 'size' bytes from\n"
  	"    offset 'off' (entire device if not specified)\n"
@@ -422,9 +548,9 @@ diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-l200v5/common/cmd_nan
  	"nand bad - show bad blocks\n"
  	"nand dump[.oob] off - dump page\n"
  	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
-diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-l200v5/common/console.c
+diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-sam9g20/common/console.c
 --- u-boot-2010.09/common/console.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/console.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/common/console.c	2011-08-12 15:50:41.000000000 +0800
 @@ -525,7 +525,7 @@
  	gd->have_console = 1;
  
@@ -434,9 +560,9 @@ diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-l200v5/common/console.
  		gd->flags |= GD_FLG_SILENT;
  #endif
  
-diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-l200v5/common/env_common.c
+diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-sam9g20/common/env_common.c
 --- u-boot-2010.09/common/env_common.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/env_common.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/common/env_common.c	2011-08-12 15:50:41.000000000 +0800
 @@ -119,6 +119,18 @@
  #ifdef	CONFIG_BOOTFILE
  	"bootfile="	MK_STR(CONFIG_BOOTFILE)		"\0"
@@ -456,9 +582,9 @@ diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-l200v5/common/env_c
  #ifdef	CONFIG_LOADADDR
  	"loadaddr="	MK_STR(CONFIG_LOADADDR)		"\0"
  #endif
-diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-l200v5/common/env_nand.c
+diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-sam9g20/common/env_nand.c
 --- u-boot-2010.09/common/env_nand.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/env_nand.c	2011-08-12 16:13:13.000000000 +0800
++++ u-boot-2010.09-sam9g20/common/env_nand.c	2011-08-12 16:13:13.000000000 +0800
 @@ -265,6 +265,12 @@
  
  	u_char *char_ptr;
@@ -472,10 +598,80 @@ diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-l200v5/common/env_nan
  	blocksize = nand_info[0].erasesize;
  	if (!blocksize)
  		return 1;
-diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-l200v5/common/main.c
+diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-sam9g20/common/main.c
 --- u-boot-2010.09/common/main.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/common/main.c	2011-08-12 15:50:41.000000000 +0800
-@@ -429,6 +429,13 @@
++++ u-boot-2010.09-sam9g20/common/main.c	2011-08-15 17:11:25.000000000 +0800
+@@ -55,6 +55,7 @@
+ #endif
+ 
+ extern int do_bootd (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]);
++extern int detect_init_key(void); /*Add by guowenxue*/
+ 
+ #if defined(CONFIG_UPDATE_TFTP)
+ void update_tftp (void);
+@@ -221,6 +222,14 @@
+ 	printf("Hit any key to stop autoboot: %2d ", bootdelay);
+ #endif
+ 
++    /*Add by guowenxue*/
++    abort = !detect_init_key(); /*The init key pressed, the pin goes to low level */
++    if(abort)
++    {
++            goto RET_ABORT;
++    }
++    /*Add by guowenxue end*/
++
+ #if defined CONFIG_ZERO_BOOTDELAY_CHECK
+ 	/*
+ 	 * Check if key already pressed
+@@ -228,26 +237,32 @@
+ 	 */
+ 	if (bootdelay >= 0) {
+ 		if (tstc()) {	/* we got a key press	*/
+-			(void) getc();  /* consume input	*/
+-			puts ("\b\b\b 0");
+-			abort = 1;	/* don't auto boot	*/
++            if(27==getc()) /*Modify by guowenxue, only get ECS key will skip autoboot*/
++            {
++			    puts ("\b\b\b 0");
++			    abort = 1;	/* don't auto boot	*/
++            }
+ 		}
+ 	}
+ #endif
+ 
+-	while ((bootdelay > 0) && (!abort)) {
++	while ((bootdelay >= 0) && (!abort)) {
+ 		int i;
+ 
+ 		--bootdelay;
+ 		/* delay 100 * 10ms */
+ 		for (i=0; !abort && i<100; ++i) {
+ 			if (tstc()) {	/* we got a key press	*/
+-				abort  = 1;	/* don't auto boot	*/
++				//abort  = 1;	/* don't auto boot,comment by guowenxue	*/
+ 				bootdelay = 0;	/* no more delay	*/
+ # ifdef CONFIG_MENUKEY
+ 				menukey = getc();
+ # else
+-				(void) getc();  /* consume input	*/
++                if(27==getc()) /*Modify by guowenxue, only get ECS key will skip autoboot*/
++                {
++                    puts ("\b\b\b 0"); 
++                    abort = 1;  /* don't auto boot  */
++                }
+ # endif
+ 				break;
+ 			}
+@@ -259,6 +274,7 @@
+ 
+ 	putc('\n');
+ 
++RET_ABORT:  /*This tag Add by guowenxue*/
+ #ifdef CONFIG_SILENT_CONSOLE
+ 	if (abort)
+ 		gd->flags &= ~GD_FLG_SILENT;
+@@ -429,6 +445,13 @@
  #endif /* CONFIG_MENUKEY */
  #endif /* CONFIG_BOOTDELAY */
  
@@ -489,9 +685,9 @@ diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-l200v5/common/main.c
  	/*
  	 * Main Loop for Monitor Command Processing
  	 */
-diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-l200v5/drivers/mtd/dataflash.c
+diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-sam9g20/drivers/mtd/dataflash.c
 --- u-boot-2010.09/drivers/mtd/dataflash.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/drivers/mtd/dataflash.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/drivers/mtd/dataflash.c	2011-08-12 15:50:41.000000000 +0800
 @@ -220,6 +220,7 @@
  				break;
  			}
@@ -508,9 +704,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-l200v5/drivers/
  		}
  	}
  }
-diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-l200v5/drivers/mtd/nand/nand_base.c
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_base.c
 --- u-boot-2010.09/drivers/mtd/nand/nand_base.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/drivers/mtd/nand/nand_base.c	2011-08-12 17:05:30.000000000 +0800
++++ u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_base.c	2011-08-12 17:05:30.000000000 +0800
 @@ -2098,6 +2098,30 @@
  	struct nand_chip *chip = mtd->priv;
  	int ret;
@@ -573,9 +769,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-l200v5/dri
  	return ret;
  }
  
-diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-l200v5/drivers/mtd/nand/nand_util.c
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_util.c
 --- u-boot-2010.09/drivers/mtd/nand/nand_util.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/drivers/mtd/nand/nand_util.c	2011-08-12 17:22:58.000000000 +0800
++++ u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_util.c	2011-08-12 17:22:58.000000000 +0800
 @@ -477,6 +477,25 @@
  	size_t len_incl_bad;
  	u_char *p_buffer = buffer;
@@ -661,9 +857,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-l200v5/dri
  	}
  
  	return 0;
-diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-l200v5/drivers/net/macb.c
+diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-sam9g20/drivers/net/macb.c
 --- u-boot-2010.09/drivers/net/macb.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/drivers/net/macb.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/drivers/net/macb.c	2011-08-12 15:50:41.000000000 +0800
 @@ -330,7 +330,7 @@
  
  	adv = ADVERTISE_CSMA | ADVERTISE_ALL;
@@ -696,10 +892,10 @@ diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-l200v5/drivers/net/m
  	netdev->init = macb_init;
  	netdev->halt = macb_halt;
  	netdev->send = macb_send;
-diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/include/configs/at91sam9260ek.h
+diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20/include/configs/at91sam9260ek.h
 --- u-boot-2010.09/include/configs/at91sam9260ek.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/include/configs/at91sam9260ek.h	2011-08-12 17:33:07.000000000 +0800
-@@ -63,10 +63,14 @@
++++ u-boot-2010.09-sam9g20/include/configs/at91sam9260ek.h	2011-08-15 14:01:19.000000000 +0800
+@@ -63,10 +63,15 @@
  
  /* LED */
  #define CONFIG_AT91_LED
@@ -709,6 +905,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
 +//#define	CONFIG_GREEN_LED	AT91_PIN_PA6	/* this is the user led */
 +#define CONFIG_RUN_LED      AT91_PIN_PA26   /* Add by guowenxue, 2011.08.11*/
 +#define CONFIG_BEEP         AT91_PIN_PC2    /*Add by guowenxue, 2011.08.11*/
++#define CONFIG_RESTORE_KEY  AT91_PIN_PB20
 +#define CONFIG_BEEP_ALARM   
 +#define CONFIG_SILENT_CONSOLE          /*Add by guowenxue*/ 
  
@@ -717,7 +914,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
  
  /*
   * BOOTP options
-@@ -90,7 +94,7 @@
+@@ -90,7 +95,7 @@
  #define CONFIG_CMD_PING		1
  #define CONFIG_CMD_DHCP		1
  #define CONFIG_CMD_NAND		1
@@ -726,7 +923,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
  
  /* SDRAM */
  #define CONFIG_NR_DRAM_BANKS		1
-@@ -131,14 +135,28 @@
+@@ -131,14 +136,28 @@
  /* NOR flash - no real flash on this board */
  #define CONFIG_SYS_NO_FLASH			1
  
@@ -756,7 +953,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
  #define CONFIG_USB_ATMEL
  #define CONFIG_USB_OHCI_NEW		1
  #define CONFIG_DOS_PARTITION		1
-@@ -148,6 +166,7 @@
+@@ -148,6 +167,7 @@
  #define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	2
  #define CONFIG_USB_STORAGE		1
  #define CONFIG_CMD_FAT			1
@@ -764,7 +961,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
  
  #define CONFIG_SYS_LOAD_ADDR			0x22000000	/* load address */
  
-@@ -162,25 +181,31 @@
+@@ -162,25 +182,34 @@
  #define CONFIG_ENV_OFFSET		0x4200
  #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS0 + CONFIG_ENV_OFFSET)
  #define CONFIG_ENV_SIZE		0x4200
@@ -798,6 +995,9 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
 +#define CONFIG_IPADDR       192.168.200.120
 +#define CONFIG_SERVERIP     192.168.200.15
 +
++#define CONFIG_KERNEL_NAND_ADDR           0xa0000
++#define CONFIG_ROOTFS_NAND_ADDR           0x5a0000
++
 +#define CONFIG_BURNKERNEL   "tftp 20000000 uImage-sam9g20.gz;" \
 +                            "nand erase 000a0000 500000;nand write 20000000 000a0000 $(filesize)"
 +#define CONFIG_BURNFS       "tftp 21100000 ramdisk-sam9g20.gz;nand erase 5a0000 500000;" \
@@ -808,9 +1008,9 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-l200v5/
  
  #else /* CONFIG_SYS_USE_NANDFLASH */
  
-diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-l200v5/include/image.h
+diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-sam9g20/include/image.h
 --- u-boot-2010.09/include/image.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/include/image.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/include/image.h	2011-08-12 15:50:41.000000000 +0800
 @@ -166,7 +166,7 @@
  #define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
  #define IH_COMP_LZO		4	/* lzo   Compression Used	*/
@@ -820,9 +1020,9 @@ diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-l200v5/include/image.h
  #define IH_NMLEN		32	/* Image Name Length		*/
  
  /*
-diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-l200v5/include/linux/mtd/mtd.h
+diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-sam9g20/include/linux/mtd/mtd.h
 --- u-boot-2010.09/include/linux/mtd/mtd.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/include/linux/mtd/mtd.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/include/linux/mtd/mtd.h	2011-08-12 15:50:41.000000000 +0800
 @@ -129,6 +129,13 @@
  	 */
  	u_int32_t writesize;
@@ -837,9 +1037,9 @@ diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-l200v5/include/
  	u_int32_t oobsize;   /* Amount of OOB data per block (e.g. 16) */
  	u_int32_t oobavail;  /* Available OOB bytes per block */
  
-diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-l200v5/include/status_led.h
+diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-sam9g20/include/status_led.h
 --- u-boot-2010.09/include/status_led.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/include/status_led.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/include/status_led.h	2011-08-12 15:50:41.000000000 +0800
 @@ -383,6 +383,7 @@
  # include <asm/status_led.h>
  #endif
@@ -856,9 +1056,9 @@ diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-l200v5/include/sta
  
  #endif	/* CONFIG_STATUS_LED	*/
  
-diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-l200v5/Makefile
+diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-sam9g20/Makefile
 --- u-boot-2010.09/Makefile	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-l200v5/Makefile	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-sam9g20/Makefile	2011-08-12 15:50:41.000000000 +0800
 @@ -155,6 +155,7 @@
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
