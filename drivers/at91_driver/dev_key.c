@@ -7,7 +7,7 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-10
+ *              Date: 2011-08-10
  *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
