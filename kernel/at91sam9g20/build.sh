@@ -14,12 +14,11 @@ PWD=`pwd`
 PACKET_DIR=$PWD/../packet
 PATCH_DIR=$PWD/patch
 
-PLATFORM=l200v5
 CPU=sam9g20
 #CPU=sam9260
-PATCH_SUFFIX=-${PLATFORM}.patch
+PATCH_SUFFIX=-${CPU}.patch
 PRJ_NAME="linux kernel"
-INST_PATH=$PWD/../../bin/kernel
+INST_PATH=/tftpboot
 SRC_NAME=
 
 
@@ -32,7 +31,7 @@ function disp_banner()
 {
    echo ""
    echo "+------------------------------------------+"
-   echo "|      Build $PRJ_NAME for $PLATFORM            "
+   echo "|      Build $PRJ_NAME for $CPU            "
    echo "+------------------------------------------+"
    echo ""
 }
@@ -138,12 +137,11 @@ rm -f $PATCH_FILE
 cp .cfg-$CPU .config
 make
 
-VERSION=`echo $SRC_NAME | awk -F "-" '{print $2}'`
-cp arch/arm/boot/zImage . -f
-mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
-rm -f zImage
+#VERSION=`echo $SRC_NAME | awk -F "-" '{print $2}'`
+#cp arch/arm/boot/zImage . -f
+#mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
+#rm -f zImage
 set -x
-cp uImage.gz /tftpboot/uImage-$CPU.gz --reply=yes
-cp -af uImage.gz $INST_PATH/
+cp uImage.gz $INST_PATH/uImage-$CPU.gz --reply=yes
 
 
