@@ -1,5 +1,5 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  gprs.c
@@ -7,13 +7,9 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *           Date: 2011-04-08
+ *           Date: 2011-08-10
  *           Author: guowenxue <guowenxue@gmail.com>
  *       	 Descrtipion: Initial first version
- *      2,   Version: 2.0.0
- *           Date  2011-4-25
- *           Author: guoqingdong <guoqingdong@ghlsystems.com> 
- *           Descrtipion:   
  *
  ********************************************************************************/
 #include "dev_gprs.h"
@@ -24,12 +20,12 @@ GSM_DEVICE support_gprs[] = {
                      .id = GSM_GTM900B,
                      /*10~100 ms specified in user manul. */
                      .poweron_period_time = 100,
-                     /*Experience value on L200, datasheet is wrong */
+                     /*Experience value on L2, datasheet is wrong */
                      .atcmd_active_time = 6000,
                      /*About 2~3 seconds specified in user manul, 
                       * or can send AT command "AT%MSO" to shutdown, but without logout network*/
                      .poweroff_period_time = 3000,
-                     /*Experience value on L200, datasheet is wrong */
+                     /*Experience value on L2, datasheet is wrong */
                      .atcmd_inactive_time = 10000,
                      .ring_call_time = 10,
                      .ring_sms_time = 10,
@@ -40,7 +36,7 @@ GSM_DEVICE support_gprs[] = {
                      .id = GSM_GTM900C,
                      /*At least 50 ms specified in user manul. */
                      .poweron_period_time = 60,
-                     /*Experience value on L200, datasheet is wrong */
+                     /*Experience value on L2, datasheet is wrong */
                      .atcmd_active_time = 6000,
                      /*At least 50 ms specified in user manul, 
                       * or can send AT command "AT%MSO" to shutdown, but without logout network*/
@@ -101,7 +97,7 @@ int  dev_count = ARRAY_SIZE(support_gprs);     /*Support GPRS device count, ARRA
 
 void gprs_hw_init(int which)
 {	
-#ifndef PLAT_L200
+#ifndef PLAT_L2
     /*sim5215 not support*/
     if (GSM_SIM521X != which) 
     {
@@ -182,7 +178,7 @@ void gprs_powerup(int which)
     }
 	//Currently it is power off
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
     dbg_print("Enable GPRS_38V_ON_PIN.\n");
 	if (GSM_SIM900X == which)
     {
@@ -199,7 +195,7 @@ void gprs_powerup(int which)
     }
     /*step2: power on gprs module*/
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 	at91_set_gpio_value (GPRS_ON_PIN, HIGHLEVEL);		
 #else
 	at91_set_gpio_value (GPRS_ON_PIN, LOWLEVEL);		
@@ -207,13 +203,13 @@ void gprs_powerup(int which)
 
 	SLEEP(support_gprs[which].poweron_period_time);
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 	at91_set_gpio_value (GPRS_ON_PIN, LOWLEVEL);		
 #else
 	at91_set_gpio_value (GPRS_ON_PIN, HIGHLEVEL);		
 #endif
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 	if (GSM_SIM900X == which)
     {
         at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);         //gprs module power on init 
@@ -248,7 +244,7 @@ void gprs_powerdown(int which)
     }
 
     /*step 2: turn off gprs module*/
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 	at91_set_gpio_value (GPRS_ON_PIN, HIGHLEVEL);		
 #else
 	at91_set_gpio_value (GPRS_ON_PIN, LOWLEVEL);		
@@ -256,7 +252,7 @@ void gprs_powerdown(int which)
 
 	SLEEP(support_gprs[which].poweroff_period_time);		
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 	at91_set_gpio_value (GPRS_ON_PIN, LOWLEVEL);		
     at91_set_gpio_output (GPRS_38V_ON_PIN, LOWLEVEL);         //gprs module power on init 
 #else

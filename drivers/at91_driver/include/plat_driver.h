@@ -1,5 +1,5 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Sysytems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  plat_driver.h
@@ -7,7 +7,7 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-08
+ *              Date: 2011-08-10
  *            Author: guowenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
@@ -18,15 +18,12 @@
 
 #include "sys_include.h"
 #include "plat_ioctl.h"
-#include "plat_ioctl_old.h"
 
 /*Plat dependency head file*/
-#if (defined PLAT_L200)
-#include "plat_l200.h"
-#elif (defined PLAT_L300)
-#include "plat_l300.h"
-#elif (defined PLAT_N300)
-#include "plat_n300.h"
+#if (defined PLAT_L2)
+#include "plat_l2.h"
+#elif (defined PLAT_L3)
+#include "plat_l3.h"
 #endif
 
 /*===========================================================================
@@ -76,13 +73,13 @@
 #define SYS_RUNLED                  0   /*First LED always is the system running LED */
 
 /*===========================================================================
- *         GHL Netaccess device driver name and Major number define 
+ *         AT91SAM9XXX device driver name and Major number define 
  *===========================================================================*/
 
 #define DEV_LED_NAME             "led"
 #define DEV_LED_MAJOR            203
 
-#define DEV_GPIO_NAME             "gpio"
+#define DEV_GPIO_NAME             "key"
 #define DEV_GPIO_MAJOR            "211"
 
 #define DEV_BEEP_NAME            "beep"

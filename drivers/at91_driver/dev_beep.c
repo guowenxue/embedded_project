@@ -1,25 +1,25 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_beep.c
- *  Description:  GHL netAccess common char device beep driver
+ *  Description:  AT91SAM9XXx Buzzer driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-04-26
- *            Author: guowenxue <guowenxue@gmail.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "GuoWenxue<guowenxue@gmail.com>"
-#define DRV_DESC                  "GHL netAccess BUZZER module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX Buzzer driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
@@ -72,7 +72,6 @@ static long beep_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     //int   ret_val;
     switch (cmd)
     {
-      case SET_DRV_DEBUG_OLD:
       case SET_DRV_DEBUG:
           dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
 
@@ -83,12 +82,10 @@ static long beep_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
           break;
 
-      case GET_DRV_VER_OLD:
       case GET_DRV_VER:
           print_version(DRV_VERSION);
           return DRV_VERSION;
 
-      case BEEP_ENALARM_OLD:
       case BEEP_ENALARM:
           at91_set_B_periph(BEEP_PIN, DISPULLUP);  //pck1 
           *PMC_SCDR |= (0x1 << 9);  //disable pck1
@@ -96,13 +93,11 @@ static long beep_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
           *PMC_SCER |= (0x1 << 9); //enable pck1
           break;
 
-      case BEEP_DISALARM_OLD:
       case BEEP_DISALARM:
           *PMC_SCDR |= (0x1 << 9);  //disable pck1
           at91_set_gpio_output(BEEP_PIN, HIGHLEVEL);
           break;
 
-      case SET_DEFAULT_BEEP_FREQ_OLD:
       case SET_DEFAULT_BEEP_FREQ:
           prescaler = arg;
           if (prescaler > 0x6 || prescaler < 0x0)

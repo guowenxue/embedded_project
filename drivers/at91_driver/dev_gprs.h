@@ -3,11 +3,11 @@
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "GuoQingDong<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess GSM module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX GPRS/3G module driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 

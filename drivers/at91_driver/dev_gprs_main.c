@@ -1,14 +1,14 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_gprs.c
- *  Description:  GHL netAccess common char device gprs driver
+ *  Description:  AT91SAM9XXX GPRS/3G module driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-05-03
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
@@ -99,7 +99,6 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
     switch (cmd)
     {
-		case SET_DRV_DEBUG_OLD:
 		case SET_DRV_DEBUG:
 			dbg_print("%s driver debug now.\n", DISABLE==arg?"Disable":"Enable");
 
@@ -110,7 +109,6 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 			break;
 
-		case GET_DRV_VER_OLD:
 		case GET_DRV_VER:
 			print_version(DRV_VERSION);
 			return DRV_VERSION;
@@ -118,54 +116,43 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         case GPRS_CHK_MODEL:
             return detect_gprs_model();
 
-		case GPRS_POWERON_OLD:
 		case GPRS_POWERON:
 			gprs_set_worksim(arg);
 			gprs_powerup(curr_gprs_id);
 			break;
 
-        case 2:    /*use the ioctl command in kernel 2.6.22, compatible the old application*/
-		case GPRS_POWERDOWN_OLD:
 		case GPRS_POWERDOWN:
 			gprs_powerdown(curr_gprs_id);
 			break;
 
-		case GPRS_POWERMON_OLD:      /*Only 3G module support */
 		case GPRS_POWERMON:      /*Only 3G module support */
 			iRet = gprs_powermon(curr_gprs_id);
 			break;
 
-		case GPRS_RESET_OLD:         /*Only 3G module support */
 		case GPRS_RESET:         /*Only 3G module support */
 			gprs_reset(curr_gprs_id);
 			break;
 
-		case GPRS_CHK_SIMDOOR_OLD:
 		case GPRS_CHK_SIMDOOR:
 			iRet = gprs_chk_simdoor(arg);
 			break;
 
-		case SET_WORK_SIMSLOT_OLD:
 		case SET_WORK_SIMSLOT:
 			iRet = gprs_set_worksim(arg);
 			break;
 
-		case CHK_WORK_SIMSLOT_OLD:
 		case CHK_WORK_SIMSLOT:
 			iRet = gprs_get_worksim();
 			break;
 
-		case GPRS_SET_DTR_OLD:
 		case GPRS_SET_DTR:
 			gprs_set_dtr(curr_gprs_id,arg);
 			break;
 
-		case GPRS_SET_RTS_OLD:
 		case GPRS_SET_RTS:
 			gprs_set_rts(curr_gprs_id,arg);
 			break;
 		
-        case GPRS_GET_RING_OLD:
         case GPRS_GET_RING:
 			iRet = g_ucRing;     /* Save the Return value */
 			mutex_lock(&mutex);

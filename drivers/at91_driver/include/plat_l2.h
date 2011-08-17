@@ -1,26 +1,26 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Sysytems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
- *     Filename:  plat_l200.h
- *  Description:  L200V5(Based on AT91SAM9260 MCU) GPIO port definition
+ *     Filename:  plat_l2.h
+ *  Description:  L2(Based on AT91SAM9260 MCU) GPIO port definition
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-08
+ *              Date: 2011-08-10
  *            Author: guowenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  *
  ********************************************************************************/
 
-#ifndef __PLAT_L200_H
-#define __PLAT_L200_H
+#ifndef __PLAT_L2_H
+#define __PLAT_L2_H
 
 #include "plat_ioctl.h"
 
 /*=========================================================================
- *             For L200v5(ARM9)
+ *             For L2(ARM9)
  *=========================================================================*/
 /*Pin definition For GPRS/3G Driver*/
 #define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9  /* GPRS USB VBUS control pin */
@@ -97,4 +97,4 @@
 #define FUNC_SWITCH_PIN2            AT91_PIN_PB1
 #define FUNC_SWITCH_PIN3            AT91_PIN_PB0
 
-#endif                          /*End __PLAT_L200_H */
+#endif                          /*End __PLAT_L2_H */

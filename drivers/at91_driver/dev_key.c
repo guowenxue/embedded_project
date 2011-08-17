@@ -1,25 +1,25 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_gpio.c
- *  Description:  GHL netAccess common char device GPIO driver
+ *  Description:  AT91SAM9XXX Key pad driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-04-08
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-04-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "GuoQingDong<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess GPIO module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX Key pad driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
@@ -65,7 +65,6 @@ static long GPIO_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd)
     {
-        case SET_DRV_DEBUG_OLD:
 		case SET_DRV_DEBUG:
 			dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
 			if (0 == arg)

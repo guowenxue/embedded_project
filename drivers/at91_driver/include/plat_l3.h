@@ -1,26 +1,26 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Sysytems Berhad.
+ *  Copyright(c)  2011,Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
- *     Filename:  plat_l300.h
- *  Description:  L300(Include L300/L350 based on AT91SAM9260 MCU) GPIO port definition
+ *     Filename:  plat_l3.h
+ *  Description:  L3(AT91SAM9260 MCU) GPIO port definition
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-08
+ *              Date: 2011-08-10
  *            Author: guowenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  *
  ********************************************************************************/
 
-#ifndef __PLAT_L300_H
-#define __PLAT_L300_H
+#ifndef __PLAT_L3_H
+#define __PLAT_L3_H
 
 #include "plat_ioctl.h"
 
 /*=========================================================================
- *             For L200v5(ARM9)
+ *             For L2(ARM9)
  *=========================================================================*/
 /*Pin definition For GPRS/3G Driver*/
 #define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9
@@ -95,4 +95,4 @@
 #define RESTR_KEY                   AT91_PIN_PB22
 #define RESTR_KEY_IRQ               50
 
-#endif                          /*End __PLAT_L300_H */
+#endif                          /*End __PLAT_L3_H */

@@ -1,24 +1,24 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_sam.c
- *  Description:  GHL netAccess common char device sam driver
+ *  Description:  AT91SAM9XXX IS07816 Smart Card driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-05-03
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "guoqingdong<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess SAM module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX SAM card driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
@@ -235,7 +235,7 @@ static void card_set_power(int cmd)
 		{
 			at91_set_gpio_value( SAM_M0, 0 );
 			at91_set_gpio_value( SAM_M1, 1 );
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 			at91_set_gpio_value( SAM_M2, 1 );
 #endif
         }
@@ -243,11 +243,11 @@ static void card_set_power(int cmd)
 		{
 			at91_set_gpio_value( SAM_M0, 1 );
 			at91_set_gpio_value( SAM_M1, 1 );
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 			at91_set_gpio_value( SAM_M2, 1 );
 #endif
         }
-#ifdef PLAT_L200
+#ifdef PLAT_L2
         else if (VccType3V==m_ucVccType) 
 		{
 			at91_set_gpio_value( SAM_M0, 1 );
@@ -266,7 +266,7 @@ static void card_set_power(int cmd)
 	{
 		at91_set_gpio_value( SAM_M0, 0 );
 		at91_set_gpio_value( SAM_M1, 0 );
-#ifdef PLAT_L200
+#ifdef PLAT_L2
 		at91_set_gpio_value( SAM_M2, 0 );
 #endif
     }
@@ -955,7 +955,7 @@ static int sam_open(struct inode *inode, struct file *file)
         return -EBUSY;
     }
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
    // printk("SAM CARD present pin level: %d\n", at91_get_gpio_value (SAM_CHK));
     if (HIGHLEVEL == at91_get_gpio_value (SAM_CHK))
     {
@@ -1069,7 +1069,6 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
     switch (cmd)
     {
-		case SET_DRV_DEBUG_OLD:
 		case SET_DRV_DEBUG:
 		  dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
 
@@ -1080,12 +1079,10 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		  break;
 
-		case GET_DRV_VER_OLD:
 		case GET_DRV_VER:
 		  print_version(DRV_VERSION);
 		  return DRV_VERSION;
 
-		case SAM_SEL_VCC_TYPE_OLD:
 		case SAM_SEL_VCC_TYPE:
 		    m_ucVccType = (unsigned char)arg;
 		    if (m_ucVccType!=VccType3V3 && m_ucVccType!=VccType5V) 
@@ -1098,7 +1095,6 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		    dbg_print("ioctl SELECT_CARD_VCC_TYPE ok, vcc type: %sV\n", ((m_ucVccType==VccType3V3) ? "3.3" : "5"));
 		    break;
 
-	    case SAM_POWER_UP_OLD:
 	    case SAM_POWER_UP:
 			dbg_print("\n[Kernel] Power up Card.\n");
             card_activate();
@@ -1123,8 +1119,6 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             }
 	        break;
 
-        case 2:  //compatible with old ioctl command
-		case SAM_CARD_RESET_OLD:
 		case SAM_CARD_RESET:
 			dbg_print("\n[Kernel] Reset Card.\n");
 		    card_hot_reset();
@@ -1147,7 +1141,6 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		    dbg_print("ioctl CARD_RESET ok\n");
 		    break;
 
-		case SAM_CARD_STATUS_OLD:
 		case SAM_CARD_STATUS:
 			dbg_print("\n[Kernel] Get Card Status\n");
 		    if (copy_to_user((void *)arg, (const void *)(&ATRBuf), sizeof(ATRField))) {
@@ -1158,27 +1151,23 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		    dbg_print("ioctl CARD_STATUS ok\n");
 		    break;
 
-		case SAM_POWER_OFF_OLD: /*The same as CARD_DEACTIVE*/
 		case SAM_POWER_OFF: /*The same as CARD_DEACTIVE*/
 		    dbg_print("\n[Kernel] Power off Card\n");
 		    card_deactivate();
 		    dbg_print("ioctl POWER_OFF ok\n");
 		    break;
 
-		case SAM_CARD_ACTIVE_OLD:
 		case SAM_CARD_ACTIVE:
 		    card_activate();
 		    break;
 
-		case SAM_SET_PARA_OLD:
 		case SAM_SET_PARA:
 		    break;
 
-		case SAM_SET_PROT_OLD:
 		case SAM_SET_PROT:
 		    break;		  
 
-#ifdef PLAT_L200
+#ifdef PLAT_L2
         #define CARD_PRESENT           1
         #define CARD_NOT_PRESENT       0
 		case SAM_PRESENT_DETECT:
@@ -1213,7 +1202,7 @@ static void sam_hw_init(void)
     at91_set_A_periph(SAM_DATA, DISPULLUP);
     at91_set_gpio_output(SAM_M0, LOWLEVEL);
     at91_set_gpio_output(SAM_M1, LOWLEVEL);
-#ifdef PLAT_L200
+#ifdef PLAT_L2
     at91_set_gpio_output(SAM_M2, LOWLEVEL);
     at91_set_gpio_input (SAM_CHK, DISPULLUP);
 #endif

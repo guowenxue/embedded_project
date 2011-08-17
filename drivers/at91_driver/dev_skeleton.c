@@ -1,9 +1,9 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_skeleton.c
- *  Description:  GHL netAccess common char device skeleton driver, it's just provider
+ *  Description:  Linux common charactor device skeleton driver, it's just provider
  *                ioctl() system call. No read(),write(),ll_seek()... support
  *
  *        Usage:
@@ -16,8 +16,8 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-08
- *            Author: guowenxue <guowenxue@gmail.com>
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
@@ -25,7 +25,7 @@
 #include "include/plat_driver.h"
 
 #define DRV_AUTHOR                "GuoWenxue<guowenxue@gmail.com>"
-#define DRV_DESC                  "GHL netAccess GSM module driver"
+#define DRV_DESC                  "Linux Common Charactor Device Skeleton Driver"
 
 /*Driver version*/
 #define DRV_MAJOR_VER             1

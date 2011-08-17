@@ -1,25 +1,25 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_faketty.c
- *  Description:  GHL netAccess common char device faketty driver
+ *  Description:  Common Fake TTY skeleton driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-04-28
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "guoqingdong<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess faketty module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "Common fake TTY driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 

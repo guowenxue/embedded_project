@@ -1,5 +1,5 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Sysytems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  sys_include.h
@@ -7,7 +7,7 @@
  *
  *     ChangLog:
  *      1,   Version: 1.0.0
- *              Date: 2011-04-08
+ *              Date: 2011-08-10
  *            Author: guowenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *

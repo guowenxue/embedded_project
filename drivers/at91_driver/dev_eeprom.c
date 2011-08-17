@@ -1,25 +1,25 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_eeprom.c
- *  Description:  GHL netAccess common char device eeprom driver
+ *  Description:  AT91SAM9XXX platform EEPROM driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-05-03
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "GuoQingDONG<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess EEPROM module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX platform EEPROM driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
@@ -274,7 +274,6 @@ static long eeprom_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	
     switch(cmd)
     {
-		case SET_DRV_DEBUG_OLD:
 		case SET_DRV_DEBUG:
 		  dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
 
@@ -285,22 +284,18 @@ static long eeprom_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		  break;
 
-		case GET_DRV_VER_OLD:
 		case GET_DRV_VER:
 		  print_version(DRV_VERSION);
 		  return DRV_VERSION;
 
-		case LL_POWERON_OLD:
 		case LL_POWERON:
 			ll_PowerOn();
 			break;
 
-        case LL_POWEROFF_OLD:
         case LL_POWEROFF:
             ll_PowerOff();
             break;
 
-        case LL_DATALOW_OLD:
         case LL_DATALOW:
             ll_Datalow();
             for(j=0; j<parameter; j++)
@@ -314,22 +309,18 @@ static long eeprom_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             }
             break;
 
-        case LL_STOP_OLD:
         case LL_STOP:
             ll_Stop();
             break;
 
-        case LL_ACKNAK_OLD:
         case LL_ACKNAK:
             ll_AckNak(parameter);
             break;
 
-        case LL_START_OLD:
         case LL_START:
             ll_Start();
             break;
 
-        case LL_WRITE_OLD:
         case LL_WRITE:
             i=ll_Write(parameter);
             if(copy_to_user((char *)arg,(char *)&i,1))
@@ -338,7 +329,6 @@ static long eeprom_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             }
             break;
 
-        case LL_READ_OLD:
         case LL_READ:
             parameter = ll_Read();
 	        if(copy_to_user((char *)arg,(char *)&parameter,1))

@@ -1,25 +1,25 @@
 /*********************************************************************************
- *  Copyright(c)  2011, GHL Systems Berhad.
+ *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
  *  All ringhts reserved.
  *
  *     Filename:  dev_led.c
- *  Description:  GHL netAccess common char device led driver
+ *  Description:  AT91SAM9XXX LED driver
  *
  *     ChangLog:
- *      1,   Version: 2.0.0
- *              Date: 2011-04-08
- *            Author: guoqingdong <guoqingdong@ghlsystems.com>
+ *      1,   Version: 1.0.0
+ *              Date: 2011-08-10
+ *            Author: Guo Wenxue <guowenxue@gmail.com>
  *       Descrtipion: Initial first version
  *
  ********************************************************************************/
 
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "GuoQingDong<guoqingdong@ghlsystems.com>"
-#define DRV_DESC                  "GHL netAccess LED module driver"
+#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
+#define DRV_DESC                  "AT91SAM9XXX LED driver"
 
 /*Driver version*/
-#define DRV_MAJOR_VER             2
+#define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
@@ -51,9 +51,9 @@ module_param(dev_minor, int, S_IRUGO);
 
 static unsigned char led_status[LED_COUNT];
 
-#if (defined PLAT_L300)
+#if (defined PLAT_L3)
 const int LED[LED_COUNT] = {LED_D1_RUN, LED_D2_0, LED_D3_1, LED_D4_2, LED_D5_3, LED_D6_4, LED_D7_5, LED_D8_6};
-#elif( defined PLAT_L200 )
+#elif( defined PLAT_L2 )
 const int LED[LED_COUNT] = {LED_D1_RUN, LED_D2_0, LED_D3_1, LED_D4_2, LED_D5_3};
 #endif
 
@@ -111,7 +111,6 @@ static long led_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd)
     {
-        case SET_DRV_DEBUG_OLD:
 		case SET_DRV_DEBUG:
 			dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
 			if (0 == arg)
@@ -120,44 +119,36 @@ static long led_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				debug = ENABLE;
 			break;
         
-        case GET_DRV_VER_OLD:
 		case GET_DRV_VER:
 			print_version(DRV_VERSION);
 			return DRV_VERSION;
 		
-        case LED_ON_OLD:
 		case LED_ON:
 			if(LED_COUNT <= arg)
                 return -1;
             turn_led_onoff(ON, arg);
             break;
 
-        case LED_OFF_OLD:
 		case LED_OFF:
             if(LED_COUNT <= arg)
                 return -1;
             turn_led_onoff(OFF, arg); 
             break;
 
-        case 2:       /*use the ioctl command in kernel 2.6.22, compatible the old application*/
-        case LED_BLINK_OLD:
         case LED_BLINK:
             if(LED_COUNT <= arg)
                 return -1;
             turn_led_blink(arg);
             break;
 
-        case ALL_LED_ON_OLD:
         case ALL_LED_ON:
             turn_led_onoff(ON, ALL_LED);
             break;
 
-        case ALL_LED_OFF_OLD:
         case ALL_LED_OFF:
             turn_led_onoff(OFF, ALL_LED);
             break;
 
-		case ALL_LED_BLINK_OLD:
 		case ALL_LED_BLINK:
             turn_led_blink(ALL_LED);    
             break;
