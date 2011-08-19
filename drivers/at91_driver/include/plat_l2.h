@@ -88,10 +88,11 @@
 #define SAM_M2                      AT91_PIN_PA30
 
 /* Pin definition for restore key driver */
-#define RESTR_KEY                   AT91_PIN_PB20
-#define RESTR_KEY_IRQ               50
+#define RESTORE_KEY                   AT91_PIN_PB20
+#define RESTORE_KEY_IRQ               50
 
 /* Function switch */
+#define FUNC_SWITCH_SUPPORT         1
 #define FUNC_SWITCH_PIN0            AT91_PIN_PB3
 #define FUNC_SWITCH_PIN1            AT91_PIN_PB2
 #define FUNC_SWITCH_PIN2            AT91_PIN_PB1

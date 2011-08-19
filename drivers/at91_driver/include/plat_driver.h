@@ -79,15 +79,15 @@
 #define DEV_LED_NAME             "led"
 #define DEV_LED_MAJOR            203
 
-#define DEV_GPIO_NAME             "key"
-#define DEV_GPIO_MAJOR            "211"
+#define DEV_KEY_NAME             "key"
+#define DEV_KEY_MAJOR            "211"
 
 #define DEV_BEEP_NAME            "beep"
 #define DEV_BEEP_MAJOR           204
 
 #define DEV_GPRS_NAME            "gprs"
 #define DEV_GPRS_MAJOR           248
-#define FILESYS_GPRS             "ghl_gprs"  /*For /proc filesystem and /sys/class */
+#define FILESYS_GPRS             "plat_gprs"  /*For /proc filesystem and /sys/class */
 //#define GPRS_USE_PROC  /*Enable GPRS driver proc file system */
 
 #define DEV_EEPROM_NAME          "eeprom"
@@ -96,32 +96,23 @@
 #define DEV_MODEM_NAME           "modem"
 #define DEV_MODEM_MAJOR          201
 
-#define DEV_RS485_NAME           "rs485"
-#define DEV_RS485_MAJOR          241
-
 #define DEV_SAM_NAME             "sam"
 #define DEV_SAM_MAJOR            252
 
-#define DEV_KEYPAD_NAME          "restrkey"
-#define DEV_KEYPAD_MAJOR         210
+#define SKELETON_NAME            "skeleton"
+//#define DEV_MAJOR              218      /*Use dynamic major number*/
 
-#define SKELETON_NAME                "skeleton"
-//#define DEV_MAJOR                 218      /*Use dynamic major number*/
+#define FAKE_TTY_DRV_NAME        "faketty"
+#define FAKE_TTY_NAME            "faketty"
+#define FAKE_TTY_MAJOR           197
+#define FAKE_TTY_MINORS          1
+#define FAKE_TTY_MINOR_BASE      0
 
-#define FAKE_TTY_DRV_NAME           "faketty"
-#define FAKE_TTY_NAME               "faketty"
-#define FAKE_TTY_MAJOR              197
-#define FAKE_TTY_MINORS             1
-#define FAKE_TTY_MINOR_BASE         0
-
-#define DEV_DETECT_NAME             "detect"
-#define DEV_DETECT_MAJOR            132
-
-#define USBPBX_DRV_NAME             "UsbPbx"
-#define USBPBX_NAME                 "ttyPBX"
-#define USBPBX_MAJOR                196
-#define USBPBX_MINORS               8
-#define USBPBX_MINOR_BASE           0
+#define USBPBX_DRV_NAME          "UsbPbx"
+#define USBPBX_NAME              "ttyPBX"
+#define USBPBX_MAJOR             196
+#define USBPBX_MINORS            8
+#define USBPBX_MINOR_BASE        0
 
 /*GPRS Module Type*/
 enum

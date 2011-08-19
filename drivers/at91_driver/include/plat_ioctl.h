@@ -95,8 +95,9 @@ typedef struct __ATRField
 #define DETECT_WIFI_ID              _IO   (PLATDRV_MAGIC, 0x13)
 
 /* Restore key */
-#define RESTR_KEY_STATUS            _IOR  (PLATDRV_MAGIC, 0x14, unsigned int)
-#define QUERY_PRESS_TIME            _IOR  (PLATDRV_MAGIC, 0x15, unsigned int)
+#define DETECT_RESTORE_KEY          _IO  (PLATDRV_MAGIC, 0x14)
+#define QUERY_PRESS_TIME            _IO  (PLATDRV_MAGIC, 0x15)
+#define DETECT_FUNC_KEY             _IO  (PLATDRV_MAGIC, 0x1E)
 
 /* BEEP driver */
 #define BEEP_DISALARM               _IO  (PLATDRV_MAGIC, 0x16)

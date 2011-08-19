@@ -12,7 +12,7 @@ KERNEL_VER = linux-3.0
 
 LINUX_SRC ?= ../../kernel/$(ARCH)/$(KERNEL_VER)/
 CROSS_COMPILE ?= /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
-#INST_PATH=../rootfs/mnt/usr/drivers
+INST_PATH=../../rootfs/$(ARCH)
 
 PWD := $(shell pwd)
 
@@ -34,7 +34,7 @@ dev_gprs-objs  :=  dev_gprs_main.o gprs_lowlevel.o
 modules:
 	@make -C $(LINUX_SRC) M=$(PWD) modules
 	@make clear
-	cp dev_gprs.ko /tftpboot
+	cp dev_key.ko /tftpboot
 	#@make install
 
 uninstall:

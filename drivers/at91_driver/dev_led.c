@@ -96,6 +96,84 @@ static void turn_led_blink(unsigned int arg)
     }
 }
 
+#ifdef CONFIG_PROC_FS
+static int ioctl_proc_read(char *page, char **start, off_t offset, int count, int *eof, void *data)
+{
+    char *p = page;
+    if (0 != offset)
+    {
+        *eof = 1;
+        return 0;
+    }
+
+    p += sprintf(p, "Current driver support ioctl command:\n");
+    {
+        p += sprintf(p, "========================== Commone ioctl =============================\n");
+        p += sprintf(p, "Enable/Disable Debug    : %u\n", SET_DRV_DEBUG);
+        p += sprintf(p, "Get driver version      : %u\n", GET_DRV_VER);
+        p += sprintf(p, "\n");
+
+        p += sprintf(p, "=========================== LED driver ==============================\n");
+        p += sprintf(p, "Turn LED on             : %u\n", LED_ON);
+        p += sprintf(p, "Turn LED off            : %u\n", LED_OFF);
+        p += sprintf(p, "Turn LED blink          : %u\n", LED_BLINK);
+        p += sprintf(p, "Turn all LED on         : %u\n", ALL_LED_ON);
+        p += sprintf(p, "Turn all LED off        : %u\n", ALL_LED_OFF);
+        p += sprintf(p, "Turn all LED blink      : %u\n", ALL_LED_BLINK);
+        p += sprintf(p, "\n");
+
+        p += sprintf(p, "=========================== Beep driver ==============================\n");
+        p += sprintf(p, "Turn buzzer on          : %u\n", BEEP_ENALARM);
+        p += sprintf(p, "Turn buzzer off         : %u\n", BEEP_DISALARM);
+        p += sprintf(p, "Set buzzer frequency    : %u\n", SET_DEFAULT_BEEP_FREQ);
+        p += sprintf(p, "\n");
+
+        p += sprintf(p, "========================== Key Pad ioctl =============================\n");
+        p += sprintf(p, "Check Restore Key       : %u\n", DETECT_RESTORE_KEY);
+        p += sprintf(p, "Check Functional Key    : %u\n", DETECT_FUNC_KEY);
+        p += sprintf(p, "\n");
+
+#if 0
+        p += sprintf(p, "=========================== RS485 driver =============================\n");
+        p += sprintf(p, "Set RS485 as send mode  : %u\n", RS485_DIR_SEND);
+        p += sprintf(p, "Set RS485 as recv mode  : %u\n", RS485_DIR_RECV);
+        p += sprintf(p, "\n");
+
+        p += sprintf(p, "=========================== Modem driver =============================\n");
+        p += sprintf(p, "Modem reset             : %u\n", MODEM_RESET);
+        p += sprintf(p, "Set modem DTR pin       : %u\n", MODEM_SET_DTR);
+        p += sprintf(p, "Set modem RTS pin       : %u\n", MODEM_SET_RTS);
+        p += sprintf(p, "Get modem DCD pin       : %u\n", MODEM_GET_DCD);
+        p += sprintf(p, "\n");
+
+
+        p += sprintf(p, "=================== Hardware status Detect driver ====================\n");
+        p += sprintf(p, "Detect WIFI module ID   : %u\n", DETECT_WIFI_ID);
+        p += sprintf(p, "Detect SD/ETH0/ETH1/WIFI: %u\n", DETECT_STATUS);
+        p += sprintf(p, "Detect SAM Card present : %u\n", SAM_PRESENT_DETECT);
+        p += sprintf(p, "\n");
+#endif
+
+        p += sprintf(p, "=========================== GPRS driver ==============================\n");
+        p += sprintf(p, "GPRS power on           : %u\n", GPRS_POWERON);
+        p += sprintf(p, "GPRS power off          : %u\n", GPRS_POWERDOWN);
+        p += sprintf(p, "GPRS(3G) reset          : %u\n", GPRS_RESET);
+        p += sprintf(p, "GPRS(3G) power monitor  : %u\n", GPRS_POWERMON);
+        p += sprintf(p, "Check SIM door          : %u\n", GPRS_CHK_SIMDOOR);
+        p += sprintf(p, "Set work SIM slot       : %u\n", SET_WORK_SIMSLOT);
+        p += sprintf(p, "Get working SIM slot    : %u\n", CHK_WORK_SIMSLOT);
+        p += sprintf(p, "Set GPRS DTR pin        : %u\n", GPRS_SET_DTR);
+        p += sprintf(p, "Set GPRS RTS pin        : %u\n", GPRS_SET_RTS);
+        p += sprintf(p, "Check GPRS model        : %u\n", GPRS_CHK_MODEL);
+        p += sprintf(p, "\n");
+    }
+
+    return (p - page);
+}
+
+#define PROC_IOCTL       "ioctl"
+#endif
+
 static int led_open(struct inode *inode, struct file *file)
 {
     return 0;
@@ -197,6 +275,10 @@ static void led_cleanup(void)
 
     del_timer(&blink_timer);
 
+#ifdef CONFIG_PROC_FS    
+    remove_proc_entry(PROC_IOCTL, NULL);
+#endif
+
     for(i=0; i<LED_COUNT; i++)
         at91_set_gpio_value(LED[i], HIGHLEVEL);  /* Turn all LED off */
     
@@ -263,6 +345,11 @@ static int __init led_init(void)
 #else
     device_create (dev_class, NULL, devno, DEV_NAME);
 #endif  
+
+#ifdef CONFIG_PROC_FS    
+    create_proc_read_entry(PROC_IOCTL, 0444, NULL, ioctl_proc_read, NULL);
+    printk("Initializ proc file \"/proc/%s\"\n", PROC_IOCTL);
+#endif
     
     /* Initial the LED blink timer */
     init_timer(&blink_timer);

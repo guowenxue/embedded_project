@@ -23,7 +23,7 @@
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
 
-#define DEV_NAME                  DEV_GPIO_NAME
+#define DEV_NAME                  DEV_KEY_NAME
 
 #ifndef DEV_MAJOR
 #define DEV_MAJOR                 0 /*dynamic major by default */
@@ -43,25 +43,68 @@ module_param(dev_minor, int, S_IRUGO);
 #define dbg_print(format,args...) if(DISABLE!=debug) \
         {printk("[kernel] ");printk(format, ##args);}    
 
+static unsigned long  tick;
+static int  pressed = 0x00;
+static int  sec;
 
-static int GPIO_open(struct inode *inode, struct file *file)
+static irqreturn_t keypad_handler (int irq, void *dev_id)
+{
+   int value;
+
+   at91_sys_write (AT91_AIC_ICCR, 1 << AT91SAM9260_ID_PIOB);    // clear interrupt
+
+   value = at91_get_gpio_value(RESTORE_KEY);
+   if(RESTR_KEY_DOWN == value)
+   {
+        tick = jiffies;
+        pressed = 0x01;
+        sec = 0;
+   }
+   else 
+   {
+        /*Sometimes, it will miss some Key pressed or release action, use release to fix the bug*/
+        if(0x01==pressed)
+        {
+           tick = jiffies - tick;
+           sec = tick / HZ;
+        }
+        pressed = 0x00;
+   }
+
+   return IRQ_HANDLED;
+}
+
+static int detect_func_key(void)
+{
+    int value = 0;
+
+    if(DISABLE!=debug)
+    {
+       printk("FUNC_SWITCH_PIN0 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN0));
+       printk("FUNC_SWITCH_PIN1 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN1));
+       printk("FUNC_SWITCH_PIN2 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN2));
+       printk("FUNC_SWITCH_PIN3 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN3));
+    }
+    value = at91_get_gpio_value (FUNC_SWITCH_PIN0);
+    value |= (at91_get_gpio_value (FUNC_SWITCH_PIN1)<<1);
+    value |= (at91_get_gpio_value (FUNC_SWITCH_PIN2)<<2);
+    value |= (at91_get_gpio_value (FUNC_SWITCH_PIN3)<<3);
+
+    return value;
+}
+
+static int keypad_open(struct inode *inode, struct file *file)
 {
     return 0;
 }
 
-static int GPIO_release(struct inode *inode, struct file *file)
+static int keypad_release(struct inode *inode, struct file *file)
 {
     return 0;
 }
-
-#define GPRS_ON_PIN_CMD         4
-#define GPRS_38V_PIN_CMD        5
-#define GPRS_VBUS_PIN_CMD       6
-#define DETECT_RESTORE_KEY      100
-#define DETECT_FUNC_SWITCH      101
 
 //compatible with kernel version 2.6.38 
-static long GPIO_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+static long keypad_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd)
     {
@@ -73,45 +116,11 @@ static long GPIO_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				debug = ENABLE;
 			break;
         
-		case GPRS_ON_PIN_CMD:
-            printk("Turn GPRS_ON_PIN level=%d\n", (int)arg);
-            if(arg == 1)
-               at91_set_gpio_output(GPRS_ON_PIN, HIGHLEVEL);
-            else
-               at91_set_gpio_output(GPRS_ON_PIN, LOWLEVEL);
-            break;
-
-		case GPRS_38V_PIN_CMD:
-            printk("Turn GPRS_38V_PIN level=%d\n", (int)arg);
-            if(arg == 1)
-               at91_set_gpio_output(GPRS_38V_ON_PIN, HIGHLEVEL);
-            else
-               at91_set_gpio_output(GPRS_38V_ON_PIN, LOWLEVEL);
-            break;
-
-		case GPRS_VBUS_PIN_CMD:
-            printk("Turn GPRS_VBUS_PIN level=%d\n", (int)arg);
-            if(arg == 1)
-               at91_set_gpio_output(GPRS_VBUS_CTRL_PIN, HIGHLEVEL);
-            else
-               at91_set_gpio_output(GPRS_VBUS_CTRL_PIN, LOWLEVEL);
-            break;
-
         case DETECT_RESTORE_KEY:
-            at91_set_gpio_input (RESTR_KEY, DISPULLUP);
-            printk("Restore Key GPIO level: %d\n", at91_get_gpio_value(RESTR_KEY));
-            break;
+            return pressed;
 
-        case DETECT_FUNC_SWITCH:
-            at91_set_gpio_input (FUNC_SWITCH_PIN0, DISPULLUP);
-            at91_set_gpio_input (FUNC_SWITCH_PIN1, DISPULLUP);
-            at91_set_gpio_input (FUNC_SWITCH_PIN2, DISPULLUP);
-            at91_set_gpio_input (FUNC_SWITCH_PIN3, DISPULLUP);
-            printk("FUNC_SWITCH_PIN0 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN0));
-            printk("FUNC_SWITCH_PIN1 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN1));
-            printk("FUNC_SWITCH_PIN2 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN2));
-            printk("FUNC_SWITCH_PIN3 Key GPIO level: %d\n", at91_get_gpio_value(FUNC_SWITCH_PIN3));
-            break;
+        case DETECT_FUNC_KEY:
+            return detect_func_key();
 
 		default:
 			dbg_print("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);
@@ -121,17 +130,19 @@ static long GPIO_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     return 0;
 }
 
-static struct file_operations GPIO_fops = {
+static struct file_operations keypad_fops = {
     .owner = THIS_MODULE,
-    .open = GPIO_open,
-    .release = GPIO_release,
-    .unlocked_ioctl = GPIO_ioctl, //compatible with kernel version 2.6.38 
+    .open = keypad_open,
+    .release = keypad_release,
+    .unlocked_ioctl = keypad_ioctl, //compatible with kernel version 2.6.38 
 };
 
 
-static void GPIO_cleanup(void)
+static void keypad_cleanup(void)
 {
     dev_t devno = MKDEV(dev_major, dev_minor);
+
+    free_irq (RESTORE_KEY, NULL);
 
     device_destroy(dev_class, devno);   
     class_destroy(dev_class);
@@ -143,10 +154,17 @@ static void GPIO_cleanup(void)
     printk("%s driver removed\n", DEV_NAME);
 }
 
-static int __init GPIO_init(void)
+static int __init keypad_init(void)
 {
     int result;
     dev_t devno;
+
+    at91_set_gpio_input(RESTORE_KEY, 0); /*Remove the first interrupt when insmod*/
+    at91_set_deglitch(RESTORE_KEY, 1);
+    if (request_irq (RESTORE_KEY, keypad_handler, 0, "Keypad", NULL))
+    {
+         printk(KERN_WARNING "Request Restore Key IRQ failed\n" ); 
+    }
 
     /* Alloc for the device for driver */
     if (0 != dev_major)
@@ -168,7 +186,7 @@ static int __init GPIO_init(void)
     }
 	
     /*Initialize cdev structure and register it*/
-	cdev_init (&dev_cdev, &GPIO_fops);
+	cdev_init (&dev_cdev, &keypad_fops);
 	dev_cdev.owner 	= THIS_MODULE;
 	
 	result = cdev_add (&dev_cdev, devno , 1);
@@ -202,8 +220,8 @@ ERROR:
     return result;
 }
 
-module_init(GPIO_init);
-module_exit(GPIO_cleanup);
+module_init(keypad_init);
+module_exit(keypad_cleanup);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR(DRV_AUTHOR);
