@@ -299,7 +299,7 @@ static void card_set_clock(int cmd)
 static void card_activate(void)
 {
     card_set_reset(0);
-    card_set_power(1);
+    card_set_power(m_ucVccType);
     *US_CR = AT91C_US_RXEN | AT91C_US_TXDIS;
     card_set_clock(1);
 }
@@ -1091,7 +1091,7 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		        card_deactivate();
 		        return -1;
 		    }
-		    card_set_power(1);
+		    card_set_power(m_ucVccType);
 		    dbg_print("ioctl SELECT_CARD_VCC_TYPE ok, vcc type: %sV\n", ((m_ucVccType==VccType3V3) ? "3.3" : "5"));
 		    break;
 
@@ -1167,16 +1167,15 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		case SAM_SET_PROT:
 		    break;		  
 
-#ifdef PLAT_L2
-        #define CARD_PRESENT           1
-        #define CARD_NOT_PRESENT       0
 		case SAM_PRESENT_DETECT:
+#ifdef PLAT_L2
             if (LOWLEVEL == at91_get_gpio_value (SAM_CHK))
                    return CARD_PRESENT;
             else
                    return CARD_NOT_PRESENT;
+#else /*L3 doesn't support GPIO to get card present status, it should always return card PRESENT*/
+                   return CARD_PRESENT;
 #endif
-
 
 		default:
 			printk("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);
@@ -1207,20 +1206,25 @@ static void sam_hw_init(void)
     at91_set_gpio_input (SAM_CHK, DISPULLUP);
 #endif
 
-    US_CR   = ioremap(AT91SAM9260_BASE_US3 + 0x00, 0x04);
-    US_MR   = ioremap(AT91SAM9260_BASE_US3 + 0x04, 0x04);
-    US_CSR  = ioremap(AT91SAM9260_BASE_US3 + 0x14, 0x04);
-    US_RHR  = ioremap(AT91SAM9260_BASE_US3 + 0x18, 0x04);
-    US_THR  = ioremap(AT91SAM9260_BASE_US3 + 0x1c, 0x04);
-    US_IDR  = ioremap(AT91SAM9260_BASE_US3 + 0x0c, 0x04);
-    US_TTGR = ioremap(AT91SAM9260_BASE_US3 + 0x28, 0x04);
-    US_BRGR = ioremap(AT91SAM9260_BASE_US3 + 0x20, 0x04);
-    US_FIDIR= ioremap(AT91SAM9260_BASE_US3 + 0x40, 0x04);
-    US_NER  = ioremap(AT91SAM9260_BASE_US3 + 0x44, 0x04);
-    US_RTOR = ioremap(AT91SAM9260_BASE_US3 + 0x24, 0x04);
+    US_CR   = ioremap(AT91SAM9260_BASE_US3 + 0x00, 0x04); /*Control Register*/
+    US_MR   = ioremap(AT91SAM9260_BASE_US3 + 0x04, 0x04); /*Mode Register*/
+    US_CSR  = ioremap(AT91SAM9260_BASE_US3 + 0x14, 0x04); /*Interrupt Enable Register*/
+    US_RHR  = ioremap(AT91SAM9260_BASE_US3 + 0x18, 0x04); /*Receiver Holding Register*/
+    US_THR  = ioremap(AT91SAM9260_BASE_US3 + 0x1c, 0x04); /*Transmitter Holding Register*/
+    US_IDR  = ioremap(AT91SAM9260_BASE_US3 + 0x0c, 0x04); /*Interrupt Disable Register*/
+    US_TTGR = ioremap(AT91SAM9260_BASE_US3 + 0x28, 0x04); /*Transmitter Timeguard Register*/
+    US_BRGR = ioremap(AT91SAM9260_BASE_US3 + 0x20, 0x04); /*Baud Rate Generator Register*/
+    US_FIDIR= ioremap(AT91SAM9260_BASE_US3 + 0x40, 0x04); /*FI DI Ratio Register*/
+    US_NER  = ioremap(AT91SAM9260_BASE_US3 + 0x44, 0x04); /*Number of Error Register*/
+    US_RTOR = ioremap(AT91SAM9260_BASE_US3 + 0x24, 0x04); /*Receiver Time-out Register */
 
-    // Reset and disable receiver & transmitter
+    /* 
+     * Reset and disable receiver & transmitter
+     * RSTRX(1): Resets the receiver  RSTTX(1): Resets the Transmitter 
+     * RXDIS(1): Disable the receiver TXDIS(1): Disable the transmitter 
+     */
     *US_CR = AT91C_US_RSTRX | AT91C_US_RSTTX | AT91C_US_RXDIS | AT91C_US_TXDIS;
+
     *US_MR =  AT91C_US_USMODE_ISO7816_0
                      | AT91C_US_CLKS_CLOCK
                      | AT91C_US_NBSTOP_1_BIT
