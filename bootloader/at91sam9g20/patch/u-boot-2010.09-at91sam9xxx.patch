@@ -1,6 +1,6 @@
-diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/at91/led.c
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-at91sam9xxx/arch/arm/cpu/arm926ejs/at91/led.c
 --- u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/at91/led.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/arch/arm/cpu/arm926ejs/at91/led.c	2011-08-22 14:44:55.000000000 +0800
 @@ -28,6 +28,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -14,9 +14,9 @@ diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/at91/led.c u-boot-2010.09-sam9g
  }
  #endif
 +#endif /*Comment by guowenxue*/
-diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/start.S
+diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-at91sam9xxx/arch/arm/cpu/arm926ejs/start.S
 --- u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/arch/arm/cpu/arm926ejs/start.S	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/arch/arm/cpu/arm926ejs/start.S	2011-08-22 14:44:55.000000000 +0800
 @@ -209,8 +209,8 @@
  	cmp	r0, r1
  	ble	clbss_l
@@ -28,9 +28,9 @@ diff -Nuar u-boot-2010.09/arch/arm/cpu/arm926ejs/start.S u-boot-2010.09-sam9g20/
  #endif /* CONFIG_PRELOADER */
  
  	ldr	pc, _start_armboot
-diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-sam9g20/arch/arm/lib/board.c
+diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-at91sam9xxx/arch/arm/lib/board.c
 --- u-boot-2010.09/arch/arm/lib/board.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/arch/arm/lib/board.c	2011-08-15 17:04:28.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/arch/arm/lib/board.c	2011-08-22 14:44:56.000000000 +0800
 @@ -50,6 +50,15 @@
  #include <onenand_uboot.h>
  #include <mmc.h>
@@ -199,9 +199,9 @@ diff -Nuar u-boot-2010.09/arch/arm/lib/board.c u-boot-2010.09-sam9g20/arch/arm/l
  	/* main_loop() can return to retry autoboot, if so just run it again. */
  	for (;;) {
  		main_loop ();
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/at91sam9260ek.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/at91sam9260ek.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/at91sam9260ek.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/at91sam9260ek.c	2011-08-22 14:44:56.000000000 +0800
 @@ -32,7 +32,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -283,9 +283,9 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/at91sam9260ek.c u-boot-2010.
  
  	return 0;
  }
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/led.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/led.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/led.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/led.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/led.c	2011-08-22 14:44:56.000000000 +0800
 @@ -28,6 +28,7 @@
  #include <asm/arch/gpio.h>
  #include <asm/arch/io.h>
@@ -299,9 +299,9 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/led.c u-boot-2010.09-sam9g20
  	at91_set_gpio_value(CONFIG_GREEN_LED, 1);
  }
 +#endif
-diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/partition.c
+diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/partition.c
 --- u-boot-2010.09/board/atmel/at91sam9260ek/partition.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/board/atmel/at91sam9260ek/partition.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/board/atmel/at91sam9260ek/partition.c	2011-08-22 14:44:56.000000000 +0800
 @@ -30,11 +30,11 @@
  	{CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS1, 1}
  };
@@ -320,9 +320,9 @@ diff -Nuar u-boot-2010.09/board/atmel/at91sam9260ek/partition.c u-boot-2010.09-s
 +	{0x00040000, 0x001FFFFF, FLAG_PROTECT_CLEAR, 0,	"Kernel 1.75M"},
 +	{0x00200000, 0x003FFFFF, FLAG_PROTECT_CLEAR, 0,	"Rootfs 2M"},
  };
-diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-sam9g20/common/cmd_bootm.c
+diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-at91sam9xxx/common/cmd_bootm.c
 --- u-boot-2010.09/common/cmd_bootm.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/cmd_bootm.c	2011-08-12 16:26:53.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/common/cmd_bootm.c	2011-08-22 14:44:56.000000000 +0800
 @@ -67,6 +67,10 @@
  #define CONFIG_SYS_BOOTM_LEN	0x800000	/* use 8MByte as default max gunzip size */
  #endif
@@ -373,9 +373,9 @@ diff -Nuar u-boot-2010.09/common/cmd_bootm.c u-boot-2010.09-sam9g20/common/cmd_b
  
  	/* get image parameters */
  	switch (genimg_get_format (os_hdr)) {
-diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-sam9g20/common/cmd_nand.c
+diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-at91sam9xxx/common/cmd_nand.c
 --- u-boot-2010.09/common/cmd_nand.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/cmd_nand.c	2011-08-15 11:02:58.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/common/cmd_nand.c	2011-08-22 14:44:56.000000000 +0800
 @@ -148,6 +148,7 @@
  #if defined(CONFIG_CMD_MTDPARTS)
  out:
@@ -548,9 +548,9 @@ diff -Nuar u-boot-2010.09/common/cmd_nand.c u-boot-2010.09-sam9g20/common/cmd_na
  	"nand bad - show bad blocks\n"
  	"nand dump[.oob] off - dump page\n"
  	"nand scrub - really clean NAND erasing bad blocks (UNSAFE)\n"
-diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-sam9g20/common/console.c
+diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-at91sam9xxx/common/console.c
 --- u-boot-2010.09/common/console.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/console.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/common/console.c	2011-08-22 14:44:56.000000000 +0800
 @@ -525,7 +525,7 @@
  	gd->have_console = 1;
  
@@ -560,13 +560,16 @@ diff -Nuar u-boot-2010.09/common/console.c u-boot-2010.09-sam9g20/common/console
  		gd->flags |= GD_FLG_SILENT;
  #endif
  
-diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-sam9g20/common/env_common.c
+diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-at91sam9xxx/common/env_common.c
 --- u-boot-2010.09/common/env_common.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/env_common.c	2011-08-12 15:50:41.000000000 +0800
-@@ -119,6 +119,18 @@
++++ u-boot-2010.09-at91sam9xxx/common/env_common.c	2011-08-24 13:14:49.000000000 +0800
+@@ -119,6 +119,21 @@
  #ifdef	CONFIG_BOOTFILE
  	"bootfile="	MK_STR(CONFIG_BOOTFILE)		"\0"
  #endif
++#ifdef CONFIG_CPU
++    "cpu="  CONFIG_CPU           "\0"
++#endif
 +#ifdef  CONFIG_BURNKERNEL /*Add by guowenxue, burn kernel*/
 +    "bkr="  CONFIG_BURNKERNEL           "\0"
 +#endif
@@ -582,9 +585,9 @@ diff -Nuar u-boot-2010.09/common/env_common.c u-boot-2010.09-sam9g20/common/env_
  #ifdef	CONFIG_LOADADDR
  	"loadaddr="	MK_STR(CONFIG_LOADADDR)		"\0"
  #endif
-diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-sam9g20/common/env_nand.c
+diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-at91sam9xxx/common/env_nand.c
 --- u-boot-2010.09/common/env_nand.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/env_nand.c	2011-08-12 16:13:13.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/common/env_nand.c	2011-08-22 14:44:56.000000000 +0800
 @@ -265,6 +265,12 @@
  
  	u_char *char_ptr;
@@ -598,9 +601,9 @@ diff -Nuar u-boot-2010.09/common/env_nand.c u-boot-2010.09-sam9g20/common/env_na
  	blocksize = nand_info[0].erasesize;
  	if (!blocksize)
  		return 1;
-diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-sam9g20/common/main.c
+diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-at91sam9xxx/common/main.c
 --- u-boot-2010.09/common/main.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/common/main.c	2011-08-15 17:11:25.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/common/main.c	2011-08-22 14:44:56.000000000 +0800
 @@ -55,6 +55,7 @@
  #endif
  
@@ -685,9 +688,9 @@ diff -Nuar u-boot-2010.09/common/main.c u-boot-2010.09-sam9g20/common/main.c
  	/*
  	 * Main Loop for Monitor Command Processing
  	 */
-diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-sam9g20/drivers/mtd/dataflash.c
+diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-at91sam9xxx/drivers/mtd/dataflash.c
 --- u-boot-2010.09/drivers/mtd/dataflash.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/drivers/mtd/dataflash.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/drivers/mtd/dataflash.c	2011-08-22 14:44:56.000000000 +0800
 @@ -220,6 +220,7 @@
  				break;
  			}
@@ -704,9 +707,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/dataflash.c u-boot-2010.09-sam9g20/drivers
  		}
  	}
  }
-diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_base.c
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-at91sam9xxx/drivers/mtd/nand/nand_base.c
 --- u-boot-2010.09/drivers/mtd/nand/nand_base.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_base.c	2011-08-12 17:05:30.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/drivers/mtd/nand/nand_base.c	2011-08-22 14:44:56.000000000 +0800
 @@ -2098,6 +2098,30 @@
  	struct nand_chip *chip = mtd->priv;
  	int ret;
@@ -769,9 +772,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_base.c u-boot-2010.09-sam9g20/dr
  	return ret;
  }
  
-diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_util.c
+diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-at91sam9xxx/drivers/mtd/nand/nand_util.c
 --- u-boot-2010.09/drivers/mtd/nand/nand_util.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/drivers/mtd/nand/nand_util.c	2011-08-12 17:22:58.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/drivers/mtd/nand/nand_util.c	2011-08-22 14:44:56.000000000 +0800
 @@ -477,6 +477,25 @@
  	size_t len_incl_bad;
  	u_char *p_buffer = buffer;
@@ -857,9 +860,9 @@ diff -Nuar u-boot-2010.09/drivers/mtd/nand/nand_util.c u-boot-2010.09-sam9g20/dr
  	}
  
  	return 0;
-diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-sam9g20/drivers/net/macb.c
+diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-at91sam9xxx/drivers/net/macb.c
 --- u-boot-2010.09/drivers/net/macb.c	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/drivers/net/macb.c	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/drivers/net/macb.c	2011-08-22 14:44:56.000000000 +0800
 @@ -330,7 +330,7 @@
  
  	adv = ADVERTISE_CSMA | ADVERTISE_ALL;
@@ -892,10 +895,21 @@ diff -Nuar u-boot-2010.09/drivers/net/macb.c u-boot-2010.09-sam9g20/drivers/net/
  	netdev->init = macb_init;
  	netdev->halt = macb_halt;
  	netdev->send = macb_send;
-diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20/include/configs/at91sam9260ek.h
+diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-at91sam9xxx/include/configs/at91sam9260ek.h
 --- u-boot-2010.09/include/configs/at91sam9260ek.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/include/configs/at91sam9260ek.h	2011-08-15 14:01:19.000000000 +0800
-@@ -63,10 +63,15 @@
++++ u-boot-2010.09-at91sam9xxx/include/configs/at91sam9260ek.h	2011-08-24 13:14:54.000000000 +0800
+@@ -37,8 +37,10 @@
+ 
+ #ifdef CONFIG_AT91SAM9G20EK
+ #define CONFIG_AT91SAM9G20	1	/* It's an Atmel AT91SAM9G20 SoC*/
++#define CONFIG_CPU        "sam9g20"
+ #else
+ #define CONFIG_AT91SAM9260	1	/* It's an Atmel AT91SAM9260 SoC*/
++#define CONFIG_CPU        "sam9260"
+ #endif
+ 
+ #define CONFIG_ARCH_CPU_INIT
+@@ -63,10 +65,15 @@
  
  /* LED */
  #define CONFIG_AT91_LED
@@ -914,7 +928,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20
  
  /*
   * BOOTP options
-@@ -90,7 +95,7 @@
+@@ -90,7 +97,7 @@
  #define CONFIG_CMD_PING		1
  #define CONFIG_CMD_DHCP		1
  #define CONFIG_CMD_NAND		1
@@ -923,7 +937,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20
  
  /* SDRAM */
  #define CONFIG_NR_DRAM_BANKS		1
-@@ -131,14 +136,28 @@
+@@ -131,14 +138,28 @@
  /* NOR flash - no real flash on this board */
  #define CONFIG_SYS_NO_FLASH			1
  
@@ -953,7 +967,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20
  #define CONFIG_USB_ATMEL
  #define CONFIG_USB_OHCI_NEW		1
  #define CONFIG_DOS_PARTITION		1
-@@ -148,6 +167,7 @@
+@@ -148,6 +169,7 @@
  #define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	2
  #define CONFIG_USB_STORAGE		1
  #define CONFIG_CMD_FAT			1
@@ -961,7 +975,7 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20
  
  #define CONFIG_SYS_LOAD_ADDR			0x22000000	/* load address */
  
-@@ -162,25 +182,34 @@
+@@ -162,25 +184,34 @@
  #define CONFIG_ENV_OFFSET		0x4200
  #define CONFIG_ENV_ADDR		(CONFIG_SYS_DATAFLASH_LOGIC_ADDR_CS0 + CONFIG_ENV_OFFSET)
  #define CONFIG_ENV_SIZE		0x4200
@@ -998,19 +1012,19 @@ diff -Nuar u-boot-2010.09/include/configs/at91sam9260ek.h u-boot-2010.09-sam9g20
 +#define CONFIG_KERNEL_NAND_ADDR           0xa0000
 +#define CONFIG_ROOTFS_NAND_ADDR           0x5a0000
 +
-+#define CONFIG_BURNKERNEL   "tftp 20000000 uImage-sam9g20.gz;" \
++#define CONFIG_BURNKERNEL   "tftp 20000000 uImage-$(cpu).gz;" \
 +                            "nand erase 000a0000 500000;nand write 20000000 000a0000 $(filesize)"
-+#define CONFIG_BURNFS       "tftp 21100000 ramdisk-sam9g20.gz;nand erase 5a0000 500000;" \
++#define CONFIG_BURNFS       "tftp 21100000 ramdisk-$(cpu).gz;nand erase 5a0000 500000;" \
 +                            "nand write 21100000 5a0000 $(filesize)"
-+#define CONFIG_BURNBL       "tftp 20000000 u-boot-sam9g20.bin;protect off 0xD0008400 0xD003FFFF;" \
++#define CONFIG_BURNBL       "tftp 20000000 u-boot-$(cpu).bin;protect off 0xD0008400 0xD003FFFF;" \
 +                            "erase 0xD0008400 0xD003FFFF;cp.b 20000000 d0008400 $(filesize)"
-+#define CONFIG_TFTPBOOT     "tftp 20000000 uImage-sam9g20.gz;tftp 21100000 ramdisk-sam9g20.gz;bootm 20000000"
++#define CONFIG_TFTPBOOT     "tftp 20000000 uImage-$(cpu).gz;tftp 21100000 ramdisk-$(cpu).gz;bootm 20000000"
  
  #else /* CONFIG_SYS_USE_NANDFLASH */
  
-diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-sam9g20/include/image.h
+diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-at91sam9xxx/include/image.h
 --- u-boot-2010.09/include/image.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/include/image.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/include/image.h	2011-08-22 14:44:56.000000000 +0800
 @@ -166,7 +166,7 @@
  #define IH_COMP_LZMA		3	/* lzma  Compression Used	*/
  #define IH_COMP_LZO		4	/* lzo   Compression Used	*/
@@ -1020,9 +1034,9 @@ diff -Nuar u-boot-2010.09/include/image.h u-boot-2010.09-sam9g20/include/image.h
  #define IH_NMLEN		32	/* Image Name Length		*/
  
  /*
-diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-sam9g20/include/linux/mtd/mtd.h
+diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-at91sam9xxx/include/linux/mtd/mtd.h
 --- u-boot-2010.09/include/linux/mtd/mtd.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/include/linux/mtd/mtd.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/include/linux/mtd/mtd.h	2011-08-22 14:44:56.000000000 +0800
 @@ -129,6 +129,13 @@
  	 */
  	u_int32_t writesize;
@@ -1037,9 +1051,9 @@ diff -Nuar u-boot-2010.09/include/linux/mtd/mtd.h u-boot-2010.09-sam9g20/include
  	u_int32_t oobsize;   /* Amount of OOB data per block (e.g. 16) */
  	u_int32_t oobavail;  /* Available OOB bytes per block */
  
-diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-sam9g20/include/status_led.h
+diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-at91sam9xxx/include/status_led.h
 --- u-boot-2010.09/include/status_led.h	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/include/status_led.h	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/include/status_led.h	2011-08-22 14:44:56.000000000 +0800
 @@ -383,6 +383,7 @@
  # include <asm/status_led.h>
  #endif
@@ -1056,9 +1070,9 @@ diff -Nuar u-boot-2010.09/include/status_led.h u-boot-2010.09-sam9g20/include/st
  
  #endif	/* CONFIG_STATUS_LED	*/
  
-diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-sam9g20/Makefile
+diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-at91sam9xxx/Makefile
 --- u-boot-2010.09/Makefile	2010-09-29 05:20:55.000000000 +0800
-+++ u-boot-2010.09-sam9g20/Makefile	2011-08-12 15:50:41.000000000 +0800
++++ u-boot-2010.09-at91sam9xxx/Makefile	2011-08-24 12:05:46.000000000 +0800
 @@ -155,6 +155,7 @@
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
@@ -1067,21 +1081,27 @@ diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-sam9g20/Makefile
  # set default to nothing for native builds
  ifeq ($(HOSTARCH),$(ARCH))
  CROSS_COMPILE ?=
-@@ -477,6 +478,13 @@
+@@ -477,6 +478,19 @@
  	$(MAKE) -C tools HOST_TOOLS_ALL=y
  endif	# config.mk
  
 +# Add by guowenxue for GHL L200v5 production, which use AT91SAM9G20
-+l200v5_sam9g20:
++sam9g20:
 +	make at91sam9g20ek_dataflash_cs1_config
 +	make
 +	cp u-boot.bin u-boot-sam9g20.bin
 +	cp -f u-boot-sam9g20.bin /tftpboot --reply=yes
 +
++sam9260:
++	make at91sam9260ek_dataflash_cs1_config
++	make
++	cp u-boot.bin u-boot-sam9260.bin
++	cp -f u-boot-sam9260.bin /tftpboot --reply=yes
++
  .PHONY : CHANGELOG
  CHANGELOG:
  	git log --no-merges U-Boot-1_1_5.. | \
-@@ -1917,6 +1925,7 @@
+@@ -1917,6 +1931,7 @@
  	else \
  		echo "#define CONFIG_SYS_USE_DATAFLASH_CS1 1"	>>$(obj)include/config.h ; \
  	fi;
@@ -1089,7 +1109,7 @@ diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-sam9g20/Makefile
  	@$(MKCONFIG) -n $@ -a at91sam9260ek arm arm926ejs at91sam9260ek atmel at91
  
  at91sam9xeek_nandflash_config \
-@@ -2479,7 +2488,7 @@
+@@ -2479,7 +2494,7 @@
  		-o -name '*.srec' -o -name '*.bin' -o -name u-boot.img \) \
  		-print0 \
  		| xargs -0 rm -f

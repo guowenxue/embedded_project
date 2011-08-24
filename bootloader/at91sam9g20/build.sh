@@ -15,8 +15,9 @@ PWD=`pwd`
 PACKET_DIR=$PWD/../packet
 PATCH_DIR=$PWD/patch
 
-PLATFORM=l200v5
-CPU=sam9g20
+PLATFORM=at91sam9xxx
+#CPU=sam9g20
+CPU=sam9260
 PATCH_SUFFIX=-${PLATFORM}.patch
 PRJ_NAME="u-boot"
 BIN_NAME="u-boot.bin"
@@ -33,7 +34,7 @@ function disp_banner()
 {
    echo ""
    echo "+------------------------------------------+"
-   echo "|      Build $PRJ_NAME for $PLATFORM            "
+   echo "|      Build $PRJ_NAME for $CPU             "
    echo "+------------------------------------------+"
    echo ""
 }
@@ -122,7 +123,7 @@ patch -p0 < $PATCH_FILE
 
 #Start to cross compile the source code and install it now
 cd $SRC_NAME
-make ${PLATFORM}_${CPU}
+make ${CPU}
 cp -af $BIN_NAME $INST_PATH/
 
 
