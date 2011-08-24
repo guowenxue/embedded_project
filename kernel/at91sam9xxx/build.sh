@@ -14,9 +14,9 @@ PWD=`pwd`
 PACKET_DIR=$PWD/../packet
 PATCH_DIR=$PWD/patch
 
-CPU=sam9g20
-#CPU=sam9260
-PATCH_SUFFIX=-${CPU}.patch
+#CPU=sam9g20
+CPU=sam9260
+PATCH_SUFFIX=-at91sam9xxx.patch
 PRJ_NAME="linux kernel"
 INST_PATH=/tftpboot
 SRC_NAME=
