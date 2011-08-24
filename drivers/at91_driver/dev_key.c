@@ -74,6 +74,7 @@ static irqreturn_t keypad_handler (int irq, void *dev_id)
    return IRQ_HANDLED;
 }
 
+#ifdef FUNC_SWITCH_SUPPORT
 static int detect_func_key(void)
 {
     int value = 0;
@@ -92,6 +93,7 @@ static int detect_func_key(void)
 
     return value;
 }
+#endif
 
 static int keypad_open(struct inode *inode, struct file *file)
 {
@@ -119,8 +121,10 @@ static long keypad_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
         case DETECT_RESTORE_KEY:
             return pressed;
 
+#ifdef FUNC_SWITCH_SUPPORT
         case DETECT_FUNC_KEY:
             return detect_func_key();
+#endif
 
 		default:
 			dbg_print("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);

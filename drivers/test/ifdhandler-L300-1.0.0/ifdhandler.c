@@ -651,10 +651,7 @@ RESPONSECODE IFDHControl ( DWORD Lun, PUCHAR TxBuffer,
 
 }
 
-/*
- * For L350 Can not get the status about whether the Samrt card insert or not,
- * And the Card is not easy to pull out, so it will always return presence.
- */
+
 RESPONSECODE IFDHICCPresence( DWORD Lun ) {
 
   /* This function returns the status of the card inserted in the 
@@ -666,8 +663,12 @@ RESPONSECODE IFDHICCPresence( DWORD Lun ) {
      IFD_COMMUNICATION_ERROR
   */ 
 
-    
-//  print("\n**In handler driver call IFDHICCPresence, and return PRESENT\n\n");
-
-  return IFD_ICC_PRESENT;
+   int ret = -1;
+   ret = ioctl(SmartCard.fd, SAM_PRESENT_DETECT, 0);
+   if(CARD_PRESENT == ret)
+           return IFD_ICC_PRESENT;
+   else if(CARD_NOT_PRESENT == ret)
+           return IFD_ICC_NOT_PRESENT;
+   else
+           return IFD_COMMUNICATION_ERROR;
 }

@@ -1,18 +1,22 @@
-ARCH = at91sam9g20
+
 PLAT ?= L2
-HWVER ?= V5
-
-#ARCH = at91sam9260
-#PLAT ?= L3
-
+ARCH = at91sam9g20
 KERNEL_VER = linux-3.0
-#KERNEL_VER = linux-2.6.33
-#KERNEL_VER = linux-2.6.22.1
+LINUX_SRC ?= ../../kernel/at91sam9xxx/$(KERNEL_VER)/
+HWVER ?= V1
+
+#PLAT=L3
+#ARCH = at91sam9260
+#LINUX_SRC?=/home/guowenxue/l300/src/kernel/linux-2.6.22.1
+#LINUX_SRC?=/home/guowenxue/l300/src/kernel/linux-2.6.33
+#HWVER ?= V23
 
 
-LINUX_SRC ?= ../../kernel/$(ARCH)/$(KERNEL_VER)/
+
+
+
 CROSS_COMPILE ?= /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
-INST_PATH=../../rootfs/$(ARCH)
+INST_PATH=../../rootfs/at91sam9xxx
 
 PWD := $(shell pwd)
 

@@ -55,6 +55,7 @@
 #include <mach/at91_pmc.h>
 #include <asm/irq.h>
 #include <mach/at91_rtt.h>
+#include <mach/cpu.h>  /*For SAM card driver*/
 #else                           /*For 2.6.22.1 we used before */
 #include <asm-arm/irq.h>
 #include <asm/arch/gpio.h>
@@ -62,6 +63,7 @@
 #include <asm/arch/at91_tc.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/at91_rtt.h>
+#include <asm/arch/cpu.h>
 #endif
 
 #endif /*__SYS_INCLUDE_H*/

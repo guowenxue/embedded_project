@@ -29,7 +29,15 @@ int main(int argc, char **argv)
 	printf("\n Test IFDHCreateChannel       :\n");
 	IFDHCreateChannel(0, 0);
 
-	printf("\nTest IFDHPowerICC           :\n");
+    long present;
+    present = IFDHICCPresence(0);
+    printf("SAM card present status: %ld\n", present);
+    if(IFD_ICC_PRESENT != present)
+    {
+           return -1; 
+    }
+
+	printf("\nTest IFDHPowerICC    IFD_RESET       :\n");
 	memset(pAtr, 0, 50);
 	if (0 != IFDHPowerICC(0, IFD_RESET, pAtr, &AtrLength))
 	{
@@ -103,7 +111,7 @@ printf("####################################################################\n")
 		printf("%02x ", pAtr[j]);
 	printf("Over\n");
 
-	printf("\nTest IFDHPowerICC           :\n");
+	printf("\nTest IFDHPowerICC Card Reset          :\n");
 	memset(pAtr, 0, 50);
 	if (0 != IFDHPowerICC(0, IFD_RESET, pAtr, &AtrLength))
 	{

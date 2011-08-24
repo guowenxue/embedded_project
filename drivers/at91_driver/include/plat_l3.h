@@ -92,7 +92,7 @@
 #define SAM_M1                      AT91_PIN_PB18
 
 /* Pin definition for restore key driver */
-#define RESTR_KEY                   AT91_PIN_PB22
-#define RESTR_KEY_IRQ               50
+#define RESTORE_KEY                 AT91_PIN_PB22
+#define RESTORE_KEY_IRQ             50
 
 #endif                          /*End __PLAT_L3_H */
