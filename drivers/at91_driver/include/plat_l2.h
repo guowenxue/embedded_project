@@ -30,8 +30,6 @@
 #define GPRS_RESET_PIN              AT91_PIN_PA11 
 #define GPRS_RTS_PIN                AT91_PIN_PB28
 #define GPRS_DTR_PIN                AT91_PIN_PA22
-#define GPRS_DCD_PIN                AT91_PIN_PA28
-#define GPRS_CTS_PIN                AT91_PIN_PB29
 #define GPRS_DSR_PIN                AT91_PIN_PA25
 #define GPRS_RI_PIN                 AT91_PIN_PB30
 #define GPRS_TXD_PIN                AT91_PIN_PB6
@@ -83,9 +81,12 @@
 #define SAM_RST                     AT91_PIN_PB11   // reset
 #define SAM_DATA                    AT91_PIN_PB10   // I/O
 #define SAM_CHK                     AT91_PIN_PA27   // Input, detect SAM card
-#define SAM_M0                      AT91_PIN_PA28
-#define SAM_M1                      AT91_PIN_PA29
-#define SAM_M2                      AT91_PIN_PA30
+#define SAM_M0                      AT91_PIN_PA16
+#define SAM_M1                      AT91_PIN_PA17
+#define SAM_M2                      AT91_PIN_PA18
+#define WRONG_SAM_M0                AT91_PIN_PA28
+#define WRONG_SAM_M1                AT91_PIN_PA29
+#define WRONG_SAM_M2                AT91_PIN_PA30
 
 /* Pin definition for restore key driver */
 #define RESTORE_KEY                   AT91_PIN_PB20

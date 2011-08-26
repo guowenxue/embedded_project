@@ -1,20 +1,13 @@
 /*********************************************************************************
- *  Copyright(c)  2011, Guo Wenxue <guowenxue@gmail.com>
+ *  Copyright(c)  2011, GHL Systems 
  *  All ringhts reserved.
  *
  *     Filename:  dev_sam.c
  *  Description:  AT91SAM9XXX IS07816 Smart Card driver
  *
- *     ChangLog:
- *      1,   Version: 1.0.0
- *              Date: 2011-08-10
- *            Author: Guo Wenxue <guowenxue@gmail.com>
- *       Descrtipion: Initial first version
- *
  ********************************************************************************/
 #include "include/plat_driver.h"
 
-#define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX SAM card driver"
 
 /*Driver version*/
@@ -107,6 +100,89 @@ static DEFINE_SPINLOCK(spin);
 
 #define dbg_print(format,args...) if(DISABLE!=debug) \
                                   {printk("[kernel] ");printk(format, ##args);}
+
+/*This Clock Management part code add by guowenxue, to get the Master clock for SAM card*/
+#define ARCH_ID_AT91SAM9260 0x019803a0
+#define ARCH_ID_AT91SAM9G20 0x019905a0
+
+static unsigned long main_clk_rate_hz;
+static unsigned long cpu_clk_rate_hz;
+//static unsigned long mck_rate_hz = 99328000;
+static unsigned long mck_rate_hz = BOARD_MCK;
+static unsigned long plla_rate_hz;
+
+static u32 at91_pll_rate(u32 freq, u32 reg)
+{ 
+    unsigned mul, div; 
+
+    div = reg & 0xff; 
+    mul = (reg >> 16) & 0x7ff; 
+    if (div && mul) 
+    { 
+        freq /= div; 
+        freq *= mul + 1; 
+    } 
+    else 
+        freq = 0; 
+    
+    return freq;
+}
+
+static unsigned long at91_css_to_rate(unsigned long css)
+{
+    switch (css) 
+    { 
+            case AT91_PMC_CSS_SLOW: 
+                    return AT91_SLOW_CLOCK; 
+            case AT91_PMC_CSS_MAIN: 
+                    return main_clk_rate_hz; 
+            case AT91_PMC_CSS_PLLA: 
+                    return plla_rate_hz; 
+#if 0
+            case AT91_PMC_MCKR_CSS_PLLB: 
+                    return pllb_rate_hz; 
+#endif
+    } 
+    return 0;
+}
+
+
+int at91_get_clock(unsigned long main_clock)
+{
+    unsigned regs, freq;
+    main_clk_rate_hz = main_clock;
+
+    regs = at91_sys_read(AT91_CKGR_PLLAR);
+    plla_rate_hz = at91_pll_rate(main_clock, regs);
+
+    regs = at91_sys_read(AT91_PMC_MCKR);
+    mck_rate_hz = at91_css_to_rate(regs & AT91_PMC_CSS);
+    freq = mck_rate_hz;
+    freq /= (1 << ((regs & AT91_PMC_PRES) >> 2)); /* prescale */
+
+    if(ARCH_ID_AT91SAM9G20 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
+    {
+        /* mdiv ; (x >> 7) = ((x >> 8) * 2) */
+        mck_rate_hz = (regs & AT91_PMC_MDIV) ?
+            freq / ((regs & AT91_PMC_MDIV) >> 7) : freq;
+        if (regs & AT91_PMC_MDIV)
+            freq /= 2;          /* processor clock division */
+    }
+    else if(ARCH_ID_AT91SAM9G20 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
+    {
+        mck_rate_hz = freq / (1 << ((regs & AT91_PMC_MDIV) >> 8)); 
+    }
+
+    cpu_clk_rate_hz = freq;
+
+#if 0
+    printk("Clocks: CPU %lu MHz, master %u MHz, main %u.%03u MHz\n",
+            cpu_clk_rate_hz / 1000000, (unsigned) mck_rate_hz / 1000000,
+            (unsigned) main_clk_rate_hz / 1000000, ((unsigned) main_clk_rate_hz % 1000000) / 1000);
+#endif
+    return 0;
+}
+/*Add by guowenxue 2011.08.23*/
 								  
 static inline unsigned char swapbits(unsigned char i)
 {
@@ -120,8 +196,13 @@ static unsigned int if_dev_send_char( unsigned char CharToSend )
 	
     if( StateUsartGlobal == USART_RCV )
     {
+        /* AT91C_US_RSTSTA: Reset Status Bit PARE,FRAME,OVER,MANERR,RXBRK in US_CSR
+         * AT91C_US_RSTIT: Reset ITERATION in US_CSR only for ISO7816 mode
+         * AT91C_US_RSTNACK: Reset NACK in US_CSR
+         */
         *US_CR = AT91C_US_RSTSTA | AT91C_US_RSTIT | AT91C_US_RSTNACK;
         StateUsartGlobal = USART_SEND;
+        /*Enable TX and Disable RX*/
         *US_CR = AT91C_US_TXEN | AT91C_US_RXDIS;
     }
 
@@ -135,10 +216,13 @@ static unsigned int if_dev_send_char( unsigned char CharToSend )
 	    senddata =  (CharToSend);
 	    *US_MR &= (~AT91C_US_MSBF);
     }
+
+    /*Wait for TX ready*/
     while(((*US_CSR) & AT91C_US_TXRDY) == 0)
            {;}
 
-   *US_THR = senddata;
+    /*Send the data*/
+    *US_THR = senddata;
 
     status = ((*US_CSR)&(AT91C_US_OVRE|AT91C_US_FRAME|
 						AT91C_US_PARE|AT91C_US_NACK|
@@ -148,7 +232,7 @@ static unsigned int if_dev_send_char( unsigned char CharToSend )
 	{
 		dbg_print("send error: US_CSR=0x%x\n", *US_CSR);
 		dbg_print("number of errors: 0x%x\n", *US_NER);
-		*US_CR = AT91C_US_RSTSTA | AT91C_US_RSTNACK | AT91C_US_RSTIT;
+        *US_CR = AT91C_US_RSTSTA | AT91C_US_RSTIT | AT91C_US_RSTNACK;
 		return status;
     }
     return 0;
@@ -166,26 +250,28 @@ static unsigned int if_dev_get_char( unsigned char *pCharToReceive )
 
     if( StateUsartGlobal == USART_SEND )
     {
-//        timeout = jiffies+HZ/2; // set timeout as 1s
+        /*If the UART is in Send mode and there is charactor ready to send, then wait send over*/
         while(((*US_CSR) & AT91C_US_TXEMPTY) == 0)
 		{;}
 		*US_CR = AT91C_US_RSTSTA | AT91C_US_RSTIT | AT91C_US_RSTNACK;
 		StateUsartGlobal = USART_RCV;
+        /*Enable RX and Disable TX*/
 		*US_CR = AT91C_US_RXEN | AT91C_US_TXDIS;
+        timeout = jiffies+HZ/2; // set timeout as 1s
     }
 
     if (card_logic_mode == INVERSE_MODE) 
 	{
-	    *US_MR |= AT91C_US_MSBF;
+	    *US_MR |= AT91C_US_MSBF; 
     }
     else
 	{
 	    *US_MR &= (~AT91C_US_MSBF);
     }
 
-    *US_CR = AT91C_US_STTTO; //Flush the last Start Time-out command, add by guowenxue
-	// Wait USART ready for reception
-	// timeout = jiffies+HZ/2; // set timeout as 1s
+    /* Flush the last Start Time-out command, add by guowenxue */
+    *US_CR = AT91C_US_STTTO; 
+
     while( (((*US_CSR) & AT91C_US_RXRDY) == 0) )
     {
 		if((*US_CSR) & AT91C_US_TIMEOUT)
@@ -200,7 +286,6 @@ static unsigned int if_dev_get_char( unsigned char *pCharToReceive )
 			printk("TIMEOUT\n");
 			return TIMEROUT_ERR;
 		}
- 
 	}
 
 	revdata = ((*US_RHR) & 0xff);
@@ -230,7 +315,7 @@ static unsigned int if_dev_get_char( unsigned char *pCharToReceive )
 static void card_set_power(int cmd)
 {
     if (cmd) {
-        printk("Set SAM card power: 0x%02x\n", cmd);
+        dbg_print("Set SAM card power: 0x%02x\n", cmd);
         if (VccType3V3==m_ucVccType) 
 		{
 			at91_set_gpio_value( SAM_M0, 0 );
@@ -262,7 +347,7 @@ static void card_set_power(int cmd)
         }
 #endif
     }
-    else 
+    else /*0V*/
 	{
 		at91_set_gpio_value( SAM_M0, 0 );
 		at91_set_gpio_value( SAM_M1, 0 );
@@ -288,7 +373,7 @@ static void card_set_clock(int cmd)
 {
     if (cmd) 
 	{
-        *US_BRGR = BOARD_MCK / (372*9600);
+        *US_BRGR = mck_rate_hz / (372*9600);
     }
     else 
 	{
@@ -308,6 +393,7 @@ static void card_deactivate(void)
 {
     card_set_reset(1);
     card_set_clock(0);
+    /*Reset RXD/TXD and Disable RXD/TXD*/
     *US_CR = AT91C_US_RSTRX | AT91C_US_RSTTX | AT91C_US_RXDIS | AT91C_US_TXDIS;
     //*US_FIDIR = 372;          
     card_set_power(0);
@@ -315,19 +401,15 @@ static void card_deactivate(void)
 
 static void card_cold_reset(void)
 {
-    int i;
-
-    for( i=0; i<(120*(BOARD_MCK/1000000)); i++ ) {;}
+    msleep(10);
     *US_CR = AT91C_US_RSTSTA | AT91C_US_RSTIT | AT91C_US_RSTNACK;
     card_set_reset(1);
 }
 
 static void card_hot_reset(void)
 {
-    int i;
-
     card_set_reset(0);
-    for( i=0; i<(120*(BOARD_MCK/1000000)); i++ ) {;}
+    msleep(10);
     *US_CR = AT91C_US_RSTSTA | AT91C_US_RSTIT | AT91C_US_RSTNACK;
     card_set_reset(1);
 }
@@ -970,8 +1052,8 @@ static int sam_open(struct inode *inode, struct file *file)
     memset((void *)&ATRBuf, 0, sizeof(ATRField));
 
     card_activate();
-    card_cold_reset();
-#if 1
+    card_cold_reset(); 
+
     if (card_get_ATR(&ATRBuf))
         {
         printk("failed to get ATR\n");
@@ -979,7 +1061,7 @@ static int sam_open(struct inode *inode, struct file *file)
                 dev_open_count--;
         return -1;
     }
-#endif
+
     if (card_decode_ATR(&ATRBuf))
         {
         printk("failed to decode ATR\n");
@@ -1204,6 +1286,9 @@ static void sam_hw_init(void)
 #ifdef PLAT_L2
     at91_set_gpio_output(SAM_M2, LOWLEVEL);
     at91_set_gpio_input (SAM_CHK, DISPULLUP);
+    at91_set_gpio_input (WRONG_SAM_M0, DISPULLUP);
+    at91_set_gpio_input (WRONG_SAM_M1, DISPULLUP);
+    at91_set_gpio_input (WRONG_SAM_M2, DISPULLUP);
 #endif
 
     US_CR   = ioremap(AT91SAM9260_BASE_US3 + 0x00, 0x04); /*Control Register*/
@@ -1233,10 +1318,19 @@ static void sam_hw_init(void)
                      | AT91C_US_CKLO
                      | (3<<24); // MAX_ITERATION
     *US_BRGR = 0;
+
     at91_sys_write (AT91_PMC_PCER, 1 << AT91SAM9260_ID_US3);
     *US_IDR = (unsigned int) -1;
     *US_FIDIR = 372;  // by default 
-	*US_BRGR = BOARD_MCK / (372*9600);
+    at91_get_clock(18432000); /*18.432 MHz crystal, used to get mck_rate_hz*/
+    /*
+     * printk("Original MCK: %u New MCK:%lu\n", BOARD_MCK, mck_rate_hz);
+     * L350:  Original MCK: 99328000 New MCK:198656000
+     * L2:    132096000
+     */
+    printk("Master Clock:%lu\n", mck_rate_hz);
+	*US_BRGR = mck_rate_hz / (372*9600);
+//	*US_BRGR = BOARD_MCK / (372*9600);
 	*US_TTGR = 0;/* modified on 12-22 */
 	*US_RTOR = 65535;
 }
@@ -1345,6 +1439,5 @@ module_init(sam_init);
 module_exit(sam_cleanup);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION(DRV_DESC);
 
