@@ -14,8 +14,8 @@ PWD=`pwd`
 PACKET_DIR=$PWD/../packet
 PATCH_DIR=$PWD/patch
 
-#CPU=sam9g20
-CPU=sam9260
+CPU=sam9g20
+#CPU=sam9260
 PATCH_SUFFIX=-at91sam9xxx.patch
 PRJ_NAME="linux kernel"
 INST_PATH=/tftpboot
@@ -131,7 +131,8 @@ cp $PATCH_FILE_PATH  $SRC_NAME
 
 #Start to cross compile the source code and install it now
 
-cd $SRC_NAME
+mv $SRC_NAME ${SRC_NAME}_${CPU}
+cd ${SRC_NAME}_${CPU}
 patch -p1 < $PATCH_FILE
 rm -f $PATCH_FILE
 cp .cfg-$CPU .config

@@ -1,6 +1,58 @@
-diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/arm/mach-at91/board-sam9260ek.c
+diff -Nuar linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c
+--- linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c	2011-07-22 10:17:23.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c	2011-08-26 12:23:35.000000000 +0800
+@@ -167,22 +167,22 @@
+ 
+ 	/* Pins used for MII and RMII */
+ 	at91_set_A_periph(AT91_PIN_PA19, 0);	/* ETXCK_EREFCK */
+-	at91_set_A_periph(AT91_PIN_PA17, 0);	/* ERXDV */
++//	at91_set_A_periph(AT91_PIN_PA17, 0);	/* ERXDV */ /*Comment by guowenxue,conflict with SAM card*/
+ 	at91_set_A_periph(AT91_PIN_PA14, 0);	/* ERX0 */
+ 	at91_set_A_periph(AT91_PIN_PA15, 0);	/* ERX1 */
+-	at91_set_A_periph(AT91_PIN_PA18, 0);	/* ERXER */
+-	at91_set_A_periph(AT91_PIN_PA16, 0);	/* ETXEN */
++//	at91_set_A_periph(AT91_PIN_PA18, 0);	/* ERXER */ /*Comment by guowenxue,conflict with SAM card*/
++//	at91_set_A_periph(AT91_PIN_PA16, 0);	/* ETXEN */ /*Comment by guowenxue,conflict with SAM card*/
+ 	at91_set_A_periph(AT91_PIN_PA12, 0);	/* ETX0 */
+ 	at91_set_A_periph(AT91_PIN_PA13, 0);	/* ETX1 */
+ 	at91_set_A_periph(AT91_PIN_PA21, 0);	/* EMDIO */
+ 	at91_set_A_periph(AT91_PIN_PA20, 0);	/* EMDC */
+ 
+ 	if (!data->is_rmii) {
+-		at91_set_B_periph(AT91_PIN_PA28, 0);	/* ECRS */
+-		at91_set_B_periph(AT91_PIN_PA29, 0);	/* ECOL */
++//		at91_set_B_periph(AT91_PIN_PA28, 0);	/* ECRS */ /*Comment by guowenxue,conflict with SAM card*/
++//		at91_set_B_periph(AT91_PIN_PA29, 0);	/* ECOL */ /*Comment by guowenxue,conflict with SAM card*/
+ 		at91_set_B_periph(AT91_PIN_PA25, 0);	/* ERX2 */
+ 		at91_set_B_periph(AT91_PIN_PA26, 0);	/* ERX3 */
+-		at91_set_B_periph(AT91_PIN_PA27, 0);	/* ERXCK */
++//		at91_set_B_periph(AT91_PIN_PA27, 0);	/* ERXCK */ /*Comment by guowenxue,conflict with SAM card*/
+ 		at91_set_B_periph(AT91_PIN_PA23, 0);	/* ETX2 */
+ 		at91_set_B_periph(AT91_PIN_PA24, 0);	/* ETX3 */
+ 		at91_set_B_periph(AT91_PIN_PA22, 0);	/* ETXER */
+@@ -1037,8 +1037,8 @@
+ 
+ static inline void configure_usart3_pins(unsigned pins)
+ {
+-	at91_set_A_periph(AT91_PIN_PB10, 1);		/* TXD3 */
+-	at91_set_A_periph(AT91_PIN_PB11, 0);		/* RXD3 */
++//	at91_set_A_periph(AT91_PIN_PB10, 1);		/* TXD3 */ /*Comment by guowenxue,conflict with SAM card*/
++//	at91_set_A_periph(AT91_PIN_PB11, 0);		/* RXD3 */ /*Comment by guowenxue,conflict with SAM card*/
+ 
+ 	if (pins & ATMEL_UART_RTS)
+ 		at91_set_B_periph(AT91_PIN_PC8, 0);	/* RTS3 */
+@@ -1081,7 +1081,7 @@
+ static inline void configure_usart4_pins(void)
+ {
+ 	at91_set_B_periph(AT91_PIN_PA31, 1);		/* TXD4 */
+-	at91_set_B_periph(AT91_PIN_PA30, 0);		/* RXD4 */
++//	at91_set_B_periph(AT91_PIN_PA30, 0);		/* RXD4 Comment by guowenxue, ,conflict with SAM card*/
+ }
+ 
+ static struct resource uart5_resources[] = {
+diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9260ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/arch/arm/mach-at91/board-sam9260ek.c	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c	2011-08-26 16:31:16.000000000 +0800
 @@ -49,6 +49,64 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -66,21 +118,23 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  
  static void __init ek_init_early(void)
  {
-@@ -66,6 +124,13 @@
+@@ -66,6 +124,15 @@
  	/* USART1 on ttyS2. (Rx, Tx, RTS, CTS) */
  	at91_register_uart(AT91SAM9260_ID_US1, 2, ATMEL_UART_CTS | ATMEL_UART_RTS);
  
 +    /*This 3 UART port add by guowenxue*/
 +    at91_register_uart(AT91SAM9260_ID_US2, 3, ATMEL_UART_CTS | ATMEL_UART_RTS);
++#if 0
 +    at91_register_uart(AT91SAM9260_ID_US3, 4, ATMEL_UART_CTS | ATMEL_UART_RTS);
 +    at91_register_uart(AT91SAM9260_ID_US4, 5, ATMEL_UART_CTS | ATMEL_UART_RTS);
 +    at91_register_uart(AT91SAM9260_ID_US5, 6, ATMEL_UART_CTS | ATMEL_UART_RTS);
++#endif
 +    /*Add end*/
 +
  	/* set serial console to ttyS0 (ie, DBGU) */
  	at91_set_serial_console(0);
  }
-@@ -95,6 +160,7 @@
+@@ -95,6 +162,7 @@
  /*
   * Audio
   */
@@ -88,7 +142,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  static struct at73c213_board_info at73c213_data = {
  	.ssc_id		= 0,
  	.shortname	= "AT91SAM9260-EK external DAC",
-@@ -120,6 +186,7 @@
+@@ -120,6 +188,7 @@
  #else
  static void __init at73c213_set_clk(struct at73c213_board_info *info) {}
  #endif
@@ -96,7 +150,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  
  /*
   * SPI devices.
-@@ -164,19 +231,54 @@
+@@ -164,19 +233,54 @@
  
  
  /*
@@ -162,7 +216,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  };
  
  static struct mtd_partition * __init nand_partitions(int size, int *num_partitions)
-@@ -234,9 +336,9 @@
+@@ -234,9 +338,9 @@
  static struct at91_mmc_data __initdata ek_mmc_data = {
  	.slot_b		= 1,
  	.wire4		= 1,
@@ -175,7 +229,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  };
  
  
-@@ -343,7 +445,8 @@
+@@ -343,7 +447,8 @@
  	/* I2C */
  	at91_add_device_i2c(ek_i2c_devices, ARRAY_SIZE(ek_i2c_devices));
  	/* SSC (to AT73C213) */
@@ -185,9 +239,9 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-l200v5/arch/
  	at91_add_device_ssc(AT91SAM9260_ID_SSC, ATMEL_SSC_TX);
  	/* LEDs */
  	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
-diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/arm/mach-at91/board-sam9g20ek.c
+diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/arch/arm/mach-at91/board-sam9g20ek.c	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c	2011-08-26 16:31:24.000000000 +0800
 @@ -48,6 +48,70 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -259,21 +313,23 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/
  /*
   * board revision encoding
   * bit 0:
-@@ -77,6 +141,13 @@
+@@ -77,6 +141,15 @@
  	/* USART1 on ttyS2. (Rx, Tx, RTS, CTS) */
  	at91_register_uart(AT91SAM9260_ID_US1, 2, ATMEL_UART_CTS | ATMEL_UART_RTS);
  
 +	/* This 3 UART port add by guowenxue*/
 +	at91_register_uart(AT91SAM9260_ID_US2, 3, ATMEL_UART_CTS | ATMEL_UART_RTS);
++/* 
 +	at91_register_uart(AT91SAM9260_ID_US3, 4, ATMEL_UART_CTS | ATMEL_UART_RTS);
 +	at91_register_uart(AT91SAM9260_ID_US4, 5, ATMEL_UART_CTS | ATMEL_UART_RTS);
 +	at91_register_uart(AT91SAM9260_ID_US5, 6, ATMEL_UART_CTS | ATMEL_UART_RTS);
++*/
 +	/* Add end*/
 +
  	/* set serial console to ttyS0 (ie, DBGU) */
  	at91_set_serial_console(0);
  }
-@@ -143,24 +214,54 @@
+@@ -143,24 +216,54 @@
  }
  
  /*
@@ -344,7 +400,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/
  };
  
  static struct mtd_partition * __init nand_partitions(int size, int *num_partitions)
-@@ -228,7 +329,9 @@
+@@ -228,7 +331,9 @@
  static struct at91_mmc_data __initdata ek_mmc_data = {
  	.slot_b		= 1,	/* Only one slot so use slot B */
  	.wire4		= 1,
@@ -355,7 +411,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/
  };
  #endif
  
-@@ -385,6 +488,7 @@
+@@ -385,6 +490,7 @@
  	ek_add_device_nand();
  	/* Ethernet */
  	ek_add_device_macb();
@@ -363,7 +419,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/
  	/* Regulators */
  	ek_add_regulators();
  	/* MMC */
-@@ -395,10 +499,12 @@
+@@ -395,10 +501,12 @@
  	ek_add_device_gpio_leds();
  	/* Push Buttons */
  	ek_add_device_buttons();
@@ -376,9 +432,9 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-l200v5/arch/
  }
  
  MACHINE_START(AT91SAM9G20EK, "Atmel AT91SAM9G20-EK")
-diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-l200v5/arch/arm/mach-at91/include/mach/at91sam9260.h
+diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h
 --- linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-08-25 11:51:12.000000000 +0800
 @@ -133,4 +133,139 @@
  
  #define AT91SAM9G20_UHP_BASE	0x00500000	/* USB Host controller */
@@ -519,9 +575,9 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-l20
 +/*Add end by guowenxue 2011.08.01*/
 +
  #endif
-diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-l200v5/arch/arm/mach-at91/Makefile.boot
+diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot
 --- linux-3.0/arch/arm/mach-at91/Makefile.boot	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/arch/arm/mach-at91/Makefile.boot	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot	2011-08-25 11:51:12.000000000 +0800
 @@ -3,16 +3,6 @@
  #   PARAMS_PHYS must be within 4MB of ZRELADDR
  #   INITRD_PHYS must be in RAM
@@ -539,9 +595,9 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-l200v5/arch/arm/
  params_phys-y	:= 0x20000100
  initrd_phys-y	:= 0x20410000
 -endif
-diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-l200v5/.cfg-sam9260
+diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 --- linux-3.0/.cfg-sam9260	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-l200v5/.cfg-sam9260	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-08-25 11:51:12.000000000 +0800
 @@ -0,0 +1,1850 @@
 +#
 +# Automatically generated make config: don't edit
@@ -2393,9 +2449,9 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-l200v5/.cfg-sam9260
 +CONFIG_NLATTR=y
 +CONFIG_GENERIC_ATOMIC64=y
 +# CONFIG_AVERAGE is not set
-diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-l200v5/.cfg-sam9g20
+diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 --- linux-3.0/.cfg-sam9g20	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-l200v5/.cfg-sam9g20	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-08-25 11:51:12.000000000 +0800
 @@ -0,0 +1,1844 @@
 +#
 +# Automatically generated make config: don't edit
@@ -4241,9 +4297,9 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-l200v5/.cfg-sam9g20
 +CONFIG_NLATTR=y
 +CONFIG_GENERIC_ATOMIC64=y
 +# CONFIG_AVERAGE is not set
-diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-l200v5/drivers/mmc/host/at91_mci.c
+diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c
 --- linux-3.0/drivers/mmc/host/at91_mci.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/drivers/mmc/host/at91_mci.c	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c	2011-08-25 11:51:12.000000000 +0800
 @@ -743,10 +743,10 @@
  	if (host->board->vcc_pin) {
  		switch (ios->power_mode) {
@@ -4257,9 +4313,9 @@ diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-l200v5/drivers/mmc/ho
  				break;
  			case MMC_POWER_ON:
  				break;
-diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-l200v5/drivers/usb/serial/option.c
+diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-at91sam9xxx/drivers/usb/serial/option.c
 --- linux-3.0/drivers/usb/serial/option.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/drivers/usb/serial/option.c	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/usb/serial/option.c	2011-08-25 11:51:12.000000000 +0800
 @@ -301,6 +301,12 @@
  #define TELIT_PRODUCT_UC864E			0x1003
  #define TELIT_PRODUCT_UC864G			0x1004
@@ -4282,9 +4338,9 @@ diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-l200v5/drivers/usb/se
  	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, ZTE_PRODUCT_MF622, 0xff, 0xff, 0xff) }, /* ZTE WCDMA products */
  	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0002, 0xff, 0xff, 0xff) },
  	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0003, 0xff, 0xff, 0xff) },
-diff -Nuar linux-3.0/Makefile linux-3.0-l200v5/Makefile
+diff -Nuar linux-3.0/Makefile linux-3.0-at91sam9xxx/Makefile
 --- linux-3.0/Makefile	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/Makefile	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/Makefile	2011-08-25 11:51:12.000000000 +0800
 @@ -144,9 +144,9 @@
  # but instead _all depend on modules
  PHONY += all
@@ -4329,9 +4385,9 @@ diff -Nuar linux-3.0/Makefile linux-3.0-l200v5/Makefile
  
  
  # Packaging of the kernel to various formats
-diff -Nuar linux-3.0/scripts/mkcompile_h linux-3.0-l200v5/scripts/mkcompile_h
+diff -Nuar linux-3.0/scripts/mkcompile_h linux-3.0-at91sam9xxx/scripts/mkcompile_h
 --- linux-3.0/scripts/mkcompile_h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-l200v5/scripts/mkcompile_h	2011-08-12 11:33:32.000000000 +0800
++++ linux-3.0-at91sam9xxx/scripts/mkcompile_h	2011-08-25 11:51:12.000000000 +0800
 @@ -27,7 +27,9 @@
  export LC_ALL
  
