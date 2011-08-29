@@ -12,34 +12,34 @@
 
 #SRC_NAME=u-boot-2010.09
 #ARCH=fl2440
-SRC_NAME=`basename $1`
-ARCH=$2
+ARCH=$1
+SRC_NAME=$2
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD/
 PATCH_DIR=$PWD/patch
 
-PRJ_NAME="u-boot"
-INST_PATH=$PWD/bin
-
-sup_ver=("" "u-boot-2010.09")
-sup_arch=("" "fl2440" "sd2410")
+INST_PATH=$PWD/../bin
 
 #===============================================================
 #               Functions forward definition                   =
 #===============================================================
-
+sup_ver=("" "u-boot-2010.09")
 function select_version()
 {
-   echo "Current support $PRJ_NAME version:"
+   echo "Current support U-Boot version:"
    i=1
    len=${#sup_ver[*]}
-
 
    while [ $i -lt $len ]; do
        echo "$i: ${sup_ver[$i]}"
        let i++;
    done
+
+   if [ $len -eq 2 ] ; then
+       SRC_NAME=${sup_ver[1]}
+       return;
+   fi
 
    echo "Please select: "
    index=
@@ -48,6 +48,7 @@ function select_version()
    SRC_NAME=${sup_ver[$index]}
 }
 
+sup_arch=("" "fl2440" "sd2410")
 function select_arch()
 {
    echo "Current support S3C24X0 boards:"
@@ -103,7 +104,7 @@ fi
 SRC_ORIG_PACKET=$PACKET_DIR/$SRC_NAME.tar.bz2
 if [ ! -s $SRC_ORIG_PACKET ] ; then
     echo ""
-    echo "ERROR:$PRJ_NAME source code patcket doesn't exist:"
+    echo "ERROR:$SRC_NAME source code patcket doesn't exist:"
     echo "PATH: \"$SRC_ORIG_PACKET\""
     echo ""
     exit
@@ -112,7 +113,7 @@ fi
 # Check patche file exist or not
 PATCH_FILE=$PATCH_DIR/$SRC_NAME-s3c24x0.patch
 if [ ! -f $PATCH_FILE ] ; then
-    echo "ERROR:$PRJ_NAME patch file doesn't exist:"
+    echo "ERROR:$SRC_NAME patch file doesn't exist:"
     echo "PATH: \"$PATCH_FILE\""
     echo ""
     exit
@@ -134,5 +135,6 @@ patch -p0 < $PATCH_FILE
 
 cd $SRC_NAME
 sh build.sh $ARCH
+set -x
 cp -af u-boot.bin $INST_PATH/$SRC_NAME-$ARCH.bin
 
