@@ -157,6 +157,6 @@ make
 #mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
 #rm -f zImage
 set -x
-cp uImage.gz $INST_PATH/uImage-$CPU.gz --reply=yes
+cp uImage.gz $INST_PATH/$SRC_NAME-uImage-$CPU.gz --reply=yes
 
 

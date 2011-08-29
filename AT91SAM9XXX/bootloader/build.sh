@@ -135,6 +135,6 @@ patch -p0 < $PATCH_FILE
 cd $SRC_NAME
 make ${CPU}
 set -x
-cp -af u-boot.bin $INST_PATH/u-boot-${CPU}.bin
+cp -af u-boot.bin $INST_PATH/$SRC_NAME-${CPU}.bin
 
 
