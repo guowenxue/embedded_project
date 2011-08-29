@@ -12,7 +12,7 @@ DEF_VERSION=$1
 #DEF_VERSION=u-boot-1.3.4
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD
 PATCH_DIR=$PWD/patch
 
 PLATFORM=at91sam9xxx
@@ -21,7 +21,7 @@ CPU=sam9260
 PATCH_SUFFIX=-${PLATFORM}.patch
 PRJ_NAME="u-boot"
 BIN_NAME="u-boot.bin"
-INST_PATH=$PWD/../../bin/bootloader
+INST_PATH=$PWD/../bin
 SRC_NAME=
 
 
@@ -96,6 +96,7 @@ SRC_ORIG_PACKET=$PACKET_DIR/$SRC_NAME.tar.bz2
 if [ ! -s $SRC_ORIG_PACKET ] ; then
     echo ""
     echo "ERROR:$PRJ_NAME source code patcket doesn't exist:"
+    echo "Please download U-boot source code to packet path:"
     echo "PATH: \"$SRC_ORIG_PACKET\""
     echo ""
     exit
@@ -124,6 +125,6 @@ patch -p0 < $PATCH_FILE
 #Start to cross compile the source code and install it now
 cd $SRC_NAME
 make ${CPU}
-cp -af $BIN_NAME $INST_PATH/
+cp -af $BIN_NAME $INST_PATH/u-boot-${CPU}.bin
 
 

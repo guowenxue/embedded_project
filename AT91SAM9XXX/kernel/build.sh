@@ -11,14 +11,14 @@ DEF_VERSION=$1
 #DEF_VERSION=linux-2.6.24
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD/
 PATCH_DIR=$PWD/patch
 
 CPU=sam9g20
 #CPU=sam9260
 PATCH_SUFFIX=-at91sam9xxx.patch
 PRJ_NAME="linux kernel"
-INST_PATH=/tftpboot
+INST_PATH=$PWD/../bin
 SRC_NAME=
 
 
@@ -89,12 +89,14 @@ if [ -z $SRC_NAME ] ; then
 fi
 
 # Check original source code packet exist or not
-SRC_ORIG_PACKET=$PACKET_DIR/$SRC_NAME.tar.bz2
+SRC_ORIG_PACKET=$SRC_NAME.tar.bz2
 
 if [ ! -s $SRC_ORIG_PACKET ] ; then
     cd $PACKET_DIR
-    wget http://www.kernel.org/pub/linux/kernel/v2.6/$SRC_NAME.tar.bz2
+    echo "ERROR: Please Download $SRC_ORIG_PACKET to here!"
+    #wget http://www.kernel.org/pub/linux/kernel/v2.6/$SRC_NAME.tar.bz2
     cd -
+    exit;
 fi
 
 if [ ! -s $SRC_ORIG_PACKET ] ; then
@@ -127,7 +129,7 @@ fi
 #Remove old source code
 tar -xjf $SRC_ORIG_PACKET
 cp $PATCH_FILE_PATH  $SRC_NAME
-#patch -p0 < $PATCH_FILE
+patch -p0 < $PATCH_FILE
 
 #Start to cross compile the source code and install it now
 
