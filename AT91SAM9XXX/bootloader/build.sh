@@ -6,42 +6,46 @@
 #       2, Version 1.0.1(2011.04.03), modify it to compatible with Linux kernel build script
 #
 
-#User can pass a argument to specify which version should be cross compile
-#or uncomment the DEF_VERSION variable to specify the version 
-DEF_VERSION=$1
-#DEF_VERSION=u-boot-1.3.4
-
 PWD=`pwd`
 PACKET_DIR=$PWD
 PATCH_DIR=$PWD/patch
-
-PLATFORM=at91sam9xxx
-#CPU=sam9g20
-CPU=sam9260
-PATCH_SUFFIX=-${PLATFORM}.patch
-PRJ_NAME="u-boot"
-BIN_NAME="u-boot.bin"
 INST_PATH=$PWD/../bin
-SRC_NAME=
+PATCH_SUFFIX=-at91sam9xxx.patch
 
-
-sup_ver=("" "u-boot-2010.09")
+CPU=
+SRC_NAME=u-boot-2010.09
 
 #===============================================================
 #               Functions forward definition                   =
 #===============================================================
-function disp_banner()
+sup_cpu=("" "sam9g20" "sam9260")
+function select_cpu()
 {
-   echo ""
-   echo "+------------------------------------------+"
-   echo "|      Build $PRJ_NAME for $CPU             "
-   echo "+------------------------------------------+"
-   echo ""
+   echo "Current support CPU:"
+   i=1
+   len=${#sup_cpu[*]}
+
+   while [ $i -lt $len ]; do
+       echo "$i: ${sup_cpu[$i]}"
+       let i++;
+   done
+
+   if [ $len -eq 2 ] ; then
+       CPU=${sup_cpu[1]}
+       return;
+   fi
+
+   echo "Please select: "
+   index=
+   read index 
+
+   CPU=${sup_cpu[$index]}
 }
 
+sup_ver=("" "u-boot-2010.09")
 function select_version()
 {
-   echo "Current support $PRJ_NAME version:"
+   echo "Current support Linux Kernel version:"
    i=1
    len=${#sup_ver[*]}
 
@@ -51,39 +55,44 @@ function select_version()
    done
 
    if [ $len -eq 2 ] ; then
-       SRC_NAME=${sup_ver[1]}
-       return;
+        SRC_NAME=${sup_ver[1]}
+        return;
    fi
 
    echo "Please select: "
    index=
-   read index 
+   read index
 
    SRC_NAME=${sup_ver[$index]}
 }
 
-function disp_compile()
+function disp_banner()
 {
    echo ""
-   echo "********************************************"
-   echo "*     Cross compile $SRC_NAME now...       "
-   echo "********************************************"
+   echo "+------------------------------------------+"
+   echo "|      Build $SRC_NAME for $CPU             "
+   echo "+------------------------------------------+"
    echo ""
 }
+
 
 #===============================================================
 #                   Script excute body start                   =
 #===============================================================
 
-disp_banner    #Display this shell script banner
+
 
 # If not define default version, then let user choose a one
-if [ -z $DEF_VERSION ] ; then
+if [ -z $SRC_NAME ] ; then
     select_version
-else
-    SRC_NAME=$DEF_VERSION
 fi
-disp_compile
+
+# If not define default CPU, then let user choose a one
+if [ -z $CPU ] ; then
+    select_cpu
+fi
+
+disp_banner    #Display this shell script banner
 
 # If $SRC_NAME not set, then abort this cross compile
 if [ -z $SRC_NAME ] ; then 
@@ -95,7 +104,7 @@ fi
 SRC_ORIG_PACKET=$PACKET_DIR/$SRC_NAME.tar.bz2
 if [ ! -s $SRC_ORIG_PACKET ] ; then
     echo ""
-    echo "ERROR:$PRJ_NAME source code patcket doesn't exist:"
+    echo "ERROR:$SRC_NAME source code patcket doesn't exist:"
     echo "Please download U-boot source code to packet path:"
     echo "PATH: \"$SRC_ORIG_PACKET\""
     echo ""
@@ -105,7 +114,7 @@ fi
 # Check patche file exist or not
 PATCH_FILE=$PATCH_DIR/$SRC_NAME$PATCH_SUFFIX
 if [ ! -f $PATCH_FILE ] ; then
-    echo "ERROR:$PRJ_NAME patch file doesn't exist:"
+    echo "ERROR:$SRC_NAME patch file doesn't exist:"
     echo "PATH: \"$PATCH_FILE\""
     echo ""
     exit
@@ -125,6 +134,7 @@ patch -p0 < $PATCH_FILE
 #Start to cross compile the source code and install it now
 cd $SRC_NAME
 make ${CPU}
-cp -af $BIN_NAME $INST_PATH/u-boot-${CPU}.bin
+set -x
+cp -af u-boot.bin $INST_PATH/u-boot-${CPU}.bin
 
 
