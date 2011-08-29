@@ -1,0 +1,21 @@
+Cross Compile Bootloader for NUC710
+
+1. For the NUC710 from Nuton must use ADS to compile it, so we must install ADS1.2 first;
+
+2. Compile Bootloader  
+1)  Running ADS and choose "CodeWarrior for ARM Developer Suite" in "Tools" menu;
+    Choose "File"->"Open", and open "buildAll\BuildAll.mcp" in the source codeode;
+2)  After use ADS open BuildAll.mcp, Press "CTRL" and "-" Key to clean the last compiled object files;
+    then press "F7" key to start compile it;
+4)  After cross compile, we can get these image files£º init.bin, init.axf, updater.bin, updater.axf, bootloader.bin; 
+    
+    If we wanna use AXD to debug and burn bootloader, we will use init.axf and updater.axf image;
+    If we wanna update bootloader when bootloader running, then we can excute updater.bin file in bootloader;
+    If we wanna use H-JTAG to burn the bootloader, we should use bootloader.bin file.
+    
+    Further more, the file cpaxf.cmd script used to copye these images to source code top path;
+
+About how to use the H-JTAG to burn bootloader, please refer to:
+
+
+
