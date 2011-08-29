@@ -9,7 +9,7 @@ PWD=`pwd`
 PACKET_DIR=$PWD/
 PATCH_DIR=$PWD/patch
 
-CPU=
+ARCH=
 SRC_NAME="linux-3.0"
 
 PATCH_SUFFIX=-at91sam9xxx.patch
@@ -47,7 +47,7 @@ function select_version()
 sup_cpu=("" "sam9g20" "sam9260")
 function select_cpu()
 {
-   echo "Current support CPU:"
+   echo "Current support ARCH:"
    i=1
    len=${#sup_cpu[*]}
 
@@ -57,7 +57,7 @@ function select_cpu()
    done
 
    if [ $len -eq 2 ] ; then
-        CPU=${sup_cpu[1]}
+        ARCH=${sup_cpu[1]}
         return;
    fi
 
@@ -65,7 +65,7 @@ function select_cpu()
    index=
    read index 
 
-   CPU=${sup_cpu[$index]}
+   ARCH=${sup_cpu[$index]}
 }
 
 
@@ -73,7 +73,7 @@ function disp_banner()
 {
    echo ""
    echo "****************************************************"
-   echo "*     Cross compile $SRC_NAME for $CPU now...       "
+   echo "*     Cross compile $SRC_NAME for $ARCH now...       "
    echo "****************************************************"
    echo ""
 }
@@ -88,7 +88,7 @@ if [ -z $SRC_NAME ] ; then
 fi
 
 # If not define default version, then let user choose a one
-if [ -z $CPU ] ; then
+if [ -z $ARCH ] ; then
     select_cpu
 fi
 
@@ -145,18 +145,19 @@ patch -p0 < $PATCH_FILE
 
 #Start to cross compile the source code and install it now
 
-mv $SRC_NAME ${SRC_NAME}_${CPU}
-cd ${SRC_NAME}_${CPU}
+mv $SRC_NAME ${SRC_NAME}_${ARCH}
+cd ${SRC_NAME}_${ARCH}
 patch -p1 < $PATCH_FILE
 rm -f $PATCH_FILE
-cp .cfg-$CPU .config
+cp .cfg-$ARCH .config
 make
 
-#VERSION=`echo $SRC_NAME | awk -F "-" '{print $2}'`
+
 #cp arch/arm/boot/zImage . -f
 #mkimage -A arm -O linux -T kernel -C none -a 20008000 -e 20008000 -n "Linux Kernel" -d zImage uImage.gz
 #rm -f zImage
 set -x
-cp uImage.gz $INST_PATH/$SRC_NAME-uImage-$CPU.gz --reply=yes
+VERSION=`echo $SRC_NAME | awk -F "-" '{print $2}'`
+cp uImage.gz $INST_PATH/uImage-$VERSION-$ARCH.gz --reply=yes
 
 
