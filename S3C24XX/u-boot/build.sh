@@ -111,7 +111,7 @@ if [ ! -s $SRC_ORIG_PACKET ] ; then
 fi
 
 # Check patche file exist or not
-PATCH_FILE=$PATCH_DIR/$SRC_NAME-s3c24x0.patch
+PATCH_FILE=$PATCH_DIR/$SRC_NAME-s3c24xx.patch
 if [ ! -f $PATCH_FILE ] ; then
     echo "ERROR:$SRC_NAME patch file doesn't exist:"
     echo "PATH: \"$PATCH_FILE\""

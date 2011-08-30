@@ -6,14 +6,14 @@
 #               
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD
 
 # Parameter valid check
 if [ $# != 2 ] ; then
     echo "+---------------------------------------------------"
     echo "|   Usage:  $0 [SRC_FOLDER] [ARCH]"
-    echo "| Example:  $0 linux-2.6.24 fl2440"
-    echo "| Example:  $0 linux-2.6.24 gr01"
+    echo "| Example:  $0 u-boot-2010.09 fl2440"
+    echo "| Example:  $0 u-boot-1.3.4 at91sam9260"
     echo "+---------------------------------------------------"
     exit;
 fi
@@ -39,34 +39,32 @@ if [ ! -s $SRC_PACKET_PATH ] ; then
     exit;
 fi
 
+# Clean up the source code
 echo "+----------------------------------------------------------"
 echo "|            Clean up the new source code                  "
 echo "+----------------------------------------------------------"
 NEW_SRC=$SRC_NAME-$ARCH
 cd $SRC_NAME
-rm -f uImage*.gz
-rm -f cscope.*
-rm -f tags
-if [ ! -s .config ] ; then
-  mv .config .cfg-$ARCH
-fi
+rm -f tags cscope*
 make distclean
 cd ..
 mv $SRC_NAME $NEW_SRC
 
-
-echo "+------------------------------------------------------------------------"
-echo "|           Decrompress orignal source code packet                       "
-echo "+------------------------------------------------------------------------"
+echo "+----------------------------------------------------------"
+echo "|         Decompress original source code packet           "
+echo "+----------------------------------------------------------"
 ORIG_SRC=$SRC_NAME
 tar -xjf $SRC_PACKET_PATH
 
+# Generate the patch file
 echo "+------------------------------------------------------------------------"
-echo "|            Generate patch file \"$NEW_SRC.patch\"                      "
+echo "| Generate patch file \"$NEW_SRC.patch\"                                 "
 echo "+------------------------------------------------------------------------"
-
 diff -Nuar $ORIG_SRC $NEW_SRC > $NEW_SRC.patch
+
+# Rollback to the original status
 rm -rf $ORIG_SRC
 mv $NEW_SRC $SRC_NAME
+
 
 
