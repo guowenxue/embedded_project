@@ -6,7 +6,7 @@
 #               
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD/
 
 # Parameter valid check
 if [ $# != 2 ] ; then
@@ -47,9 +47,11 @@ cd $SRC_NAME
 rm -f uImage*.gz
 rm -f cscope.*
 rm -f tags
-if [ ! -s .config ] ; then
+set -x
+if [ -s .config ] ; then
   mv .config .cfg-$ARCH
 fi
+set +x
 make distclean
 cd ..
 mv $SRC_NAME $NEW_SRC

@@ -10,7 +10,7 @@ PACKET_DIR=$PWD/
 PATCH_DIR=$PWD/patch
 INST_PATH=$PWD/../bin
 
-ARCH=fl2440
+ARCH=s3c2440
 SRC_NAME=
 
 #===============================================================
@@ -25,7 +25,7 @@ function disp_banner()
    echo ""
 }
 
-sup_ver=("" "linux-2.6.24" "linux-2.6.33" "linux-2.6.38")
+sup_ver=("" "linux-3.0" "linux-2.6.33" "linux-2.6.38")
 function select_version()
 {
    echo "Current support linux kernel version:"
