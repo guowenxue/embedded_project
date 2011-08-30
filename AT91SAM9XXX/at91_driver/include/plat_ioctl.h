@@ -42,7 +42,7 @@
 #define APDU_ERR                    -8
 #define TIMEROUT_ERR                -9
 
-#define CARD_PRESENT                1
+#define CARD_PRESENT                0x80000000
 #define CARD_NOT_PRESENT            0
 
 #ifndef __KERNEL__
