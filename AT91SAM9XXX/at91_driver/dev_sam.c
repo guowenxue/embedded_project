@@ -1149,6 +1149,7 @@ static int sam_read (struct file *file, char *buf, size_t len, loff_t *offset)
 
 static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
+    int ret;
     switch (cmd)
     {
 		case SET_DRV_DEBUG:
@@ -1252,12 +1253,14 @@ static long sam_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		case SAM_PRESENT_DETECT:
 #ifdef PLAT_L2
             if (LOWLEVEL == at91_get_gpio_value (SAM_CHK))
-                   return CARD_PRESENT;
+                   ret = CARD_PRESENT;
             else
-                   return CARD_NOT_PRESENT;
+                   ret = CARD_NOT_PRESENT;
 #else /*L3 doesn't support GPIO to get card present status, it should always return card PRESENT*/
-                   return CARD_PRESENT;
+                   ret = CARD_PRESENT;
 #endif
+            put_user(ret, (int *)arg);
+            return ret;
 
 		default:
 			printk("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);

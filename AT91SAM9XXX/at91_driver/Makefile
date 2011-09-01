@@ -13,11 +13,8 @@ HWVER ?= V1
 #HWVER ?= V23
 
 
-
-
-
 CROSS_COMPILE ?= /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
-INST_PATH=../../rootfs/at91sam9xxx
+INST_PATH=../bin
 
 PWD := $(shell pwd)
 

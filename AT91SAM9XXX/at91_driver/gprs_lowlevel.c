@@ -66,7 +66,7 @@ GSM_DEVICE support_gprs[] = {
                      .id = GSM_SIM521X,
                      /*Turn GPRS_PWR pin to low level >=64 ms, Page 22 */
                      //.poweron_period_time = 80,
-                     .poweron_period_time = 1500,
+                     .poweron_period_time = 100,
                      /*Reference Page 22, AT command can be set 2~3 after SIM521X is power on */
                      .atcmd_active_time = 8000,
                      /* Turn GPRS_PWR pin to low level about 2 second, 64 ms in datasheet Page 22 
@@ -121,7 +121,7 @@ void gprs_hw_init(int which)
     at91_set_A_periph (GPRS_RXD_PIN, DISPULLUP);
     at91_set_A_periph (GPRS_TXD_PIN, ENPULLUP);
 	    
-    //at91_set_gpio_output (GPRS_RESET_PIN, HIGHLEVEL);  //GTM900 need init this pin??
+    at91_set_gpio_output (GPRS_RESET_PIN, HIGHLEVEL);  //GTM900 need init this pin??
     at91_set_deglitch(GPRS_RI_PIN, ENABLE);
 }
 
