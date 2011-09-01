@@ -1289,9 +1289,6 @@ static void sam_hw_init(void)
 #ifdef PLAT_L2
     at91_set_gpio_output(SAM_M2, LOWLEVEL);
     at91_set_gpio_input (SAM_CHK, DISPULLUP);
-    at91_set_gpio_input (WRONG_SAM_M0, DISPULLUP);
-    at91_set_gpio_input (WRONG_SAM_M1, DISPULLUP);
-    at91_set_gpio_input (WRONG_SAM_M2, DISPULLUP);
 #endif
 
     US_CR   = ioremap(AT91SAM9260_BASE_US3 + 0x00, 0x04); /*Control Register*/
