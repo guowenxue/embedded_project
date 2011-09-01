@@ -6,7 +6,7 @@
 #               
 
 PWD=`pwd`
-PACKET_DIR=$PWD/../packet
+PACKET_DIR=$PWD/
 
 # Parameter valid check
 if [ $# != 2 ] ; then
