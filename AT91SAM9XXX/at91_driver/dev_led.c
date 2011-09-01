@@ -357,6 +357,7 @@ static int __init led_init(void)
     //blink_timer.data = 0; //only RUN_LED need to blink
     blink_timer.expires = jiffies + HZ;
     add_timer(&blink_timer);
+    turn_led_blink(0); /*Turn RUN LED blink*/
 
     printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER,
                DRV_REVER_VER);
