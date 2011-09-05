@@ -1,6 +1,6 @@
 diff -Nuar linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c
 --- linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c	2011-09-01 14:04:11.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c	2011-09-05 09:52:58.000000000 +0800
 @@ -167,22 +167,23 @@
  
  	/* Pins used for MII and RMII */
@@ -48,13 +48,13 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c linux-3.0-at91sam9
  {
  	at91_set_B_periph(AT91_PIN_PA31, 1);		/* TXD4 */
 -	at91_set_B_periph(AT91_PIN_PA30, 0);		/* RXD4 */
-+//	at91_set_B_periph(AT91_PIN_PA30, 0);		/* RXD4 Comment by guowenxue, ,conflict with SAM card*/
++//	at91_set_B_periph(AT91_PIN_PA30, 0);		/* RXD4 Comment by guowenxue,conflict with SAM card*/
  }
  
  static struct resource uart5_resources[] = {
 diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9260ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c	2011-09-01 14:16:53.000000000 +0800
 @@ -49,6 +49,64 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -243,7 +243,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/
  	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
 diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c	2011-09-01 14:16:53.000000000 +0800
 @@ -48,6 +48,70 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -436,7 +436,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/
  MACHINE_START(AT91SAM9G20EK, "Atmel AT91SAM9G20-EK")
 diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h
 --- linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-09-01 14:16:53.000000000 +0800
 @@ -133,4 +133,139 @@
  
  #define AT91SAM9G20_UHP_BASE	0x00500000	/* USB Host controller */
@@ -579,7 +579,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-at9
  #endif
 diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot
 --- linux-3.0/arch/arm/mach-at91/Makefile.boot	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot	2011-09-01 14:16:53.000000000 +0800
 @@ -3,16 +3,6 @@
  #   PARAMS_PHYS must be within 4MB of ZRELADDR
  #   INITRD_PHYS must be in RAM
@@ -599,7 +599,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch
 -endif
 diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 --- linux-3.0/.cfg-sam9260	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-09-01 14:16:53.000000000 +0800
 @@ -0,0 +1,1850 @@
 +#
 +# Automatically generated make config: don't edit
@@ -2453,7 +2453,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 --- linux-3.0/.cfg-sam9g20	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-09-01 14:16:53.000000000 +0800
 @@ -0,0 +1,1844 @@
 +#
 +# Automatically generated make config: don't edit
@@ -4301,7 +4301,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c
 --- linux-3.0/drivers/mmc/host/at91_mci.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c	2011-09-01 14:16:53.000000000 +0800
 @@ -743,10 +743,10 @@
  	if (host->board->vcc_pin) {
  		switch (ios->power_mode) {
@@ -4317,7 +4317,7 @@ diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-at91sam9xxx/drivers/m
  				break;
 diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-at91sam9xxx/drivers/usb/serial/option.c
 --- linux-3.0/drivers/usb/serial/option.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/drivers/usb/serial/option.c	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/usb/serial/option.c	2011-09-01 14:16:53.000000000 +0800
 @@ -301,6 +301,12 @@
  #define TELIT_PRODUCT_UC864E			0x1003
  #define TELIT_PRODUCT_UC864G			0x1004
@@ -4342,7 +4342,7 @@ diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-at91sam9xxx/drivers/u
  	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0003, 0xff, 0xff, 0xff) },
 diff -Nuar linux-3.0/Makefile linux-3.0-at91sam9xxx/Makefile
 --- linux-3.0/Makefile	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/Makefile	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/Makefile	2011-09-01 14:16:53.000000000 +0800
 @@ -144,9 +144,9 @@
  # but instead _all depend on modules
  PHONY += all
@@ -4389,7 +4389,7 @@ diff -Nuar linux-3.0/Makefile linux-3.0-at91sam9xxx/Makefile
  # Packaging of the kernel to various formats
 diff -Nuar linux-3.0/scripts/mkcompile_h linux-3.0-at91sam9xxx/scripts/mkcompile_h
 --- linux-3.0/scripts/mkcompile_h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/scripts/mkcompile_h	2011-09-01 10:38:42.000000000 +0800
++++ linux-3.0-at91sam9xxx/scripts/mkcompile_h	2011-09-01 14:16:53.000000000 +0800
 @@ -27,7 +27,9 @@
  export LC_ALL
  
