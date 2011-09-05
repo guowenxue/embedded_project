@@ -81,12 +81,12 @@
 #define SAM_RST                     AT91_PIN_PB11   // reset
 #define SAM_DATA                    AT91_PIN_PB10   // I/O
 #define SAM_CHK                     AT91_PIN_PA27   // Input, detect SAM card
-#define FAKE_SAM_M0                 AT91_PIN_PB16
-#define FAKE_SAM_M1                 AT91_PIN_PB17
-#define FAKE_SAM_M2                 AT91_PIN_PB18
-#define SAM_M0                      AT91_PIN_PA28
-#define SAM_M1                      AT91_PIN_PA29
-#define SAM_M2                      AT91_PIN_PA30
+#define SAM_M0                      AT91_PIN_PB16
+#define SAM_M1                      AT91_PIN_PB17
+#define SAM_M2                      AT91_PIN_PB18
+#define FAKE_SAM_M0                 AT91_PIN_PA28
+#define FAKE_SAM_M1                 AT91_PIN_PA29
+#define FAKE_SAM_M2                 AT91_PIN_PA30
 
 /* Pin definition for restore key driver */
 #define RESTORE_KEY                   AT91_PIN_PB20
