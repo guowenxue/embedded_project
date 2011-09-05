@@ -1288,6 +1288,9 @@ static void sam_hw_init(void)
     at91_set_gpio_output(SAM_M1, LOWLEVEL);
 #ifdef PLAT_L2
     at91_set_gpio_output(SAM_M2, LOWLEVEL);
+    at91_set_gpio_input(FAKE_SAM_M0, DISPULLUP);
+    at91_set_gpio_input(FAKE_SAM_M1, DISPULLUP);
+    at91_set_gpio_input(FAKE_SAM_M2, DISPULLUP);
     at91_set_gpio_input (SAM_CHK, DISPULLUP);
 #endif
 
