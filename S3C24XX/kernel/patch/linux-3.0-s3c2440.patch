@@ -1,7 +1,29 @@
 diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c
 --- linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-09-06 13:28:59.000000000 +0800
-@@ -114,19 +114,20 @@
++++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-09-06 15:42:12.000000000 +0800
+@@ -44,6 +44,7 @@
+ #include <plat/clock.h>
+ #include <plat/devs.h>
+ #include <plat/cpu.h>
++#include <plat/ts.h> /*Add by guowenxue to support Touch screen, 2011.09.06*/
+ 
+ #include <plat/common-smdk.h>
+ 
+@@ -102,6 +103,13 @@
+ 	}
+ };
+ 
++/*Touch Screen driver info add by guowenxue 2011.09.04 */
++static struct s3c2410_ts_mach_info smdk2440_ts_cfg __initdata = {
++    .delay = 10000,
++    .presc = 49,
++    .oversampling_shift = 2,
++};
++
+ /* LCD driver info */
+ 
+ static struct s3c2410fb_display smdk2440_lcd_cfg __initdata = {
+@@ -114,19 +122,20 @@
  
  	.type		= S3C2410_LCDCON1_TFT,
  
@@ -34,24 +56,25 @@ diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arc
  };
  
  static struct s3c2410fb_mach_info smdk2440_fb_info __initdata = {
-@@ -144,9 +145,9 @@
- 	.gpdcon_mask	= 0xffffffff,
- 	.gpdup		= 0x0000faff,
+@@ -146,7 +155,8 @@
  	.gpdup_mask	= 0xffffffff,
--#endif
+ #endif
  
- 	.lpcsel		= ((0xCE6) & ~7) | 1<<4,
-+#endif
+-	.lpcsel		= ((0xCE6) & ~7) | 1<<4,
++	.lpcsel		= ((0xCE6) & ~7) | 1<<1,
++
  };
  
  static struct platform_device *smdk2440_devices[] __initdata = {
-@@ -155,12 +156,15 @@
+@@ -155,18 +165,24 @@
  	&s3c_device_wdt,
  	&s3c_device_i2c0,
  	&s3c_device_iis,
 +    &s3c_device_dm9000, /* Add DM9000 ethernet car driver by guowenxue, 2011.08.30*/
 +    &s3c_device_sdi,    /* Add SD card driver by guowenxue, 2011.09.06*/
 +    &s3c_device_rtc,    /* Add RTC driver by guowenxue, 2011.09.06*/
++    &s3c_device_adc,    /* Add Touch Screen driver by guowenxue, 2011.09.06*/
++    &s3c_device_ts,     /* Add Touch Screen driver by guowenxue, 2011.09.06*/
  };
  
  static void __init smdk2440_map_io(void)
@@ -62,6 +85,13 @@ diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arc
  	s3c24xx_init_uarts(smdk2440_uartcfgs, ARRAY_SIZE(smdk2440_uartcfgs));
  }
  
+ static void __init smdk2440_machine_init(void)
+ {
+ 	s3c24xx_fb_set_platdata(&smdk2440_fb_info);
++    s3c24xx_ts_set_platdata(&smdk2440_ts_cfg); /*Add Touch Screen info by guowenxue, 2011.09.06*/
+ 	s3c_i2c0_set_platdata(NULL);
+ 
+ 	platform_add_devices(smdk2440_devices, ARRAY_SIZE(smdk2440_devices));
 diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c linux-3.0-s3c2440/arch/arm/plat-s3c24xx/common-smdk.c
 --- linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c	2011-07-22 10:17:23.000000000 +0800
 +++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/common-smdk.c	2011-09-06 11:23:01.000000000 +0800
@@ -158,7 +188,7 @@ diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c linux-3.0-s3c2440/arch/
  static struct s3c2410_nand_set smdk_nand_sets[] = {
 diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/devs.c linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c
 --- linux-3.0/arch/arm/plat-s3c24xx/devs.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c	2011-09-06 11:44:08.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c	2011-09-06 15:59:20.000000000 +0800
 @@ -42,6 +42,7 @@
  #include <plat/regs-spi.h>
  #include <plat/ts.h>
@@ -242,7 +272,7 @@ diff -Nuar linux-3.0/arch/arm/tools/mach-types linux-3.0-s3c2440/arch/arm/tools/
  cpuat9g20		MACH_CPUAT9G20		CPUAT9G20		2031
 diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 --- linux-3.0/.cfg-s3c2440	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-s3c2440/.cfg-s3c2440	2011-09-06 13:29:47.000000000 +0800
++++ linux-3.0-s3c2440/.cfg-s3c2440	2011-09-06 16:31:27.000000000 +0800
 @@ -0,0 +1,1814 @@
 +#
 +# Automatically generated make config: don't edit
@@ -1067,7 +1097,7 @@ diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 +#
 +# Userland interfaces
 +#
-+CONFIG_INPUT_MOUSEDEV=m
++CONFIG_INPUT_MOUSEDEV=y
 +# CONFIG_INPUT_MOUSEDEV_PSAUX is not set
 +CONFIG_INPUT_MOUSEDEV_SCREEN_X=240
 +CONFIG_INPUT_MOUSEDEV_SCREEN_Y=320
@@ -2058,10 +2088,47 @@ diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 +CONFIG_NLATTR=y
 +CONFIG_GENERIC_ATOMIC64=y
 +# CONFIG_AVERAGE is not set
+diff -Nuar linux-3.0/drivers/input/touchscreen/s3c2410_ts.c linux-3.0-s3c2440/drivers/input/touchscreen/s3c2410_ts.c
+--- linux-3.0/drivers/input/touchscreen/s3c2410_ts.c	2011-07-22 10:17:23.000000000 +0800
++++ linux-3.0-s3c2440/drivers/input/touchscreen/s3c2410_ts.c	2011-09-06 15:23:41.000000000 +0800
+@@ -112,6 +112,7 @@
+ 	data0 = readl(ts.io + S3C2410_ADCDAT0);
+ 	data1 = readl(ts.io + S3C2410_ADCDAT1);
+ 
++    printk("[gwx] %s\n", __FUNCTION__);
+ 	down = get_down(data0, data1);
+ 
+ 	if (down) {
+@@ -119,7 +120,8 @@
+ 			ts.xp >>= ts.shift;
+ 			ts.yp >>= ts.shift;
+ 
+-			dev_dbg(ts.dev, "%s: X=%lu, Y=%lu, count=%d\n",
++			//dev_dbg(ts.dev, "%s: X=%lu, Y=%lu, count=%d\n",
++			printk(ts.dev, "%s: X=%lu, Y=%lu, count=%d\n",
+ 				__func__, ts.xp, ts.yp, ts.count);
+ 
+ 			input_report_abs(ts.input, ABS_X, ts.xp);
 diff -Nuar linux-3.0/drivers/mmc/host/s3cmci.c linux-3.0-s3c2440/drivers/mmc/host/s3cmci.c
 --- linux-3.0/drivers/mmc/host/s3cmci.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/drivers/mmc/host/s3cmci.c	2011-09-06 13:02:17.000000000 +0800
-@@ -1357,11 +1357,16 @@
++++ linux-3.0-s3c2440/drivers/mmc/host/s3cmci.c	2011-09-06 14:49:15.000000000 +0800
+@@ -1275,6 +1275,7 @@
+ 
+ 	writel(mci_con, host->base + S3C2410_SDICON);
+ 
++#if 0 /*Comment by guowenxue, remove the noisy debug output*/
+ 	if ((ios->power_mode == MMC_POWER_ON) ||
+ 	    (ios->power_mode == MMC_POWER_UP)) {
+ 		dbg(host, dbg_conf, "running at %lukHz (requested: %ukHz).\n",
+@@ -1282,6 +1283,7 @@
+ 	} else {
+ 		dbg(host, dbg_conf, "powered down.\n");
+ 	}
++#endif
+ 
+ 	host->bus_width = ios->bus_width;
+ }
+@@ -1357,11 +1359,16 @@
  	.enable_sdio_irq = s3cmci_enable_sdio_irq,
  };
  
@@ -2161,7 +2228,7 @@ diff -Nuar linux-3.0/Makefile linux-3.0-s3c2440/Makefile
  all: vmlinux
 +gen_uImage:
 +	cp arch/arm/boot/zImage . -f
-+	mkimage -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
++	mkimage_orig -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
 +	rm -f zImage
  
  ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
