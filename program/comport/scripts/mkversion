@@ -1,0 +1,21 @@
+#!/bin/sh
+
+GET_SVN=$1
+MAJOR=$2
+MINOR=$3
+REVER=$4
+
+    echo "============ Get svn version now ============"
+
+    #If .svn folder missed, so can't get $svn_ver, then we set it as zero.
+    if [ -f .svn/entries ] ; then
+        svn_ver=`sed -n -e 11p .svn/entries`
+    else
+        svn_ver=0
+    fi
+    echo "/* This is generate by makefile , don't Edit it by hand */" > version.h
+    echo "#define MAJOR ${MAJOR}" >>version.h
+    echo "#define MINOR ${MINOR}" >>version.h
+    echo "#define REVER ${REVER}" >>version.h
+
+    echo "#define SVNVER $svn_ver" >>version.h
