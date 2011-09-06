@@ -1,7 +1,51 @@
 diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c
 --- linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-08-30 15:42:57.000000000 +0800
-@@ -155,12 +155,13 @@
++++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-09-06 11:14:55.000000000 +0800
+@@ -114,19 +114,20 @@
+ 
+ 	.type		= S3C2410_LCDCON1_TFT,
+ 
+-	.width		= 240,
+-	.height		= 320,
++	.width		= 320,
++	.height		= 240,
+ 
+-	.pixclock	= 166667, /* HCLK 60 MHz, divisor 10 */
+-	.xres		= 240,
+-	.yres		= 320,
+-	.bpp		= 16,
+-	.left_margin	= 20,
+-	.right_margin	= 8,
+-	.hsync_len	= 4,
+-	.upper_margin	= 8,
+-	.lower_margin	= 7,
+-	.vsync_len	= 4,
++    /*Set value from LCD datasheet*/
++	.pixclock	= 156000, /* Dclk-Period          =>Tosc 156000*/
++	.xres		= 320,    /* Hsync Display Period =>Thd  320*/
++	.yres		= 240,    /* Vsync Display Period =>Tvd  240*/
++	.bpp		= 16,     /* 16 bpp*/
++	.left_margin	= 38, /* Hsync Front-Porch    =>Thf 38*/
++	.right_margin	= 20, /* Hsync Back-Porch     =>Thb 20*/
++	.hsync_len	= 30,     /* Hsync Pulse Width    =>Thp 30*/
++	.upper_margin	= 15, /* Vsync Front-Porch    =>Tvf 15*/
++	.lower_margin	= 12, /* Vsync Back-Porch     =>Tvb 12*/
++	.vsync_len	= 3,      /* Vsync Pulse Width    =>Tvp 3*/
+ };
+ 
+ static struct s3c2410fb_mach_info smdk2440_fb_info __initdata = {
+@@ -144,9 +145,9 @@
+ 	.gpdcon_mask	= 0xffffffff,
+ 	.gpdup		= 0x0000faff,
+ 	.gpdup_mask	= 0xffffffff,
+-#endif
+ 
+ 	.lpcsel		= ((0xCE6) & ~7) | 1<<4,
++#endif
+ };
+ 
+ static struct platform_device *smdk2440_devices[] __initdata = {
+@@ -155,12 +156,13 @@
  	&s3c_device_wdt,
  	&s3c_device_i2c0,
  	&s3c_device_iis,
@@ -18,7 +62,7 @@ diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arc
  
 diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c linux-3.0-s3c2440/arch/arm/plat-s3c24xx/common-smdk.c
 --- linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/common-smdk.c	2011-08-30 15:44:48.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/common-smdk.c	2011-09-05 15:49:40.000000000 +0800
 @@ -106,49 +106,49 @@
  	},
  };
@@ -112,7 +156,7 @@ diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/common-smdk.c linux-3.0-s3c2440/arch/
  static struct s3c2410_nand_set smdk_nand_sets[] = {
 diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/devs.c linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c
 --- linux-3.0/arch/arm/plat-s3c24xx/devs.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c	2011-08-30 15:46:32.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/plat-s3c24xx/devs.c	2011-09-05 15:49:40.000000000 +0800
 @@ -42,6 +42,7 @@
  #include <plat/regs-spi.h>
  #include <plat/ts.h>
@@ -162,7 +206,7 @@ diff -Nuar linux-3.0/arch/arm/plat-s3c24xx/devs.c linux-3.0-s3c2440/arch/arm/pla
  #endif // CONFIG_CPU_S32440
 diff -Nuar linux-3.0/arch/arm/plat-samsung/include/plat/devs.h linux-3.0-s3c2440/arch/arm/plat-samsung/include/plat/devs.h
 --- linux-3.0/arch/arm/plat-samsung/include/plat/devs.h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/plat-samsung/include/plat/devs.h	2011-08-30 15:47:22.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/plat-samsung/include/plat/devs.h	2011-09-05 15:49:40.000000000 +0800
 @@ -92,6 +92,7 @@
  extern struct platform_device s3c_device_usbgadget;
  extern struct platform_device s3c_device_usb_hsudc;
@@ -173,7 +217,7 @@ diff -Nuar linux-3.0/arch/arm/plat-samsung/include/plat/devs.h linux-3.0-s3c2440
  extern struct platform_device s5pv210_device_pcm0;
 diff -Nuar linux-3.0/arch/arm/tools/mach-types linux-3.0-s3c2440/arch/arm/tools/mach-types
 --- linux-3.0/arch/arm/tools/mach-types	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/tools/mach-types	2011-08-30 15:48:57.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/tools/mach-types	2011-09-05 15:49:40.000000000 +0800
 @@ -85,7 +85,8 @@
  bast			ARCH_BAST		BAST			331
  h1940			ARCH_H1940		H1940			347
@@ -196,7 +240,7 @@ diff -Nuar linux-3.0/arch/arm/tools/mach-types linux-3.0-s3c2440/arch/arm/tools/
  cpuat9g20		MACH_CPUAT9G20		CPUAT9G20		2031
 diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 --- linux-3.0/.cfg-s3c2440	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-s3c2440/.cfg-s3c2440	2011-08-30 16:46:42.000000000 +0800
++++ linux-3.0-s3c2440/.cfg-s3c2440	2011-09-06 11:10:34.000000000 +0800
 @@ -0,0 +1,1814 @@
 +#
 +# Automatically generated make config: don't edit
@@ -1349,8 +1393,8 @@ diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 +CONFIG_FONT_8x8=y
 +CONFIG_FONT_8x16=y
 +CONFIG_LOGO=y
-+CONFIG_LOGO_LINUX_MONO=y
-+CONFIG_LOGO_LINUX_VGA16=y
++# CONFIG_LOGO_LINUX_MONO is not set
++# CONFIG_LOGO_LINUX_VGA16 is not set
 +CONFIG_LOGO_LINUX_CLUT224=y
 +CONFIG_SOUND=y
 +CONFIG_SOUND_OSS_CORE=y
@@ -2014,7 +2058,7 @@ diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/drivers/net/dm9000.c linux-3.0-s3c2440/drivers/net/dm9000.c
 --- linux-3.0/drivers/net/dm9000.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/drivers/net/dm9000.c	2011-08-30 16:15:04.000000000 +0800
++++ linux-3.0-s3c2440/drivers/net/dm9000.c	2011-09-05 15:49:40.000000000 +0800
 @@ -39,6 +39,10 @@
  #include <asm/irq.h>
  #include <asm/io.h>
@@ -2042,7 +2086,7 @@ diff -Nuar linux-3.0/drivers/net/dm9000.c linux-3.0-s3c2440/drivers/net/dm9000.c
  		dev_dbg(db->dev, "enabling %s\n", dev->name);
 diff -Nuar linux-3.0/drivers/tty/serial/samsung.c linux-3.0-s3c2440/drivers/tty/serial/samsung.c
 --- linux-3.0/drivers/tty/serial/samsung.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/drivers/tty/serial/samsung.c	2011-08-30 15:53:28.000000000 +0800
++++ linux-3.0-s3c2440/drivers/tty/serial/samsung.c	2011-09-05 15:49:40.000000000 +0800
 @@ -54,7 +54,7 @@
  
  /* UART name and device definitions */
@@ -2063,7 +2107,7 @@ diff -Nuar linux-3.0/drivers/tty/serial/samsung.c linux-3.0-s3c2440/drivers/tty/
  	.dev_name	= S3C24XX_SERIAL_NAME,
 diff -Nuar linux-3.0/Makefile linux-3.0-s3c2440/Makefile
 --- linux-3.0/Makefile	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/Makefile	2011-08-30 15:58:16.000000000 +0800
++++ linux-3.0-s3c2440/Makefile	2011-09-05 16:11:04.000000000 +0800
 @@ -144,9 +144,9 @@
  # but instead _all depend on modules
  PHONY += all
@@ -2093,7 +2137,7 @@ diff -Nuar linux-3.0/Makefile linux-3.0-s3c2440/Makefile
  all: vmlinux
 +gen_uImage:
 +	cp arch/arm/boot/zImage . -f
-+	mkimage -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
++	mkimage_orig -A arm -O linux -T kernel -C none -a 30008000 -e 30008040 -n "Linux Kernel" -d zImage uImage.gz
 +	rm -f zImage
  
  ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
