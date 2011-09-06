@@ -1082,7 +1082,7 @@ diff -Nuar u-boot-2010.09/Makefile u-boot-2010.09-at91sam9xxx/Makefile
  include $(obj)include/config.mk
  export	ARCH CPU BOARD VENDOR SOC
  
-+CROSS_COMPILE = CROSS_COMPILE = /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
++CROSS_COMPILE = /opt/buildroot-2011.02/arm926t/usr/bin/arm-linux-
  # set default to nothing for native builds
  ifeq ($(HOSTARCH),$(ARCH))
  CROSS_COMPILE ?=
