@@ -1,6 +1,6 @@
 diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c
 --- linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-09-06 11:44:58.000000000 +0800
++++ linux-3.0-s3c2440/arch/arm/mach-s3c2440/mach-smdk2440.c	2011-09-06 13:28:59.000000000 +0800
 @@ -114,19 +114,20 @@
  
  	.type		= S3C2410_LCDCON1_TFT,
@@ -45,12 +45,13 @@ diff -Nuar linux-3.0/arch/arm/mach-s3c2440/mach-smdk2440.c linux-3.0-s3c2440/arc
  };
  
  static struct platform_device *smdk2440_devices[] __initdata = {
-@@ -155,12 +156,14 @@
+@@ -155,12 +156,15 @@
  	&s3c_device_wdt,
  	&s3c_device_i2c0,
  	&s3c_device_iis,
-+    &s3c_device_dm9000, /* Add by guowenxue, 2011.08.30*/
-+    &s3c_device_sdi,     /* Add SD card driver by guowenxue, 2011.09.06*/
++    &s3c_device_dm9000, /* Add DM9000 ethernet car driver by guowenxue, 2011.08.30*/
++    &s3c_device_sdi,    /* Add SD card driver by guowenxue, 2011.09.06*/
++    &s3c_device_rtc,    /* Add RTC driver by guowenxue, 2011.09.06*/
  };
  
  static void __init smdk2440_map_io(void)
@@ -241,7 +242,7 @@ diff -Nuar linux-3.0/arch/arm/tools/mach-types linux-3.0-s3c2440/arch/arm/tools/
  cpuat9g20		MACH_CPUAT9G20		CPUAT9G20		2031
 diff -Nuar linux-3.0/.cfg-s3c2440 linux-3.0-s3c2440/.cfg-s3c2440
 --- linux-3.0/.cfg-s3c2440	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-s3c2440/.cfg-s3c2440	2011-09-06 13:06:13.000000000 +0800
++++ linux-3.0-s3c2440/.cfg-s3c2440	2011-09-06 13:29:47.000000000 +0800
 @@ -0,0 +1,1814 @@
 +#
 +# Automatically generated make config: don't edit
