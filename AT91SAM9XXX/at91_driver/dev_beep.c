@@ -132,6 +132,7 @@ static void beep_hw_init(void)
     PMC_SCER = ioremap(AT91_BASE_SYS + AT91_PMC_SCER, 0x04);    //PMC System Clock Enable Register,control pck/pck0/pck1...
     PMC_SCDR = ioremap(AT91_BASE_SYS + AT91_PMC_SCDR, 0x04);    //PMC System Clock Disable Register 
     PMC_PCK1 = ioremap(AT91_BASE_SYS + AT91_PMC_PCKR(1), 0x04); //PMC Programmable Clock Register,pck1 register
+    at91_set_gpio_output(BEEP_PIN, HIGHLEVEL);
 }
 
 static void beep_hw_term(void)

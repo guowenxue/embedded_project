@@ -113,8 +113,10 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			print_version(DRV_VERSION);
 			return DRV_VERSION;
 
+#ifdef PLAT_L2
         case GPRS_CHK_MODEL:
             return detect_gprs_model();
+#endif
 
 		case GPRS_POWERON:
 			gprs_set_worksim(arg);
@@ -125,20 +127,12 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			gprs_powerdown(curr_gprs_id);
 			break;
 
-		case GPRS_POWERMON:      /*Only 3G module support */
-			iRet = gprs_powermon(curr_gprs_id);
-			break;
-
 		case GPRS_RESET:         /*Only 3G module support */
 			gprs_reset(curr_gprs_id);
 			break;
 
 		case GPRS_CHK_SIMDOOR:
 			iRet = gprs_chk_simdoor(arg);
-			break;
-
-		case SET_WORK_SIMSLOT:
-			iRet = gprs_set_worksim(arg);
 			break;
 
 		case CHK_WORK_SIMSLOT:
@@ -148,11 +142,7 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		case GPRS_SET_DTR:
 			gprs_set_dtr(curr_gprs_id,arg);
 			break;
-
-		case GPRS_SET_RTS:
-			gprs_set_rts(curr_gprs_id,arg);
-			break;
-		
+	
         case GPRS_GET_RING:
 			iRet = g_ucRing;     /* Save the Return value */
 			mutex_lock(&mutex);
@@ -161,7 +151,21 @@ static long gprs_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			dbg_print("Get Ring Call: %d\n", g_ucRing);
 
 			return iRet;
-		
+
+#ifndef PLAT_L2
+		case GPRS_POWERMON:      /*Only 3G module support */
+			iRet = gprs_powermon(curr_gprs_id);
+			break;
+
+		case SET_WORK_SIMSLOT:
+			iRet = gprs_set_worksim(arg);
+			break;
+
+		case GPRS_SET_RTS:
+			gprs_set_rts(curr_gprs_id,arg);
+			break;
+#endif
+	
         default:
 			printk("%s driver don't support ioctl command=%u\n", DEV_NAME, cmd);
 			return -1;

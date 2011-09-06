@@ -18,25 +18,25 @@
 #define __PLAT_L2_H
 
 #include "plat_ioctl.h"
+#define UNDEFINED 0xFFFFFFFF
 
 /*=========================================================================
  *             For L2(ARM9)
  *=========================================================================*/
 /*Pin definition For GPRS/3G Driver*/
 #define GPRS_VBUS_CTRL_PIN          AT91_PIN_PC9  /* GPRS USB VBUS control pin */
-#define GPRS_POWER_MON_PIN          AT91_PIN_PB13 /* SIM5215 don't use it */
+#define GPRS_POWER_MON_PIN          UNDEFINED     /*NC*/
+#define GPRS_CHK_SIM2_PIN           UNDEFINED     /*NC*/
+#define GPRS_RTS_PIN                UNDEFINED     /*NC*/
 #define GPRS_ON_PIN                 AT91_PIN_PA25 /* GPRS power on/off switch pin */
 #define GPRS_38V_ON_PIN             AT91_PIN_PA10 /* GPRS module 3.8V power supply Pin, 1->On 0->off */
-#define GPRS_RESET_PIN              AT91_PIN_PA11 
-#define GPRS_RTS_PIN                AT91_PIN_PB28
-#define GPRS_DTR_PIN                AT91_PIN_PA22
-#define GPRS_DSR_PIN                AT91_PIN_PA25
-#define GPRS_RI_PIN                 AT91_PIN_PB30
-#define GPRS_TXD_PIN                AT91_PIN_PB6
+#define GPRS_RESET_PIN              AT91_PIN_PA11 /* GPRS Reset Pin*/
+#define GPRS_DTR_PIN                AT91_PIN_PA22 /*Set GPIO Highlevel*/
+#define GPRS_RI_PIN                 AT91_PIN_PB30 
+#define GPRS_TXD_PIN                AT91_PIN_PB6  
 #define GPRS_RXD_PIN                AT91_PIN_PB7
 #define GPRS_SELECT_SIM_PIN         AT91_PIN_PC1
 #define GPRS_CHK_SIM1_PIN           AT91_PIN_PC6
-#define GPRS_CHK_SIM2_PIN           AT91_PIN_PC7
 
 #define GPRS_MODEL_CHK_PIN0         AT91_PIN_PB31
 #define GPRS_MODEL_CHK_PIN1         AT91_PIN_PB12

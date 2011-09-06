@@ -298,6 +298,7 @@ int gprs_powermon(int which)
     /*Only UC864E module support Power monitor ping */
     if (GSM_UC864E != which)
         return -1;
+
     /*Lowlevel means power off and highlevel means power on */
     at91_set_gpio_input (GPRS_POWER_MON_PIN, DISPULLUP);  
 	if (LOWLEVEL == at91_get_gpio_value (GPRS_POWER_MON_PIN))
