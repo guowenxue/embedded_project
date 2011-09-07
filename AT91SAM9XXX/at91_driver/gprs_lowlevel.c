@@ -101,8 +101,8 @@ void gprs_hw_init(int which)
     /*sim5215 not support*/
     if (GSM_SIM521X != which) 
     {
-         at91_set_A_periph (GPRS_RTS_PIN, DISPULLUP);
-         at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);
+        at91_set_A_periph (GPRS_RTS_PIN, DISPULLUP);
+        at91_set_gpio_output (GPRS_DTR_PIN, LOWLEVEL);
     }
 
     at91_set_A_periph (GPRS_CTS_PIN, DISPULLUP);
@@ -113,6 +113,8 @@ void gprs_hw_init(int which)
     at91_set_gpio_output (GPRS_38V_ON_PIN, LOWLEVEL);    //gprs module power on init 
 
     at91_set_gpio_output (GPRS_SELECT_SIM_PIN, HIGHLEVEL); //default set to SIM1
+#else
+    at91_set_gpio_output (GPRS_DTR_PIN, HIGHLEVEL);
 #endif
 
     at91_set_gpio_output (GPRS_ON_PIN, HIGHLEVEL);         //gprs module power on init 
