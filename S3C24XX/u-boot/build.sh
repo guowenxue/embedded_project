@@ -129,11 +129,11 @@ fi
 
 #Remove old source code
 tar -xjf $SRC_ORIG_PACKET
-patch -p0 < $PATCH_FILE
 
 #Start to cross compile the source code and install it now
 
 cd $SRC_NAME
+patch -p1 < $PATCH_FILE
 sh build.sh $ARCH
 set -x
 cp -af u-boot.bin $INST_PATH/$SRC_NAME-$ARCH.bin
