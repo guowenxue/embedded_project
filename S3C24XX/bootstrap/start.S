@@ -125,7 +125,7 @@ start_code:
     /*Set LOCKTIME as default value 0x00ffffff*/
     ldr r0, =ELFIN_CLOCK_POWER_BASE
     ldr r1, =0x00ffffff
-    str r1, [r0, #LOCKTIME_OFFSET]  /*Set Clock Divider*/
+    str r1, [r0, #LOCKTIME_OFFSET] 
 
  /*******************************************************************************************
   * Reference to S3C2440 datasheet: Chap 7-8 ~ Page 242
