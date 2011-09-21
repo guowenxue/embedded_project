@@ -28,11 +28,11 @@
 #define GPRS_POWER_MON_PIN          UNDEFINED     /*NC*/
 #define GPRS_CHK_SIM2_PIN           UNDEFINED     /*NC*/
 #define GPRS_RTS_PIN                UNDEFINED     /*NC*/
-#define GPRS_ON_PIN                 AT91_PIN_PA25 /* GPRS power on/off switch pin */
+#define GPRS_ON_PIN                 AT91_PIN_PB30 /* GPRS power on/off switch pin */
 #define GPRS_38V_ON_PIN             AT91_PIN_PA10 /* GPRS module 3.8V power supply Pin, 1->On 0->off */
 #define GPRS_RESET_PIN              AT91_PIN_PA11 /* GPRS Reset Pin*/
 #define GPRS_DTR_PIN                AT91_PIN_PA22 /*Set GPIO Highlevel*/
-#define GPRS_RI_PIN                 AT91_PIN_PB30 
+#define GPRS_RI_PIN                 AT91_PIN_PA25
 #define GPRS_TXD_PIN                AT91_PIN_PB6  
 #define GPRS_RXD_PIN                AT91_PIN_PB7
 #define GPRS_SELECT_SIM_PIN         AT91_PIN_PC1
