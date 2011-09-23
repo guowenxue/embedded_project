@@ -9,9 +9,9 @@
  * =====================================================================================
  */
 
-#define ELFIN_WATCHDOG_BASE     0x53000000
+#define S3C_WATCHDOG_BASE       0x53000000
 
-#define ELFIN_INTERRUPT_BASE    0x4a000000
+#define S3C_INTERRUPT_BASE      0x4a000000
 #define SRCPND_OFFSET           0x00
 #define INTMOD_OFFSET           0x04
 #define INTMSK_OFFSET           0x08
@@ -21,7 +21,7 @@
 #define SUBSRCPND_OFFSET        0x18
 #define INTSUBMSK_OFFSET        0x1c
 
-#define ELFIN_CLOCK_POWER_BASE  0x4c000000
+#define S3C_CLOCK_POWER_BASE    0x4c000000
 #define LOCKTIME_OFFSET         0x00
 #define MPLLCON_OFFSET          0x04
 #define UPLLCON_OFFSET          0x08
@@ -30,13 +30,13 @@
 #define CLKDIVN_OFFSET          0x14
 #define CAMDIVN_OFFSET          0x18
 
-#define BWSCON  		0x48000000
+#define BWSCON  		        0x48000000
 
 #define MDIV_405                0x7f << 12
 #define PSDIV_405               0x21
 
 /*  BWSCON */
-#define DW8         (0x0)
+#define DW8             (0x0)
 #define DW16            (0x1)
 #define DW32            (0x2)
 #define WAIT            (0x1<<2)

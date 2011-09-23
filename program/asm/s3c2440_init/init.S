@@ -25,12 +25,12 @@ _start:
     msr cpsr, r0
 
     /* Disable watchdog */
-    ldr r0, =ELFIN_WATCHDOG_BASE
+    ldr r0, =S3C_WATCHDOG_BASE
     mov r1, #0
     str r1, [r0]
 
     /* Disable Interrupt */
-    ldr r0, =ELFIN_INTERRUPT_BASE
+    ldr r0, =S3C_INTERRUPT_BASE
     mov r1, #0xffffffff
     str r1, [r0, #INTMSK_OFFSET]
     ldr r1, =0x000007ff
@@ -63,7 +63,7 @@ _start:
   ******************************************************************************************/
 
     /*Set LOCKTIME as default value 0x00ffffff*/
-    ldr r0, =ELFIN_CLOCK_POWER_BASE
+    ldr r0, =S3C_CLOCK_POWER_BASE
     ldr r1, =0x00ffffff
     str r1, [r0, #LOCKTIME_OFFSET] 
 
@@ -74,7 +74,7 @@ _start:
   * This ratio is determined by HDIVN(here is 2) and PDIVN(here is 1) control register.
   * Refer to the s3c2440 datasheet
   *******************************************************************************************/
-    ldr r0, =ELFIN_CLOCK_POWER_BASE
+    ldr r0, =S3C_CLOCK_POWER_BASE
     mov r1, #5
     str r1, [r0, #CLKDIVN_OFFSET]  /*Set Clock Divider*/
 
@@ -98,7 +98,7 @@ _start:
   *         = 405MHz
   *  For FCLK:HCLK:PCLK=1:4:8, so HCLK=100MHz, PCLK=50MHz
   ***************************************************************************************/
-    mov r1, #ELFIN_CLOCK_POWER_BASE
+    mov r1, #S3C_CLOCK_POWER_BASE
     mov r2, #MDIV_405
     add r2, r2, #PSDIV_405
     str r2, [r1, #MPLLCON_OFFSET]
