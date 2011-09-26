@@ -10,15 +10,21 @@
 
 CROSS=/opt/buildroot-2011.02/arm920t/usr/bin/arm-linux-
 
+all:     init.bin led.bin
 init.bin: init.S
 	${CROSS}gcc init.S -c -o init.o
 	${CROSS}ld -Ttext=0x33000000 init.o -o init.elf
 	${CROSS}objcopy -O binary init.elf init.bin
 	rm -f *.elf *.o
 
+led.bin: led.S
+	${CROSS}gcc led.S -c -o led.o
+	${CROSS}ld -Ttext=0x33000000 led.o -o led.elf
+	${CROSS}objcopy -O binary led.elf led.bin
+	rm -f *.elf *.o
+
 install:
-	cp init.bin ~/winxp -f --reply=yes
+	cp *.bin ~/winxp -f --reply=yes
 
 clean:
-	rm -f *.elf *.o
-	rm -f init.bin
+	rm -f *.elf *.o *.bin
