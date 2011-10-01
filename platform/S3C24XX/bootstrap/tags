@@ -1,0 +1,2235 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+-reply	makefile	/^	cp $(APP_NAME).bin \/tftpboot -f --reply=yes$/;"	m
+A	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+A	bignum.c	/^    mpi W, R, T, A, RR;$/;"	l
+ADCCON	include/s3c24x0.h	/^    S3C24X0_REG32 ADCCON;$/;"	m	struct:__anon22
+ADCCON	include/s3c24x0.h	/^    S3C24X0_REG32 ADCCON;$/;"	m	struct:__anon23
+ADCDAT	include/s3c24x0.h	/^    S3C24X0_REG32 ADCDAT;$/;"	m	struct:__anon22
+ADCDAT0	include/s3c24x0.h	/^    S3C24X0_REG32 ADCDAT0;$/;"	m	struct:__anon23
+ADCDAT1	include/s3c24x0.h	/^    S3C24X0_REG32 ADCDAT1;$/;"	m	struct:__anon23
+ADCDLY	include/s3c24x0.h	/^    S3C24X0_REG32 ADCDLY;$/;"	m	struct:__anon23
+ADCTSC	include/s3c24x0.h	/^    S3C24X0_REG32 ADCTSC;$/;"	m	struct:__anon23
+AFLAGS	makefile	/^AFLAGS := $(CFLAGS) -D__ASSEMBLY__$/;"	m
+ALMDATE	include/s3c24x0.h	/^    S3C24X0_REG8 ALMDATE;$/;"	m	struct:__anon21
+ALMDATE_REG	include/s3c2440.h	530;"	d
+ALMHOUR	include/s3c24x0.h	/^    S3C24X0_REG8 ALMHOUR;$/;"	m	struct:__anon21
+ALMHOUR_REG	include/s3c2440.h	529;"	d
+ALMMIN	include/s3c24x0.h	/^    S3C24X0_REG8 ALMMIN;$/;"	m	struct:__anon21
+ALMMIN_REG	include/s3c2440.h	528;"	d
+ALMMON	include/s3c24x0.h	/^    S3C24X0_REG8 ALMMON;$/;"	m	struct:__anon21
+ALMMON_REG	include/s3c2440.h	531;"	d
+ALMSEC	include/s3c24x0.h	/^    S3C24X0_REG8 ALMSEC;$/;"	m	struct:__anon21
+ALMSEC_REG	include/s3c2440.h	527;"	d
+ALMYEAR	include/s3c24x0.h	/^    S3C24X0_REG8 ALMYEAR;$/;"	m	struct:__anon21
+ALMYEAR_REG	include/s3c2440.h	532;"	d
+APP_NAME	makefile	/^APP_NAME=bootstrap$/;"	m
+AR	makefile	/^AR  = $(CROSS_COMPILE)ar$/;"	m
+AS	makefile	/^AS  = $(CROSS_COMPILE)as$/;"	m
+ASN1_HASH_MDX	include/rsa.h	42;"	d
+ASN1_HASH_SHA1	include/rsa.h	46;"	d
+B0_PMC	mem_init.S	/^#define B0_PMC			0x0$/;"	d
+B0_Tacc	mem_init.S	/^#define B0_Tacc			0x7$/;"	d
+B0_Tacp	mem_init.S	/^#define B0_Tacp			0x0$/;"	d
+B0_Tacs	mem_init.S	/^#define B0_Tacs			0x0$/;"	d
+B0_Tah	mem_init.S	/^#define B0_Tah			0x0$/;"	d
+B0_Tcoh	mem_init.S	/^#define B0_Tcoh			0x0$/;"	d
+B0_Tcos	mem_init.S	/^#define B0_Tcos			0x0$/;"	d
+B1_BWSCON	mem_init.S	/^#define B1_BWSCON		(DW16)$/;"	d
+B1_PMC	mem_init.S	/^#define B1_PMC			0x0$/;"	d
+B1_Tacc	mem_init.S	/^#define B1_Tacc			0x7$/;"	d
+B1_Tacp	mem_init.S	/^#define B1_Tacp			0x0$/;"	d
+B1_Tacs	mem_init.S	/^#define B1_Tacs			0x0$/;"	d
+B1_Tah	mem_init.S	/^#define B1_Tah			0x0$/;"	d
+B1_Tcoh	mem_init.S	/^#define B1_Tcoh			0x0$/;"	d
+B1_Tcos	mem_init.S	/^#define B1_Tcos			0x0$/;"	d
+B2_BWSCON	mem_init.S	/^#define B2_BWSCON		(DW16)$/;"	d
+B2_PMC	mem_init.S	/^#define B2_PMC			0x0$/;"	d
+B2_Tacc	mem_init.S	/^#define B2_Tacc			0x7$/;"	d
+B2_Tacp	mem_init.S	/^#define B2_Tacp			0x0$/;"	d
+B2_Tacs	mem_init.S	/^#define B2_Tacs			0x0$/;"	d
+B2_Tah	mem_init.S	/^#define B2_Tah			0x0$/;"	d
+B2_Tcoh	mem_init.S	/^#define B2_Tcoh			0x0$/;"	d
+B2_Tcos	mem_init.S	/^#define B2_Tcos			0x0$/;"	d
+B3_BWSCON	mem_init.S	/^#define B3_BWSCON		(DW16 + WAIT + UBLB)$/;"	d
+B3_PMC	mem_init.S	/^#define B3_PMC			0x0$/;"	d
+B3_Tacc	mem_init.S	/^#define B3_Tacc			0xf$/;"	d
+B3_Tacp	mem_init.S	/^#define B3_Tacp			0x0$/;"	d
+B3_Tacs	mem_init.S	/^#define B3_Tacs			0xc$/;"	d
+B3_Tah	mem_init.S	/^#define B3_Tah			0x0$/;"	d
+B3_Tcoh	mem_init.S	/^#define B3_Tcoh			0x1$/;"	d
+B3_Tcos	mem_init.S	/^#define B3_Tcos			0x7$/;"	d
+B4_BWSCON	mem_init.S	/^#define B4_BWSCON		(DW16)$/;"	d
+B4_PMC	mem_init.S	/^#define B4_PMC			0x0$/;"	d
+B4_Tacc	mem_init.S	/^#define B4_Tacc			0x7$/;"	d
+B4_Tacp	mem_init.S	/^#define B4_Tacp			0x0$/;"	d
+B4_Tacs	mem_init.S	/^#define B4_Tacs			0x0$/;"	d
+B4_Tah	mem_init.S	/^#define B4_Tah			0x0$/;"	d
+B4_Tcoh	mem_init.S	/^#define B4_Tcoh			0x0$/;"	d
+B4_Tcos	mem_init.S	/^#define B4_Tcos			0x0$/;"	d
+B5_BWSCON	mem_init.S	/^#define B5_BWSCON		(DW16)$/;"	d
+B5_PMC	mem_init.S	/^#define B5_PMC			0x0$/;"	d
+B5_Tacc	mem_init.S	/^#define B5_Tacc			0xf$/;"	d
+B5_Tacp	mem_init.S	/^#define B5_Tacp			0x0$/;"	d
+B5_Tacs	mem_init.S	/^#define B5_Tacs			0xc$/;"	d
+B5_Tah	mem_init.S	/^#define B5_Tah			0x0$/;"	d
+B5_Tcoh	mem_init.S	/^#define B5_Tcoh			0x1$/;"	d
+B5_Tcos	mem_init.S	/^#define B5_Tcos			0x7$/;"	d
+B6_BWSCON	mem_init.S	/^#define B6_BWSCON		(DW32)$/;"	d
+B6_MT	mem_init.S	/^#define B6_MT			0x3	\/* SDRAM *\/$/;"	d
+B6_SCAN	mem_init.S	/^#define B6_SCAN			0x1	\/* 9bit *\/$/;"	d
+B6_Trcd	mem_init.S	/^#define B6_Trcd			0x1$/;"	d
+B7_BWSCON	mem_init.S	/^#define B7_BWSCON		(DW32)$/;"	d
+B7_MT	mem_init.S	/^#define B7_MT			0x3	\/* SDRAM *\/$/;"	d
+B7_SCAN	mem_init.S	/^#define B7_SCAN			0x1	\/* 9bit *\/$/;"	d
+B7_Trcd	mem_init.S	/^#define B7_Trcd			0x1	\/* 3clk *\/$/;"	d
+BANKCON	include/s3c24x0.h	/^    S3C24X0_REG32 BANKCON[8];$/;"	m	struct:__anon3
+BANKCON0_OFFSET	include/s3c2440.h	81;"	d
+BANKCON0_REG	include/s3c2440.h	95;"	d
+BANKCON1_OFFSET	include/s3c2440.h	82;"	d
+BANKCON1_REG	include/s3c2440.h	96;"	d
+BANKCON2_OFFSET	include/s3c2440.h	83;"	d
+BANKCON2_REG	include/s3c2440.h	97;"	d
+BANKCON3_OFFSET	include/s3c2440.h	84;"	d
+BANKCON3_REG	include/s3c2440.h	98;"	d
+BANKCON4_OFFSET	include/s3c2440.h	85;"	d
+BANKCON4_REG	include/s3c2440.h	99;"	d
+BANKCON5_OFFSET	include/s3c2440.h	86;"	d
+BANKCON5_REG	include/s3c2440.h	100;"	d
+BANKCON6_OFFSET	include/s3c2440.h	87;"	d
+BANKCON6_REG	include/s3c2440.h	101;"	d
+BANKCON7_OFFSET	include/s3c2440.h	88;"	d
+BANKCON7_REG	include/s3c2440.h	102;"	d
+BANKSIZE	include/s3c24x0.h	/^    S3C24X0_REG32 BANKSIZE;$/;"	m	struct:__anon3
+BANKSIZE_OFFSET	include/s3c2440.h	90;"	d
+BANKSIZE_REG	include/s3c2440.h	104;"	d
+BBT_AUTO_REFRESH	include/nand.h	148;"	d
+BBT_AUTO_REFRESH	nand.h	148;"	d
+BCDDATE	include/s3c24x0.h	/^    S3C24X0_REG8 BCDDATE;$/;"	m	struct:__anon21
+BCDDATE_REG	include/s3c2440.h	536;"	d
+BCDDAY	include/s3c24x0.h	/^    S3C24X0_REG8 BCDDAY;$/;"	m	struct:__anon21
+BCDDAY_REG	include/s3c2440.h	537;"	d
+BCDHOUR	include/s3c24x0.h	/^    S3C24X0_REG8 BCDHOUR;$/;"	m	struct:__anon21
+BCDHOUR_REG	include/s3c2440.h	535;"	d
+BCDMIN	include/s3c24x0.h	/^    S3C24X0_REG8 BCDMIN;$/;"	m	struct:__anon21
+BCDMIN_REG	include/s3c2440.h	534;"	d
+BCDMON	include/s3c24x0.h	/^    S3C24X0_REG8 BCDMON;$/;"	m	struct:__anon21
+BCDMON_REG	include/s3c2440.h	538;"	d
+BCDSEC	include/s3c24x0.h	/^    S3C24X0_REG8 BCDSEC;$/;"	m	struct:__anon21
+BCDSEC_REG	include/s3c2440.h	533;"	d
+BCDYEAR	include/s3c24x0.h	/^    S3C24X0_REG8 BCDYEAR;$/;"	m	struct:__anon21
+BCDYEAR_REG	include/s3c2440.h	539;"	d
+BEEP	include/s3c2440.h	34;"	d
+BIT19	include/s3c2440.h	662;"	d
+BIT29	include/s3c2440.h	663;"	d
+BITS_PER_LONG	include/asm/types.h	42;"	d
+BITS_TO_LIMBS	bignum.c	36;"	d	file:
+BIT_ADC	include/s3c2440.h	658;"	d
+BIT_ALLMSK	include/s3c2440.h	659;"	d
+BIT_BAT_FLT	include/s3c2440.h	636;"	d
+BIT_DMA0	include/s3c2440.h	646;"	d
+BIT_DMA1	include/s3c2440.h	647;"	d
+BIT_DMA2	include/s3c2440.h	648;"	d
+BIT_DMA3	include/s3c2440.h	649;"	d
+BIT_EINT0	include/s3c2440.h	630;"	d
+BIT_EINT1	include/s3c2440.h	631;"	d
+BIT_EINT2	include/s3c2440.h	632;"	d
+BIT_EINT3	include/s3c2440.h	633;"	d
+BIT_EINT4_7	include/s3c2440.h	634;"	d
+BIT_EINT8_23	include/s3c2440.h	635;"	d
+BIT_IIC	include/s3c2440.h	654;"	d
+BIT_LCD	include/s3c2440.h	645;"	d
+BIT_RTC	include/s3c2440.h	657;"	d
+BIT_SDI	include/s3c2440.h	650;"	d
+BIT_SPI0	include/s3c2440.h	651;"	d
+BIT_SPI1	include/s3c2440.h	656;"	d
+BIT_TICK	include/s3c2440.h	637;"	d
+BIT_TIMER0	include/s3c2440.h	639;"	d
+BIT_TIMER1	include/s3c2440.h	640;"	d
+BIT_TIMER2	include/s3c2440.h	641;"	d
+BIT_TIMER3	include/s3c2440.h	642;"	d
+BIT_TIMER4	include/s3c2440.h	643;"	d
+BIT_UART0	include/s3c2440.h	655;"	d
+BIT_UART1	include/s3c2440.h	652;"	d
+BIT_UART2	include/s3c2440.h	644;"	d
+BIT_USBD	include/s3c2440.h	664;"	d
+BIT_USBD_SUB	include/s3c2440.h	665;"	d
+BIT_USBH	include/s3c2440.h	653;"	d
+BIT_WDT	include/s3c2440.h	638;"	d
+BLUELUT	include/s3c24x0.h	/^    S3C24X0_REG32 BLUELUT;$/;"	m	struct:__anon9
+BOARD	makefile	/^BOARD=SMDK2440$/;"	m
+BOOTLOADER_ENV_ADDR	include/config.h	33;"	d
+BWSCON	include/s3c24x0.h	/^    S3C24X0_REG32 BWSCON;$/;"	m	struct:__anon3
+BWSCON	mem_init.S	/^#define BWSCON	0x48000000$/;"	d
+BWSCON_OFFSET	include/s3c2440.h	80;"	d
+BWSCON_REG	include/s3c2440.h	94;"	d
+CAMDIVN_OFFSET	include/s3c2440.h	196;"	d
+CAMDIVN_REG	include/s3c2440.h	204;"	d
+CC	makefile	/^CC  = $(CROSS_COMPILE)gcc$/;"	m
+CFG_MAX_NAND_DEVICE	include/config.h	29;"	d
+CFG_NAND_BASE	include/config.h	31;"	d
+CFG_PBSIZE	include/config.h	27;"	d
+CHARS_TO_LIMBS	bignum.c	37;"	d	file:
+CHK	include/bignum.h	19;"	d
+CLKCON	include/s3c24x0.h	/^    S3C24X0_REG32 CLKCON;$/;"	m	struct:__anon8
+CLKCON_OFFSET	include/s3c2440.h	193;"	d
+CLKCON_REG	include/s3c2440.h	201;"	d
+CLKCON_USBD	include/s3c2440.h	661;"	d
+CLKDIVN	include/s3c24x0.h	/^    S3C24X0_REG32 CLKDIVN;$/;"	m	struct:__anon8
+CLKDIVN_OFFSET	include/s3c2440.h	195;"	d
+CLKDIVN_REG	include/s3c2440.h	203;"	d
+CLKSLOW	include/s3c24x0.h	/^    S3C24X0_REG32 CLKSLOW;$/;"	m	struct:__anon8
+CLKSLOW_OFFSET	include/s3c2440.h	194;"	d
+CLKSLOW_REG	include/s3c2440.h	202;"	d
+CONFIG_LED_DEBUG	include/config.h	21;"	d
+CONFIG_PRINTF_DBG	makefile	/^CONFIG_PRINTF_DBG=y$/;"	m
+CONFIG_S3C2440	include/config.h	15;"	d
+CONFIG_STACKSIZE	include/config.h	25;"	d
+CONFIG_SYS_GBL_DATA_SIZE	include/config.h	24;"	d
+CONFIG_SYS_MALLOC_LEN	include/config.h	23;"	d
+COUNT_4_OFF	include/s3c2440.h	503;"	d
+COUNT_4_ON	include/s3c2440.h	502;"	d
+CPP	makefile	/^CPP = $(CC) -E$/;"	m
+CROSS_COMPILE	makefile	/^CROSS_COMPILE=\/opt\/buildroot-2011.02\/arm920t\/usr\/bin\/arm-linux-$/;"	m
+CROSS_COMPILE	makefile	/^CROSS_COMPILE=\/opt\/buildroot-2011.02\/arm926t\/usr\/bin\/arm-linux-$/;"	m
+CTLEN	rsa.c	482;"	d	file:
+ClearPending	include/s3c2440.h	667;"	d
+D	include/rsa.h	/^    mpi D;      \/*!<  private exponent  *\/$/;"	m	struct:__anon31
+DAYSPERWEEK	include/linux/time.h	17;"	d
+DCDST	include/s3c24x0.h	/^    S3C24X0_REG32 DCDST;$/;"	m	struct:__anon6
+DCLKCON	include/s3c24x0.h	/^    S3C24X0_REG32 DCLKCON;$/;"	m	struct:__anon20
+DCON	include/s3c24x0.h	/^    S3C24X0_REG32 DCON;$/;"	m	struct:__anon6
+DCSRC	include/s3c24x0.h	/^    S3C24X0_REG32 DCSRC;$/;"	m	struct:__anon6
+DEBUG	include/common.h	19;"	d
+DELAY_TIME	led_beep.c	11;"	d	file:
+DIDST	include/s3c24x0.h	/^    S3C24X0_REG32 DIDST;$/;"	m	struct:__anon6
+DIDSTC	include/s3c24x0.h	/^    S3C24X0_REG32 DIDSTC;$/;"	m	struct:__anon6
+DISRC	include/s3c24x0.h	/^    S3C24X0_REG32 DISRC;$/;"	m	struct:__anon6
+DISRCC	include/s3c24x0.h	/^    S3C24X0_REG32 DISRCC;$/;"	m	struct:__anon6
+DITHMODE	include/s3c24x0.h	/^    S3C24X0_REG32 DITHMODE;$/;"	m	struct:__anon9
+DMASKTRIG	include/s3c24x0.h	/^    S3C24X0_REG32 DMASKTRIG;$/;"	m	struct:__anon6
+DO_CRC	crc32.c	162;"	d	file:
+DO_CRC	crc32.c	164;"	d	file:
+DO_CRC	crc32.c	212;"	d	file:
+DP	include/rsa.h	/^    mpi DP;     \/*!<  D mod (P - 1)     *\/$/;"	m	struct:__anon31
+DQ	include/rsa.h	/^    mpi DQ;     \/*!<  D mod (Q - 1)     *\/$/;"	m	struct:__anon31
+DRAM_BASE0	include/s3c2440.h	58;"	d
+DRAM_BASE1	include/s3c2440.h	59;"	d
+DSPGPSLP_OFFSET	include/s3c2440.h	266;"	d
+DSPGPSLP_REG	include/s3c2440.h	328;"	d
+DSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 DSTAT;$/;"	m	struct:__anon6
+DW16	mem_init.S	/^#define DW16			(0x1)$/;"	d
+DW32	mem_init.S	/^#define DW32			(0x2)$/;"	d
+DW8	mem_init.S	/^#define DW8			(0x0)$/;"	d
+E	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+E	include/rsa.h	/^    mpi E;      \/*!<  public exponent   *\/$/;"	m	struct:__anon31
+E2BIG	include/asm/errno.h	10;"	d
+EACCES	include/asm/errno.h	16;"	d
+EADDRINUSE	include/asm/errno.h	101;"	d
+EADDRNOTAVAIL	include/asm/errno.h	102;"	d
+EADV	include/asm/errno.h	71;"	d
+EAFNOSUPPORT	include/asm/errno.h	100;"	d
+EAGAIN	include/asm/errno.h	14;"	d
+EALREADY	include/asm/errno.h	117;"	d
+EBADE	include/asm/errno.h	55;"	d
+EBADF	include/asm/errno.h	12;"	d
+EBADFD	include/asm/errno.h	80;"	d
+EBADMSG	include/asm/errno.h	77;"	d
+EBADR	include/asm/errno.h	56;"	d
+EBADRQC	include/asm/errno.h	59;"	d
+EBADSLT	include/asm/errno.h	60;"	d
+EBFONT	include/asm/errno.h	62;"	d
+EBUSY	include/asm/errno.h	19;"	d
+ECHILD	include/asm/errno.h	13;"	d
+ECHRNG	include/asm/errno.h	47;"	d
+ECOMM	include/asm/errno.h	73;"	d
+ECONNABORTED	include/asm/errno.h	106;"	d
+ECONNREFUSED	include/asm/errno.h	114;"	d
+ECONNRESET	include/asm/errno.h	107;"	d
+EDEADLK	include/asm/errno.h	38;"	d
+EDEADLOCK	include/asm/errno.h	61;"	d
+EDESTADDRREQ	include/asm/errno.h	92;"	d
+EDOM	include/asm/errno.h	36;"	d
+EDOTDOT	include/asm/errno.h	76;"	d
+EDQUOT	include/asm/errno.h	125;"	d
+EEXIST	include/asm/errno.h	20;"	d
+EFAULT	include/asm/errno.h	17;"	d
+EFBIG	include/asm/errno.h	30;"	d
+EHOSTDOWN	include/asm/errno.h	115;"	d
+EHOSTUNREACH	include/asm/errno.h	116;"	d
+EIDRM	include/asm/errno.h	46;"	d
+EILSEQ	include/asm/errno.h	87;"	d
+EINPROGRESS	include/asm/errno.h	118;"	d
+EINTCON0_OFFSET	include/s3c2440.h	260;"	d
+EINTCON0_REG	include/s3c2440.h	322;"	d
+EINTCON1_OFFSET	include/s3c2440.h	261;"	d
+EINTCON1_REG	include/s3c2440.h	323;"	d
+EINTFLT0	include/s3c24x0.h	/^    S3C24X0_REG32 EINTFLT0;$/;"	m	struct:__anon20
+EINTFLT0_OFFSET	include/s3c2440.h	262;"	d
+EINTFLT0_REG	include/s3c2440.h	324;"	d
+EINTFLT1	include/s3c24x0.h	/^    S3C24X0_REG32 EINTFLT1;$/;"	m	struct:__anon20
+EINTFLT1_OFFSET	include/s3c2440.h	263;"	d
+EINTFLT1_REG	include/s3c2440.h	325;"	d
+EINTFLT2	include/s3c24x0.h	/^    S3C24X0_REG32 EINTFLT2;$/;"	m	struct:__anon20
+EINTFLT3	include/s3c24x0.h	/^    S3C24X0_REG32 EINTFLT3;$/;"	m	struct:__anon20
+EINTMASK	include/s3c24x0.h	/^    S3C24X0_REG32 EINTMASK;$/;"	m	struct:__anon20
+EINTMASK_OFFSET	include/s3c2440.h	264;"	d
+EINTMASK_REG	include/s3c2440.h	326;"	d
+EINTPEND	include/s3c24x0.h	/^    S3C24X0_REG32 EINTPEND;$/;"	m	struct:__anon20
+EINTPEND_OFFSET	include/s3c2440.h	265;"	d
+EINTPEND_REG	include/s3c2440.h	327;"	d
+EINTR	include/asm/errno.h	7;"	d
+EINVAL	include/asm/errno.h	25;"	d
+EIO	include/asm/errno.h	8;"	d
+EISCONN	include/asm/errno.h	109;"	d
+EISDIR	include/asm/errno.h	24;"	d
+EISNAM	include/asm/errno.h	123;"	d
+EL2HLT	include/asm/errno.h	54;"	d
+EL2NSYNC	include/asm/errno.h	48;"	d
+EL3HLT	include/asm/errno.h	49;"	d
+EL3RST	include/asm/errno.h	50;"	d
+ELFIN_ADC_BASE	include/s3c2440.h	70;"	d
+ELFIN_CLOCK_POWER_BASE	include/s3c2440.h	188;"	d
+ELFIN_DMA_BASE	include/s3c2440.h	66;"	d
+ELFIN_GPIO_BASE	include/s3c2440.h	215;"	d
+ELFIN_I2C_BASE	include/s3c2440.h	68;"	d
+ELFIN_I2S_BASE	include/s3c2440.h	69;"	d
+ELFIN_INTERRUPT_BASE	include/s3c2440.h	164;"	d
+ELFIN_LCD_BASE	include/s3c2440.h	209;"	d
+ELFIN_MEM_CON_BASE	include/s3c2440.h	78;"	d
+ELFIN_NAND_BASE	include/s3c2440.h	345;"	d
+ELFIN_RTC_BASE	include/s3c2440.h	523;"	d
+ELFIN_SDI_BASE	include/s3c2440.h	72;"	d
+ELFIN_SPI_BASE	include/s3c2440.h	71;"	d
+ELFIN_TIMER_BASE	include/s3c2440.h	470;"	d
+ELFIN_UART_BASE	include/s3c2440.h	413;"	d
+ELFIN_USBD_BASE	include/s3c2440.h	542;"	d
+ELFIN_USB_DEVICE_BASE	include/s3c2440.h	67;"	d
+ELFIN_USB_HOST_BASE	include/s3c2440.h	111;"	d
+ELFIN_WATCHDOG_BASE	include/s3c2440.h	400;"	d
+ELIBACC	include/asm/errno.h	82;"	d
+ELIBBAD	include/asm/errno.h	83;"	d
+ELIBEXEC	include/asm/errno.h	86;"	d
+ELIBMAX	include/asm/errno.h	85;"	d
+ELIBSCN	include/asm/errno.h	84;"	d
+ELNRNG	include/asm/errno.h	51;"	d
+ELOOP	include/asm/errno.h	43;"	d
+EMEDIUMTYPE	include/asm/errno.h	128;"	d
+EMFILE	include/asm/errno.h	27;"	d
+EMIT	include/bn_asm.h	434;"	d
+EMLINK	include/asm/errno.h	34;"	d
+EMSGSIZE	include/asm/errno.h	93;"	d
+EMULTIHOP	include/asm/errno.h	75;"	d
+ENAMETOOLONG	include/asm/errno.h	39;"	d
+ENAVAIL	include/asm/errno.h	122;"	d
+ENETDOWN	include/asm/errno.h	103;"	d
+ENETRESET	include/asm/errno.h	105;"	d
+ENETUNREACH	include/asm/errno.h	104;"	d
+ENFILE	include/asm/errno.h	26;"	d
+ENOANO	include/asm/errno.h	58;"	d
+ENOBUFS	include/asm/errno.h	108;"	d
+ENOCSI	include/asm/errno.h	53;"	d
+ENODATA	include/asm/errno.h	64;"	d
+ENODEV	include/asm/errno.h	22;"	d
+ENOENT	include/asm/errno.h	5;"	d
+ENOEXEC	include/asm/errno.h	11;"	d
+ENOIOCTLCMD	include/asm/errno.h	134;"	d
+ENOLCK	include/asm/errno.h	40;"	d
+ENOLINK	include/asm/errno.h	70;"	d
+ENOMEDIUM	include/asm/errno.h	127;"	d
+ENOMEM	include/asm/errno.h	15;"	d
+ENOMSG	include/asm/errno.h	45;"	d
+ENONET	include/asm/errno.h	67;"	d
+ENOPKG	include/asm/errno.h	68;"	d
+ENOPROTOOPT	include/asm/errno.h	95;"	d
+ENOSPC	include/asm/errno.h	31;"	d
+ENOSR	include/asm/errno.h	66;"	d
+ENOSTR	include/asm/errno.h	63;"	d
+ENOSYS	include/asm/errno.h	41;"	d
+ENOTBLK	include/asm/errno.h	18;"	d
+ENOTCONN	include/asm/errno.h	110;"	d
+ENOTDIR	include/asm/errno.h	23;"	d
+ENOTEMPTY	include/asm/errno.h	42;"	d
+ENOTNAM	include/asm/errno.h	121;"	d
+ENOTSOCK	include/asm/errno.h	91;"	d
+ENOTTY	include/asm/errno.h	28;"	d
+ENOTUNIQ	include/asm/errno.h	79;"	d
+ENXIO	include/asm/errno.h	9;"	d
+EOPNOTSUPP	include/asm/errno.h	98;"	d
+EOVERFLOW	include/asm/errno.h	78;"	d
+EP0_CSR_IN_CSR1_REG	include/s3c24x0.h	/^    S3C24X0_REG8 EP0_CSR_IN_CSR1_REG;$/;"	m	struct:__anon16
+EPERM	include/asm/errno.h	4;"	d
+EPFNOSUPPORT	include/asm/errno.h	99;"	d
+EPIPE	include/asm/errno.h	35;"	d
+EPOCH_WDAY	include/linux/time.h	22;"	d
+EPOCH_YEAR	include/linux/time.h	21;"	d
+EPROTO	include/asm/errno.h	74;"	d
+EPROTONOSUPPORT	include/asm/errno.h	96;"	d
+EPROTOTYPE	include/asm/errno.h	94;"	d
+EP_DMA_CON	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_CON;$/;"	m	struct:__anon15
+EP_DMA_FIFO	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_FIFO;$/;"	m	struct:__anon15
+EP_DMA_TTC_H	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_TTC_H;$/;"	m	struct:__anon15
+EP_DMA_TTC_L	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_TTC_L;$/;"	m	struct:__anon15
+EP_DMA_TTC_M	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_TTC_M;$/;"	m	struct:__anon15
+EP_DMA_UNIT	include/s3c24x0.h	/^    S3C24X0_REG8 EP_DMA_UNIT;$/;"	m	struct:__anon15
+EP_FIFO_REG	include/s3c24x0.h	/^    S3C24X0_REG8 EP_FIFO_REG;$/;"	m	struct:__anon14
+EP_INT_EN_REG	include/s3c24x0.h	/^    S3C24X0_REG8 EP_INT_EN_REG;$/;"	m	struct:__anon16
+EP_INT_REG	include/s3c24x0.h	/^    S3C24X0_REG8 EP_INT_REG;$/;"	m	struct:__anon16
+ERANGE	include/asm/errno.h	37;"	d
+EREMCHG	include/asm/errno.h	81;"	d
+EREMOTE	include/asm/errno.h	69;"	d
+EREMOTEIO	include/asm/errno.h	124;"	d
+ERESTART	include/asm/errno.h	88;"	d
+ERESTARTNOHAND	include/asm/errno.h	133;"	d
+ERESTARTNOINTR	include/asm/errno.h	132;"	d
+ERESTARTSYS	include/asm/errno.h	131;"	d
+EROFS	include/asm/errno.h	33;"	d
+ERR_MPI_BUFFER_TOO_SMALL	include/bignum.h	13;"	d
+ERR_MPI_DIVISION_BY_ZERO	include/bignum.h	15;"	d
+ERR_MPI_INVALID_CHARACTER	include/bignum.h	11;"	d
+ERR_MPI_INVALID_PARAMETER	include/bignum.h	12;"	d
+ERR_MPI_IS_COMPOSITE	include/bignum.h	17;"	d
+ERR_MPI_NEGATIVE_VALUE	include/bignum.h	14;"	d
+ERR_MPI_NOT_INVERTIBLE	include/bignum.h	16;"	d
+ERR_RSA_BAD_INPUT_DATA	include/rsa.h	13;"	d
+ERR_RSA_INVALID_PADDING	include/rsa.h	14;"	d
+ERR_RSA_KEY_CHK_FAILED	include/rsa.h	16;"	d
+ERR_RSA_KEY_GEN_FAILED	include/rsa.h	15;"	d
+ERR_RSA_PRIVATE_FAILED	include/rsa.h	18;"	d
+ERR_RSA_PUBLIC_FAILED	include/rsa.h	17;"	d
+ERR_RSA_VERIFY_FAILED	include/rsa.h	19;"	d
+ESHUTDOWN	include/asm/errno.h	111;"	d
+ESOCKTNOSUPPORT	include/asm/errno.h	97;"	d
+ESPIPE	include/asm/errno.h	32;"	d
+ESRCH	include/asm/errno.h	6;"	d
+ESRMNT	include/asm/errno.h	72;"	d
+ESTALE	include/asm/errno.h	119;"	d
+ESTRPIPE	include/asm/errno.h	89;"	d
+ETIME	include/asm/errno.h	65;"	d
+ETIMEDOUT	include/asm/errno.h	113;"	d
+ETOOMANYREFS	include/asm/errno.h	112;"	d
+ETXTBSY	include/asm/errno.h	29;"	d
+EUCLEAN	include/asm/errno.h	120;"	d
+EUNATCH	include/asm/errno.h	52;"	d
+EUSERS	include/asm/errno.h	90;"	d
+EWOULDBLOCK	include/asm/errno.h	44;"	d
+EXDEV	include/asm/errno.h	21;"	d
+EXFULL	include/asm/errno.h	57;"	d
+EXTINT	include/s3c24x0.h	/^    S3C24X0_REG32 EXTINT;$/;"	m	struct:__anon20
+EXTINT0	include/s3c24x0.h	/^    S3C24X0_REG32 EXTINT0;$/;"	m	struct:__anon20
+EXTINT1	include/s3c24x0.h	/^    S3C24X0_REG32 EXTINT1;$/;"	m	struct:__anon20
+EXTINT2	include/s3c24x0.h	/^    S3C24X0_REG32 EXTINT2;$/;"	m	struct:__anon20
+F1stBit	include/asm/hardware.h	32;"	d
+FAlnMsk	include/asm/hardware.h	31;"	d
+FClrBit	include/asm/hardware.h	34;"	d
+FClrFld	include/asm/hardware.h	35;"	d
+FExtr	include/asm/hardware.h	40;"	d
+FInsrt	include/asm/hardware.h	37;"	d
+FMsk	include/asm/hardware.h	30;"	d
+FRAME_NUM1_REG	include/s3c24x0.h	/^    S3C24X0_REG8 FRAME_NUM1_REG;$/;"	m	struct:__anon16
+FRAME_NUM2_REG	include/s3c24x0.h	/^    S3C24X0_REG8 FRAME_NUM2_REG;$/;"	m	struct:__anon16
+FShft	include/asm/hardware.h	29;"	d
+FSize	include/asm/hardware.h	28;"	d
+FUNC_ADDR_REG	include/s3c24x0.h	/^    S3C24X0_REG8 FUNC_ADDR_REG;$/;"	m	struct:__anon16
+Fld	include/asm/hardware.h	26;"	d
+G	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+G	rsa.c	/^    mpi P1, Q1, H, G;$/;"	l
+G	rsa.c	/^    mpi TN, P1, Q1, H, G;$/;"	l
+GET_DIVIDER_TIMER4	include/s3c2440.h	518;"	d
+GET_PRESCALE_TIMER4	include/s3c2440.h	517;"	d
+GPABON_OFFSET	include/s3c2440.h	221;"	d
+GPABON_REG	include/s3c2440.h	283;"	d
+GPACON	include/s3c24x0.h	/^    S3C24X0_REG32 GPACON;$/;"	m	struct:__anon20
+GPACON_OFFSET	include/s3c2440.h	217;"	d
+GPACON_REG	include/s3c2440.h	279;"	d
+GPADAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPADAT;$/;"	m	struct:__anon20
+GPADAT_OFFSET	include/s3c2440.h	218;"	d
+GPADAT_REG	include/s3c2440.h	280;"	d
+GPAPU_OFFSET	include/s3c2440.h	219;"	d
+GPAPU_REG	include/s3c2440.h	281;"	d
+GPASLPCON_OFFSET	include/s3c2440.h	220;"	d
+GPASLPCON_REG	include/s3c2440.h	282;"	d
+GPBCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPBCON;$/;"	m	struct:__anon20
+GPBCON	led_beep.c	14;"	d	file:
+GPBDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPBDAT;$/;"	m	struct:__anon20
+GPBDAT	led_beep.c	15;"	d	file:
+GPBDAT_OFFSET	include/s3c2440.h	222;"	d
+GPBDAT_REG	include/s3c2440.h	284;"	d
+GPBPU_OFFSET	include/s3c2440.h	223;"	d
+GPBPU_REG	include/s3c2440.h	285;"	d
+GPBSLPCON_OFFSET	include/s3c2440.h	224;"	d
+GPBSLPCON_REG	include/s3c2440.h	286;"	d
+GPBUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPBUP;$/;"	m	struct:__anon20
+GPBUP	led_beep.c	16;"	d	file:
+GPCCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPCCON;$/;"	m	struct:__anon20
+GPCCON_OFFSET	include/s3c2440.h	225;"	d
+GPCCON_REG	include/s3c2440.h	287;"	d
+GPCDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPCDAT;$/;"	m	struct:__anon20
+GPCDAT_OFFSET	include/s3c2440.h	226;"	d
+GPCDAT_REG	include/s3c2440.h	288;"	d
+GPCPU_OFFSET	include/s3c2440.h	227;"	d
+GPCPU_REG	include/s3c2440.h	289;"	d
+GPCSLPCON_OFFSET	include/s3c2440.h	228;"	d
+GPCSLPCON_REG	include/s3c2440.h	290;"	d
+GPCUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPCUP;$/;"	m	struct:__anon20
+GPDCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPDCON;$/;"	m	struct:__anon20
+GPDCON_OFFSET	include/s3c2440.h	229;"	d
+GPDCON_REG	include/s3c2440.h	291;"	d
+GPDDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPDDAT;$/;"	m	struct:__anon20
+GPDDAT_OFFSET	include/s3c2440.h	230;"	d
+GPDDAT_REG	include/s3c2440.h	292;"	d
+GPDPU_OFFSET	include/s3c2440.h	231;"	d
+GPDPU_REG	include/s3c2440.h	293;"	d
+GPDUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPDUP;$/;"	m	struct:__anon20
+GPECON	include/s3c24x0.h	/^    S3C24X0_REG32 GPECON;$/;"	m	struct:__anon20
+GPECON_OFFSET	include/s3c2440.h	232;"	d
+GPECON_REG	include/s3c2440.h	294;"	d
+GPEDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPEDAT;$/;"	m	struct:__anon20
+GPEDAT_OFFSET	include/s3c2440.h	233;"	d
+GPEDAT_REG	include/s3c2440.h	295;"	d
+GPEPU_OFFSET	include/s3c2440.h	234;"	d
+GPEPU_REG	include/s3c2440.h	296;"	d
+GPESLPCON_OFFSET	include/s3c2440.h	235;"	d
+GPESLPCON_REG	include/s3c2440.h	297;"	d
+GPEUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPEUP;$/;"	m	struct:__anon20
+GPFCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPFCON;$/;"	m	struct:__anon20
+GPFCON_OFFSET	include/s3c2440.h	236;"	d
+GPFCON_REG	include/s3c2440.h	298;"	d
+GPFDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPFDAT;$/;"	m	struct:__anon20
+GPFDAT_OFFSET	include/s3c2440.h	237;"	d
+GPFDAT_REG	include/s3c2440.h	299;"	d
+GPFPU_OFFSET	include/s3c2440.h	238;"	d
+GPFPU_REG	include/s3c2440.h	300;"	d
+GPFSLPCON_OFFSET	include/s3c2440.h	239;"	d
+GPFSLPCON_REG	include/s3c2440.h	301;"	d
+GPFUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPFUP;$/;"	m	struct:__anon20
+GPGCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPGCON;$/;"	m	struct:__anon20
+GPGCON_OFFSET	include/s3c2440.h	240;"	d
+GPGCON_REG	include/s3c2440.h	302;"	d
+GPGDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPGDAT;$/;"	m	struct:__anon20
+GPGDAT_OFFSET	include/s3c2440.h	241;"	d
+GPGDAT_REG	include/s3c2440.h	303;"	d
+GPGPU_OFFSET	include/s3c2440.h	242;"	d
+GPGPU_REG	include/s3c2440.h	304;"	d
+GPGSLPCON_OFFSET	include/s3c2440.h	243;"	d
+GPGSLPCON_REG	include/s3c2440.h	305;"	d
+GPGUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPGUP;$/;"	m	struct:__anon20
+GPHCON	include/s3c24x0.h	/^    S3C24X0_REG32 GPHCON;$/;"	m	struct:__anon20
+GPHCON	serial.c	11;"	d	file:
+GPHCON_OFFSET	include/s3c2440.h	244;"	d
+GPHCON_REG	include/s3c2440.h	306;"	d
+GPHDAT	include/s3c24x0.h	/^    S3C24X0_REG32 GPHDAT;$/;"	m	struct:__anon20
+GPHDAT_OFFSET	include/s3c2440.h	245;"	d
+GPHDAT_REG	include/s3c2440.h	307;"	d
+GPHPU_OFFSET	include/s3c2440.h	246;"	d
+GPHPU_REG	include/s3c2440.h	308;"	d
+GPHSLPCON_OFFSET	include/s3c2440.h	247;"	d
+GPHSLPCON_REG	include/s3c2440.h	309;"	d
+GPHUP	include/s3c24x0.h	/^    S3C24X0_REG32 GPHUP;$/;"	m	struct:__anon20
+GPICON_OFFSET	include/s3c2440.h	248;"	d
+GPICON_REG	include/s3c2440.h	310;"	d
+GPIDAT_OFFSET	include/s3c2440.h	249;"	d
+GPIDAT_REG	include/s3c2440.h	311;"	d
+GPIPU_OFFSET	include/s3c2440.h	250;"	d
+GPIPU_REG	include/s3c2440.h	312;"	d
+GPISLPCON_OFFSET	include/s3c2440.h	251;"	d
+GPISLPCON_REG	include/s3c2440.h	313;"	d
+GPJCON_OFFSET	include/s3c2440.h	252;"	d
+GPJCON_REG	include/s3c2440.h	314;"	d
+GPJDAT_OFFSET	include/s3c2440.h	253;"	d
+GPJDAT_REG	include/s3c2440.h	315;"	d
+GPJPU_OFFSET	include/s3c2440.h	254;"	d
+GPJPU_REG	include/s3c2440.h	316;"	d
+GPKCON_OFFSET	include/s3c2440.h	256;"	d
+GPKCON_REG	include/s3c2440.h	318;"	d
+GPKDAT_OFFSET	include/s3c2440.h	257;"	d
+GPKDAT_REG	include/s3c2440.h	319;"	d
+GPKPU_OFFSET	include/s3c2440.h	258;"	d
+GPKPU_REG	include/s3c2440.h	320;"	d
+GPKSLPCON_OFFSET	include/s3c2440.h	259;"	d
+GPKSLPCON_REG	include/s3c2440.h	321;"	d
+GREENLUT	include/s3c24x0.h	/^    S3C24X0_REG32 GREENLUT;$/;"	m	struct:__anon9
+GSTATUS0	include/s3c24x0.h	/^    S3C24X0_REG32 GSTATUS0;$/;"	m	struct:__anon20
+GSTATUS1	include/s3c24x0.h	/^    S3C24X0_REG32 GSTATUS1;$/;"	m	struct:__anon20
+GSTATUS2	include/s3c24x0.h	/^    S3C24X0_REG32 GSTATUS2;$/;"	m	struct:__anon20
+GSTATUS3	include/s3c24x0.h	/^    S3C24X0_REG32 GSTATUS3;$/;"	m	struct:__anon20
+GSTATUS4	include/s3c24x0.h	/^    S3C24X0_REG32 GSTATUS4;$/;"	m	struct:__anon20
+H	rsa.c	/^    mpi P1, Q1, H, G;$/;"	l
+H	rsa.c	/^    mpi TN, P1, Q1, H, G;$/;"	l
+HOURSPERDAY	include/linux/time.h	14;"	d
+HcBuldCurrentED	include/s3c24x0.h	/^    S3C24X0_REG32 HcBuldCurrentED;$/;"	m	struct:__anon4
+HcBulkCurED_OFFSET	include/s3c2440.h	124;"	d
+HcBulkCurED_REG	include/s3c2440.h	148;"	d
+HcBulkHeadED	include/s3c24x0.h	/^    S3C24X0_REG32 HcBulkHeadED;$/;"	m	struct:__anon4
+HcBulkHeadED_OFFSET	include/s3c2440.h	123;"	d
+HcBulkHeadED_REG	include/s3c2440.h	147;"	d
+HcCommonStatus	include/s3c24x0.h	/^    S3C24X0_REG32 HcCommonStatus;$/;"	m	struct:__anon4
+HcCommonStatus_OFFSET	include/s3c2440.h	115;"	d
+HcCommonStatus_REG	include/s3c2440.h	139;"	d
+HcControl	include/s3c24x0.h	/^    S3C24X0_REG32 HcControl;$/;"	m	struct:__anon4
+HcControlCurrentED	include/s3c24x0.h	/^    S3C24X0_REG32 HcControlCurrentED;$/;"	m	struct:__anon4
+HcControlHeadED	include/s3c24x0.h	/^    S3C24X0_REG32 HcControlHeadED;$/;"	m	struct:__anon4
+HcControl_OFFSET	include/s3c2440.h	114;"	d
+HcControl_REG	include/s3c2440.h	138;"	d
+HcCtrlCurED_OFFSET	include/s3c2440.h	122;"	d
+HcCtrlCurED_REG	include/s3c2440.h	146;"	d
+HcCtrlHeadED_OFFSET	include/s3c2440.h	121;"	d
+HcCtrlHeadED_REG	include/s3c2440.h	145;"	d
+HcDoneHead	include/s3c24x0.h	/^    S3C24X0_REG32 HcDoneHead;$/;"	m	struct:__anon4
+HcDoneHead_OFFSET	include/s3c2440.h	125;"	d
+HcDoneHead_REG	include/s3c2440.h	149;"	d
+HcFmNumber	include/s3c24x0.h	/^    S3C24X0_REG32 HcFmNumber;$/;"	m	struct:__anon4
+HcFmNumber_OFFSET	include/s3c2440.h	128;"	d
+HcFmNumber_REG	include/s3c2440.h	152;"	d
+HcFmRemain_OFFSET	include/s3c2440.h	127;"	d
+HcFmRemain_REG	include/s3c2440.h	151;"	d
+HcFmRemaining	include/s3c24x0.h	/^    S3C24X0_REG32 HcFmRemaining;$/;"	m	struct:__anon4
+HcHCCA	include/s3c24x0.h	/^    S3C24X0_REG32 HcHCCA;$/;"	m	struct:__anon4
+HcHCCA_OFFSET	include/s3c2440.h	119;"	d
+HcHCCA_REG	include/s3c2440.h	143;"	d
+HcIntDisable_OFFSET	include/s3c2440.h	118;"	d
+HcIntDisable_REG	include/s3c2440.h	142;"	d
+HcIntEnable_OFFSET	include/s3c2440.h	117;"	d
+HcIntEnable_REG	include/s3c2440.h	141;"	d
+HcIntStatus_OFFSET	include/s3c2440.h	116;"	d
+HcIntStatus_REG	include/s3c2440.h	140;"	d
+HcInterruptDisable	include/s3c24x0.h	/^    S3C24X0_REG32 HcInterruptDisable;$/;"	m	struct:__anon4
+HcInterruptEnable	include/s3c24x0.h	/^    S3C24X0_REG32 HcInterruptEnable;$/;"	m	struct:__anon4
+HcInterruptStatus	include/s3c24x0.h	/^    S3C24X0_REG32 HcInterruptStatus;$/;"	m	struct:__anon4
+HcLSThres_OFFSET	include/s3c2440.h	130;"	d
+HcLSThres_REG	include/s3c2440.h	154;"	d
+HcLSThreshold	include/s3c24x0.h	/^    S3C24X0_REG32 HcLSThreshold;$/;"	m	struct:__anon4
+HcPerdCurED_OFFSET	include/s3c2440.h	120;"	d
+HcPerdCurED_REG	include/s3c2440.h	144;"	d
+HcPerdStart_OFFSET	include/s3c2440.h	129;"	d
+HcPerdStart_REG	include/s3c2440.h	153;"	d
+HcPeriodCuttendED	include/s3c24x0.h	/^    S3C24X0_REG32 HcPeriodCuttendED;$/;"	m	struct:__anon4
+HcPeriodicStart	include/s3c24x0.h	/^    S3C24X0_REG32 HcPeriodicStart;$/;"	m	struct:__anon4
+HcRevision	include/s3c24x0.h	/^    S3C24X0_REG32 HcRevision;$/;"	m	struct:__anon4
+HcRevision_OFFSET	include/s3c2440.h	113;"	d
+HcRevision_REG	include/s3c2440.h	137;"	d
+HcRhDescA_OFFSET	include/s3c2440.h	131;"	d
+HcRhDescA_REG	include/s3c2440.h	155;"	d
+HcRhDescB_OFFSET	include/s3c2440.h	132;"	d
+HcRhDescB_REG	include/s3c2440.h	156;"	d
+HcRhDescriptorA	include/s3c24x0.h	/^    S3C24X0_REG32 HcRhDescriptorA;$/;"	m	struct:__anon4
+HcRhDescriptorB	include/s3c24x0.h	/^    S3C24X0_REG32 HcRhDescriptorB;$/;"	m	struct:__anon4
+HcRhPortStatus1	include/s3c24x0.h	/^    S3C24X0_REG32 HcRhPortStatus1;$/;"	m	struct:__anon4
+HcRhPortStatus2	include/s3c24x0.h	/^    S3C24X0_REG32 HcRhPortStatus2;$/;"	m	struct:__anon4
+HcRhPortSts1_OFFSET	include/s3c2440.h	134;"	d
+HcRhPortSts1_REG	include/s3c2440.h	158;"	d
+HcRhPortSts2_OFFSET	include/s3c2440.h	135;"	d
+HcRhPortSts2_REG	include/s3c2440.h	159;"	d
+HcRhStatus	include/s3c24x0.h	/^    S3C24X0_REG32 HcRhStatus;$/;"	m	struct:__anon4
+HcRhStatus_OFFSET	include/s3c2440.h	133;"	d
+HcRhStatus_REG	include/s3c2440.h	157;"	d
+HcRmInterval	include/s3c24x0.h	/^    S3C24X0_REG32 HcRmInterval;$/;"	m	struct:__anon4
+HcRmInterval_OFFSET	include/s3c2440.h	126;"	d
+HcRmInterval_REG	include/s3c2440.h	150;"	d
+IICADD	include/s3c24x0.h	/^    S3C24X0_REG32 IICADD;$/;"	m	struct:__anon18
+IICCON	include/s3c24x0.h	/^    S3C24X0_REG32 IICCON;$/;"	m	struct:__anon18
+IICDS	include/s3c24x0.h	/^    S3C24X0_REG32 IICDS;$/;"	m	struct:__anon18
+IICSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 IICSTAT;$/;"	m	struct:__anon18
+IISCON	include/s3c24x0.h	/^    S3C24X0_REG16 IISCON;$/;"	m	struct:__anon19
+IISFCON	include/s3c24x0.h	/^    S3C24X0_REG16 IISFCON;$/;"	m	struct:__anon19
+IISFIFO	include/s3c24x0.h	/^    S3C24X0_REG16 IISFIFO;$/;"	m	struct:__anon19
+IISMOD	include/s3c24x0.h	/^    S3C24X0_REG16 IISMOD;$/;"	m	struct:__anon19
+IISPSR	include/s3c24x0.h	/^    S3C24X0_REG16 IISPSR;$/;"	m	struct:__anon19
+INDEX_REG	include/s3c24x0.h	/^    S3C24X0_REG8 INDEX_REG;$/;"	m	struct:__anon16
+INST_PATH	makefile	/^INST_PATH=~\/winxp$/;"	m
+INTMOD	include/s3c24x0.h	/^    S3C24X0_REG32 INTMOD;$/;"	m	struct:__anon5
+INTMOD_OFFSET	include/s3c2440.h	167;"	d
+INTMOD_REG	include/s3c2440.h	176;"	d
+INTMSK	include/s3c24x0.h	/^    S3C24X0_REG32 INTMSK;$/;"	m	struct:__anon5
+INTMSK_OFFSET	include/s3c2440.h	168;"	d
+INTMSK_REG	include/s3c2440.h	177;"	d
+INTOFFSET	include/s3c24x0.h	/^    S3C24X0_REG32 INTOFFSET;$/;"	m	struct:__anon5
+INTOFFSET_OFFSET	include/s3c2440.h	171;"	d
+INTOFFSET_REG	include/s3c2440.h	180;"	d
+INTPND	include/s3c24x0.h	/^    S3C24X0_REG32 INTPND;$/;"	m	struct:__anon5
+INTPND_OFFSET	include/s3c2440.h	170;"	d
+INTPND_REG	include/s3c2440.h	179;"	d
+INTSUBMSK	include/s3c24x0.h	/^    S3C24X0_REG32 INTSUBMSK;$/;"	m	struct:__anon5
+INTSUBMSK_OFFSET	include/s3c2440.h	173;"	d
+INTSUBMSK_REG	include/s3c2440.h	182;"	d
+IN_CSR2_REG	include/s3c24x0.h	/^    S3C24X0_REG8 IN_CSR2_REG;$/;"	m	struct:__anon16
+I_BIT	start.S	/^#define I_BIT		0x80$/;"	d
+LARGE	common.c	68;"	d	file:
+LAUNCHER_NAND_ADDR	include/config.h	34;"	d
+LCDBGCON_OFFSET	include/s3c2440.h	625;"	d
+LCDCON1	include/s3c24x0.h	/^    S3C24X0_REG32 LCDCON1;$/;"	m	struct:__anon9
+LCDCON2	include/s3c24x0.h	/^    S3C24X0_REG32 LCDCON2;$/;"	m	struct:__anon9
+LCDCON3	include/s3c24x0.h	/^    S3C24X0_REG32 LCDCON3;$/;"	m	struct:__anon9
+LCDCON4	include/s3c24x0.h	/^    S3C24X0_REG32 LCDCON4;$/;"	m	struct:__anon9
+LCDCON5	include/s3c24x0.h	/^    S3C24X0_REG32 LCDCON5;$/;"	m	struct:__anon9
+LCDINTMSK	include/s3c24x0.h	/^    S3C24X0_REG32 LCDINTMSK;$/;"	m	struct:__anon9
+LCDINTPND	include/s3c24x0.h	/^    S3C24X0_REG32 LCDINTPND;$/;"	m	struct:__anon9
+LCDSADDR1	include/s3c24x0.h	/^    S3C24X0_REG32 LCDSADDR1;$/;"	m	struct:__anon9
+LCDSADDR2	include/s3c24x0.h	/^    S3C24X0_REG32 LCDSADDR2;$/;"	m	struct:__anon9
+LCDSADDR3	include/s3c24x0.h	/^    S3C24X0_REG32 LCDSADDR3;$/;"	m	struct:__anon9
+LCDSRCPND	include/s3c24x0.h	/^    S3C24X0_REG32 LCDSRCPND;$/;"	m	struct:__anon9
+LD	makefile	/^LD  = $(CROSS_COMPILE)ld$/;"	m
+LDFLAGS	makefile	/^LDFLAGS=-Bstatic -T$(APP_NAME).lds -Ttext $(TEXT_BASE)$/;"	m
+LDR	makefile	/^LDR = $(CROSS_COMPILE)ldr$/;"	m
+LED0	include/s3c2440.h	35;"	d
+LED1	include/s3c2440.h	36;"	d
+LED2	include/s3c2440.h	37;"	d
+LED3	include/s3c2440.h	38;"	d
+LEFT	common.c	66;"	d	file:
+LOCKTIME	include/s3c24x0.h	/^    S3C24X0_REG32 LOCKTIME;$/;"	m	struct:__anon8
+LOCKTIME_OFFSET	include/s3c2440.h	190;"	d
+LOCKTIME_REG	include/s3c2440.h	198;"	d
+LPCSEL	include/s3c24x0.h	/^    S3C24X0_REG32 LPCSEL;$/;"	m	struct:__anon9
+MAP_NOCACHE	include/asm/io.h	36;"	d
+MAP_WRBACK	include/asm/io.h	38;"	d
+MAP_WRCOMBINE	include/asm/io.h	37;"	d
+MAP_WRTHROUGH	include/asm/io.h	39;"	d
+MAXP_REG	include/s3c24x0.h	/^    S3C24X0_REG8 MAXP_REG;$/;"	m	struct:__anon16
+MDIV_405	include/config.h	18;"	d
+MEM0CONSLP_OFFSET	include/s3c2440.h	270;"	d
+MEM0CONSLP_REG	include/s3c2440.h	332;"	d
+MEM0CONSTOP_OFFSET	include/s3c2440.h	267;"	d
+MEM0CONSTOP_REG	include/s3c2440.h	329;"	d
+MEM0DRVCON_OFFSET	include/s3c2440.h	275;"	d
+MEM0DRVCON_REG	include/s3c2440.h	337;"	d
+MEM1CONSLP_OFFSET	include/s3c2440.h	271;"	d
+MEM1CONSLP_REG	include/s3c2440.h	333;"	d
+MEM1CONSTOP_OFFSET	include/s3c2440.h	268;"	d
+MEM1CONSTOP_REG	include/s3c2440.h	330;"	d
+MEM1DRVCON_OFFSET	include/s3c2440.h	276;"	d
+MEM1DRVCON_REG	include/s3c2440.h	338;"	d
+MEM2CONSLP_OFFSET	include/s3c2440.h	272;"	d
+MEM2CONSLP_REG	include/s3c2440.h	334;"	d
+MEM2CONSTOP_OFFSET	include/s3c2440.h	269;"	d
+MEM2CONSTOP_REG	include/s3c2440.h	331;"	d
+MEM2DRVCON_OFFSET	include/s3c2440.h	277;"	d
+MEM2DRVCON_REG	include/s3c2440.h	339;"	d
+MINSPERHOUR	include/linux/time.h	13;"	d
+MISCCR	include/s3c24x0.h	/^    S3C24X0_REG32 MISCCR;$/;"	m	struct:__anon20
+MMCMD0	include/s3c24x0.h	/^    S3C24X0_REG8 MMCMD0;$/;"	m	struct:__anon26
+MMCMD1	include/s3c24x0.h	/^    S3C24X0_REG32 MMCMD1;$/;"	m	struct:__anon26
+MMCON	include/s3c24x0.h	/^    S3C24X0_REG8 MMCON;$/;"	m	struct:__anon26
+MMCR16	include/s3c24x0.h	/^    S3C24X0_REG16 MMCR16;$/;"	m	struct:__anon26
+MMCR7	include/s3c24x0.h	/^    S3C24X0_REG8 MMCR7;$/;"	m	struct:__anon26
+MMCRR	include/s3c24x0.h	/^    S3C24X0_REG8 MMCRR;$/;"	m	struct:__anon26
+MMDAT	include/s3c24x0.h	/^    S3C24X0_REG8 MMDAT;$/;"	m	struct:__anon26
+MMFCON	include/s3c24x0.h	/^    S3C24X0_REG8 MMFCON;$/;"	m	struct:__anon26
+MMFSTA	include/s3c24x0.h	/^    S3C24X0_REG16 MMFSTA;$/;"	m	struct:__anon26
+MMLEN	include/s3c24x0.h	/^    S3C24X0_REG16 MMLEN;$/;"	m	struct:__anon26
+MMPRE	include/s3c24x0.h	/^    S3C24X0_REG8 MMPRE;$/;"	m	struct:__anon26
+MMRSP	include/s3c24x0.h	/^    S3C24X0_REG32 MMRSP[4];$/;"	m	struct:__anon26
+MMSTA	include/s3c24x0.h	/^    S3C24X0_REG8 MMSTA;$/;"	m	struct:__anon26
+MODE_SVC	start.S	/^#define MODE_SVC	0x13$/;"	d
+MONSPERYEAR	include/linux/time.h	18;"	d
+MPLLCON	include/s3c24x0.h	/^    S3C24X0_REG32 MPLLCON;$/;"	m	struct:__anon8
+MPLLCON_OFFSET	include/s3c2440.h	191;"	d
+MPLLCON_REG	include/s3c2440.h	199;"	d
+MRSRB6	include/s3c24x0.h	/^    S3C24X0_REG32 MRSRB6;$/;"	m	struct:__anon3
+MRSRB6_OFFSET	include/s3c2440.h	91;"	d
+MRSRB6_REG	include/s3c2440.h	105;"	d
+MRSRB7	include/s3c24x0.h	/^    S3C24X0_REG32 MRSRB7;$/;"	m	struct:__anon3
+MRSRB7_OFFSET	include/s3c2440.h	92;"	d
+MRSRB7_REG	include/s3c2440.h	106;"	d
+MULADDC_CORE	include/bn_asm.h	112;"	d
+MULADDC_CORE	include/bn_asm.h	141;"	d
+MULADDC_CORE	include/bn_asm.h	19;"	d
+MULADDC_CORE	include/bn_asm.h	213;"	d
+MULADDC_CORE	include/bn_asm.h	243;"	d
+MULADDC_CORE	include/bn_asm.h	273;"	d
+MULADDC_CORE	include/bn_asm.h	303;"	d
+MULADDC_CORE	include/bn_asm.h	328;"	d
+MULADDC_CORE	include/bn_asm.h	353;"	d
+MULADDC_CORE	include/bn_asm.h	384;"	d
+MULADDC_CORE	include/bn_asm.h	417;"	d
+MULADDC_CORE	include/bn_asm.h	510;"	d
+MULADDC_CORE	include/bn_asm.h	529;"	d
+MULADDC_HUIT	include/bn_asm.h	156;"	d
+MULADDC_HUIT	include/bn_asm.h	37;"	d
+MULADDC_HUIT	include/bn_asm.h	436;"	d
+MULADDC_INIT	include/bn_asm.h	105;"	d
+MULADDC_INIT	include/bn_asm.h	134;"	d
+MULADDC_INIT	include/bn_asm.h	13;"	d
+MULADDC_INIT	include/bn_asm.h	204;"	d
+MULADDC_INIT	include/bn_asm.h	234;"	d
+MULADDC_INIT	include/bn_asm.h	267;"	d
+MULADDC_INIT	include/bn_asm.h	296;"	d
+MULADDC_INIT	include/bn_asm.h	322;"	d
+MULADDC_INIT	include/bn_asm.h	347;"	d
+MULADDC_INIT	include/bn_asm.h	378;"	d
+MULADDC_INIT	include/bn_asm.h	411;"	d
+MULADDC_INIT	include/bn_asm.h	505;"	d
+MULADDC_INIT	include/bn_asm.h	522;"	d
+MULADDC_STOP	include/bn_asm.h	124;"	d
+MULADDC_STOP	include/bn_asm.h	150;"	d
+MULADDC_STOP	include/bn_asm.h	223;"	d
+MULADDC_STOP	include/bn_asm.h	253;"	d
+MULADDC_STOP	include/bn_asm.h	286;"	d
+MULADDC_STOP	include/bn_asm.h	29;"	d
+MULADDC_STOP	include/bn_asm.h	312;"	d
+MULADDC_STOP	include/bn_asm.h	337;"	d
+MULADDC_STOP	include/bn_asm.h	368;"	d
+MULADDC_STOP	include/bn_asm.h	400;"	d
+MULADDC_STOP	include/bn_asm.h	427;"	d
+MULADDC_STOP	include/bn_asm.h	518;"	d
+MULADDC_STOP	include/bn_asm.h	543;"	d
+N	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+N	include/rsa.h	/^    mpi N;      \/*!<  public modulus    *\/$/;"	m	struct:__anon31
+NAND_4PAGE_ARRAY	include/nand.h	144;"	d
+NAND_4PAGE_ARRAY	nand.h	144;"	d
+NAND_ALE	include/nand.h	44;"	d
+NAND_ALE	nand.h	44;"	d
+NAND_BBT_SCANNED	include/nand.h	183;"	d
+NAND_BBT_SCANNED	nand.h	183;"	d
+NAND_BUSWIDTH_16	include/nand.h	132;"	d
+NAND_BUSWIDTH_16	nand.h	132;"	d
+NAND_CACHEPRG	include/nand.h	136;"	d
+NAND_CACHEPRG	nand.h	136;"	d
+NAND_CANAUTOINCR	include/nand.h	161;"	d
+NAND_CANAUTOINCR	nand.h	161;"	d
+NAND_CHIPOPTIONS_MSK	include/nand.h	170;"	d
+NAND_CHIPOPTIONS_MSK	nand.h	170;"	d
+NAND_CI_CELLTYPE_MSK	include/nand.h	189;"	d
+NAND_CI_CELLTYPE_MSK	nand.h	189;"	d
+NAND_CI_CHIPNR_MSK	include/nand.h	188;"	d
+NAND_CI_CHIPNR_MSK	nand.h	188;"	d
+NAND_CLE	include/nand.h	42;"	d
+NAND_CLE	nand.h	42;"	d
+NAND_CMD_CACHEDPROG	include/nand.h	71;"	d
+NAND_CMD_CACHEDPROG	nand.h	71;"	d
+NAND_CMD_DEPLETE1	include/nand.h	80;"	d
+NAND_CMD_DEPLETE1	nand.h	80;"	d
+NAND_CMD_DEPLETE2	include/nand.h	81;"	d
+NAND_CMD_DEPLETE2	nand.h	81;"	d
+NAND_CMD_ERASE1	include/nand.h	58;"	d
+NAND_CMD_ERASE1	nand.h	58;"	d
+NAND_CMD_ERASE2	include/nand.h	59;"	d
+NAND_CMD_ERASE2	nand.h	59;"	d
+NAND_CMD_NONE	include/nand.h	92;"	d
+NAND_CMD_NONE	nand.h	92;"	d
+NAND_CMD_PAGEPROG	include/nand.h	57;"	d
+NAND_CMD_PAGEPROG	nand.h	57;"	d
+NAND_CMD_READ0	include/nand.h	53;"	d
+NAND_CMD_READ0	nand.h	53;"	d
+NAND_CMD_READ1	include/nand.h	62;"	d
+NAND_CMD_READ1	nand.h	62;"	d
+NAND_CMD_READID	include/nand.h	55;"	d
+NAND_CMD_READID	nand.h	55;"	d
+NAND_CMD_READOOB	include/nand.h	67;"	d
+NAND_CMD_READOOB	nand.h	67;"	d
+NAND_CMD_READSTART	include/nand.h	54;"	d
+NAND_CMD_READSTART	nand.h	54;"	d
+NAND_CMD_RESET	include/nand.h	61;"	d
+NAND_CMD_RESET	nand.h	61;"	d
+NAND_CMD_RNDIN	include/nand.h	65;"	d
+NAND_CMD_RNDIN	nand.h	65;"	d
+NAND_CMD_RNDOUT	include/nand.h	63;"	d
+NAND_CMD_RNDOUT	nand.h	63;"	d
+NAND_CMD_RNDOUTSTART	include/nand.h	64;"	d
+NAND_CMD_RNDOUTSTART	nand.h	64;"	d
+NAND_CMD_SEQIN	include/nand.h	56;"	d
+NAND_CMD_SEQIN	nand.h	56;"	d
+NAND_CMD_STATUS	include/nand.h	60;"	d
+NAND_CMD_STATUS	nand.h	60;"	d
+NAND_CMD_STATUS_CLEAR	include/nand.h	90;"	d
+NAND_CMD_STATUS_CLEAR	nand.h	90;"	d
+NAND_CMD_STATUS_ERROR	include/nand.h	83;"	d
+NAND_CMD_STATUS_ERROR	nand.h	83;"	d
+NAND_CMD_STATUS_ERROR0	include/nand.h	85;"	d
+NAND_CMD_STATUS_ERROR0	nand.h	85;"	d
+NAND_CMD_STATUS_ERROR1	include/nand.h	86;"	d
+NAND_CMD_STATUS_ERROR1	nand.h	86;"	d
+NAND_CMD_STATUS_ERROR2	include/nand.h	87;"	d
+NAND_CMD_STATUS_ERROR2	nand.h	87;"	d
+NAND_CMD_STATUS_ERROR3	include/nand.h	88;"	d
+NAND_CMD_STATUS_ERROR3	nand.h	88;"	d
+NAND_CMD_STATUS_MULTI	include/nand.h	68;"	d
+NAND_CMD_STATUS_MULTI	include/nand.h	82;"	d
+NAND_CMD_STATUS_MULTI	nand.h	68;"	d
+NAND_CMD_STATUS_MULTI	nand.h	82;"	d
+NAND_CMD_STATUS_RESET	include/nand.h	89;"	d
+NAND_CMD_STATUS_RESET	nand.h	89;"	d
+NAND_CONTROLLER_ALLOC	include/nand.h	185;"	d
+NAND_CONTROLLER_ALLOC	nand.h	185;"	d
+NAND_COPYBACK	include/nand.h	138;"	d
+NAND_COPYBACK	nand.h	138;"	d
+NAND_CTRL_ALE	include/nand.h	47;"	d
+NAND_CTRL_ALE	nand.h	47;"	d
+NAND_CTRL_CHANGE	include/nand.h	48;"	d
+NAND_CTRL_CHANGE	nand.h	48;"	d
+NAND_CTRL_CLE	include/nand.h	46;"	d
+NAND_CTRL_CLE	nand.h	46;"	d
+NAND_ECC_HW	include/nand.h	/^    NAND_ECC_HW,$/;"	e	enum:__anon2
+NAND_ECC_HW	nand.h	/^    NAND_ECC_HW,$/;"	e	enum:__anon32
+NAND_ECC_HW_OOB_FIRST	include/nand.h	/^    NAND_ECC_HW_OOB_FIRST,$/;"	e	enum:__anon2
+NAND_ECC_HW_OOB_FIRST	nand.h	/^    NAND_ECC_HW_OOB_FIRST,$/;"	e	enum:__anon32
+NAND_ECC_HW_SYNDROME	include/nand.h	/^    NAND_ECC_HW_SYNDROME,$/;"	e	enum:__anon2
+NAND_ECC_HW_SYNDROME	nand.h	/^    NAND_ECC_HW_SYNDROME,$/;"	e	enum:__anon32
+NAND_ECC_NONE	include/nand.h	/^    NAND_ECC_NONE,$/;"	e	enum:__anon2
+NAND_ECC_NONE	nand.h	/^    NAND_ECC_NONE,$/;"	e	enum:__anon32
+NAND_ECC_READ	include/nand.h	117;"	d
+NAND_ECC_READ	nand.h	117;"	d
+NAND_ECC_READSYN	include/nand.h	121;"	d
+NAND_ECC_READSYN	nand.h	121;"	d
+NAND_ECC_SOFT	include/nand.h	/^    NAND_ECC_SOFT,$/;"	e	enum:__anon2
+NAND_ECC_SOFT	nand.h	/^    NAND_ECC_SOFT,$/;"	e	enum:__anon32
+NAND_ECC_WRITE	include/nand.h	119;"	d
+NAND_ECC_WRITE	nand.h	119;"	d
+NAND_GET_DEVICE	include/nand.h	124;"	d
+NAND_GET_DEVICE	nand.h	124;"	d
+NAND_HAS_CACHEPROG	include/nand.h	163;"	d
+NAND_HAS_CACHEPROG	nand.h	163;"	d
+NAND_HAS_COPYBACK	include/nand.h	164;"	d
+NAND_HAS_COPYBACK	nand.h	164;"	d
+NAND_IS_AND	include/nand.h	141;"	d
+NAND_IS_AND	nand.h	141;"	d
+NAND_K9F2G08	include/nand.h	24;"	d
+NAND_K9F2G08	nand.h	24;"	d
+NAND_LARGE_BADBLOCK_POS	include/nand.h	208;"	d
+NAND_LARGE_BADBLOCK_POS	nand.h	208;"	d
+NAND_MAX_CHIPS	include/config.h	30;"	d
+NAND_MAX_OOBSIZE	include/nand.h	30;"	d
+NAND_MAX_OOBSIZE	nand.h	30;"	d
+NAND_MAX_PAGESIZE	include/nand.h	31;"	d
+NAND_MAX_PAGESIZE	nand.h	31;"	d
+NAND_MFR_AMD	include/nand.h	202;"	d
+NAND_MFR_AMD	nand.h	202;"	d
+NAND_MFR_FUJITSU	include/nand.h	196;"	d
+NAND_MFR_FUJITSU	nand.h	196;"	d
+NAND_MFR_HYNIX	include/nand.h	200;"	d
+NAND_MFR_HYNIX	nand.h	200;"	d
+NAND_MFR_MICRON	include/nand.h	201;"	d
+NAND_MFR_MICRON	nand.h	201;"	d
+NAND_MFR_NATIONAL	include/nand.h	197;"	d
+NAND_MFR_NATIONAL	nand.h	197;"	d
+NAND_MFR_RENESAS	include/nand.h	198;"	d
+NAND_MFR_RENESAS	nand.h	198;"	d
+NAND_MFR_SAMSUNG	include/nand.h	195;"	d
+NAND_MFR_SAMSUNG	nand.h	195;"	d
+NAND_MFR_STMICRO	include/nand.h	199;"	d
+NAND_MFR_STMICRO	nand.h	199;"	d
+NAND_MFR_TOSHIBA	include/nand.h	194;"	d
+NAND_MFR_TOSHIBA	nand.h	194;"	d
+NAND_MUST_PAD	include/nand.h	162;"	d
+NAND_MUST_PAD	nand.h	162;"	d
+NAND_NCE	include/nand.h	40;"	d
+NAND_NCE	nand.h	40;"	d
+NAND_NO_AUTOINCR	include/nand.h	130;"	d
+NAND_NO_AUTOINCR	nand.h	130;"	d
+NAND_NO_PADDING	include/nand.h	134;"	d
+NAND_NO_PADDING	nand.h	134;"	d
+NAND_NO_READRDY	include/nand.h	152;"	d
+NAND_NO_READRDY	nand.h	152;"	d
+NAND_NO_SUBPAGE_WRITE	include/nand.h	154;"	d
+NAND_NO_SUBPAGE_WRITE	nand.h	154;"	d
+NAND_OWN_BUFFERS	include/nand.h	180;"	d
+NAND_OWN_BUFFERS	nand.h	180;"	d
+NAND_SAMSUNG_LP_OPTIONS	include/nand.h	157;"	d
+NAND_SAMSUNG_LP_OPTIONS	nand.h	157;"	d
+NAND_SKIP_BBTSCAN	include/nand.h	177;"	d
+NAND_SKIP_BBTSCAN	nand.h	177;"	d
+NAND_SMALL_BADBLOCK_POS	include/nand.h	207;"	d
+NAND_SMALL_BADBLOCK_POS	nand.h	207;"	d
+NAND_STATUS_FAIL	include/nand.h	95;"	d
+NAND_STATUS_FAIL	nand.h	95;"	d
+NAND_STATUS_FAIL_N1	include/nand.h	96;"	d
+NAND_STATUS_FAIL_N1	nand.h	96;"	d
+NAND_STATUS_READY	include/nand.h	98;"	d
+NAND_STATUS_READY	nand.h	98;"	d
+NAND_STATUS_TRUE_READY	include/nand.h	97;"	d
+NAND_STATUS_TRUE_READY	nand.h	97;"	d
+NAND_STATUS_WP	include/nand.h	99;"	d
+NAND_STATUS_WP	nand.h	99;"	d
+NAND_SUBPAGE_READ	include/nand.h	166;"	d
+NAND_SUBPAGE_READ	nand.h	166;"	d
+NAND_USE_FLASH_BBT	include/nand.h	175;"	d
+NAND_USE_FLASH_BBT	nand.h	175;"	d
+NFADDR	include/s3c2440.h	367;"	d
+NFADDR	include/s3c24x0.h	/^    S3C24X0_REG32 NFADDR;$/;"	m	struct:__anon10
+NFADDR_OFFSET	include/s3c2440.h	350;"	d
+NFADDR_REG	include/s3c2440.h	382;"	d
+NFCMD	include/s3c24x0.h	/^    S3C24X0_REG32 NFCMD;$/;"	m	struct:__anon10
+NFCMD_REG	include/s3c2440.h	381;"	d
+NFCMMD	include/s3c2440.h	366;"	d
+NFCMMD_OFFSET	include/s3c2440.h	349;"	d
+NFCONF	include/s3c2440.h	364;"	d
+NFCONF	include/s3c24x0.h	/^    S3C24X0_REG32 NFCONF;$/;"	m	struct:__anon10
+NFCONF_OFFSET	include/s3c2440.h	347;"	d
+NFCONF_REG	include/s3c2440.h	379;"	d
+NFCONT	include/s3c2440.h	365;"	d
+NFCONT_CS	include/s3c2440.h	393;"	d
+NFCONT_CS_ALT	include/s3c2440.h	392;"	d
+NFCONT_INITECC	include/s3c2440.h	391;"	d
+NFCONT_MECCLOCK	include/s3c2440.h	390;"	d
+NFCONT_OFFSET	include/s3c2440.h	348;"	d
+NFCONT_REG	include/s3c2440.h	380;"	d
+NFCONT_SECCLOCK	include/s3c2440.h	389;"	d
+NFCONT_WP	include/s3c2440.h	388;"	d
+NFDATA	include/s3c2440.h	368;"	d
+NFDATA	include/s3c24x0.h	/^    S3C24X0_REG32 NFDATA;$/;"	m	struct:__anon10
+NFDATA16_REG	include/s3c2440.h	384;"	d
+NFDATA32_REG	include/s3c2440.h	385;"	d
+NFDATA8_REG	include/s3c2440.h	383;"	d
+NFDATA_OFFSET	include/s3c2440.h	351;"	d
+NFEBLK_OFFSET	include/s3c2440.h	362;"	d
+NFECC	include/s3c24x0.h	/^    S3C24X0_REG32 NFECC;$/;"	m	struct:__anon10
+NFESTAT0	include/s3c2440.h	373;"	d
+NFESTAT0_OFFSET	include/s3c2440.h	356;"	d
+NFESTAT1	include/s3c2440.h	374;"	d
+NFESTAT1_OFFSET	include/s3c2440.h	357;"	d
+NFMECC0	include/s3c2440.h	375;"	d
+NFMECC0_OFFSET	include/s3c2440.h	358;"	d
+NFMECC1	include/s3c2440.h	376;"	d
+NFMECC1_OFFSET	include/s3c2440.h	359;"	d
+NFMECCD0_OFFSET	include/s3c2440.h	352;"	d
+NFMECCD1_OFFSET	include/s3c2440.h	353;"	d
+NFMECCDATA0	include/s3c2440.h	369;"	d
+NFMECCDATA1	include/s3c2440.h	370;"	d
+NFSBLK_OFFSET	include/s3c2440.h	361;"	d
+NFSECC	include/s3c2440.h	377;"	d
+NFSECCDATA	include/s3c2440.h	371;"	d
+NFSECCD_OFFSET	include/s3c2440.h	354;"	d
+NFSECC_OFFSET	include/s3c2440.h	360;"	d
+NFSTAT	include/s3c2440.h	372;"	d
+NFSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 NFSTAT;$/;"	m	struct:__anon10
+NFSTAT_BUSY	include/nand.h	217;"	d
+NFSTAT_BUSY	include/nand.h	233;"	d
+NFSTAT_BUSY	nand.h	217;"	d
+NFSTAT_BUSY	nand.h	233;"	d
+NFSTAT_OFFSET	include/s3c2440.h	355;"	d
+NFSTAT_REG	include/s3c2440.h	386;"	d
+NFSTAT_RnB	include/s3c2440.h	394;"	d
+NM	makefile	/^NM  = $(CROSS_COMPILE)nm$/;"	m
+NOT_SKIP_BAD_BLOCK	include/nand.h	243;"	d
+NOT_SKIP_BAD_BLOCK	nand.h	243;"	d
+NULL	include/linux/stddef.h	4;"	d
+NULL	include/linux/stddef.h	6;"	d
+NULL	include/linux/stddef.h	8;"	d
+OBJCOPY	makefile	/^OBJCOPY = $(CROSS_COMPILE)objcopy$/;"	m
+OBJDUMP	makefile	/^OBJDUMP = $(CROSS_COMPILE)objdump$/;"	m
+OBJS	makefile	/^OBJS    := bootstrap.o led_beep.o interrupt.o serial.o common.o xmodem.o k9f2g08.o $/;"	m
+OPENCR	include/s3c24x0.h	/^    S3C24X0_REG32 OPENCR;$/;"	m	struct:__anon20
+OUT_CSR1_REG	include/s3c24x0.h	/^    S3C24X0_REG8 OUT_CSR1_REG;$/;"	m	struct:__anon16
+OUT_CSR2_REG	include/s3c24x0.h	/^    S3C24X0_REG8 OUT_CSR2_REG;$/;"	m	struct:__anon16
+OUT_FIFO_CNT1_REG	include/s3c24x0.h	/^    S3C24X0_REG8 OUT_FIFO_CNT1_REG;$/;"	m	struct:__anon16
+OUT_FIFO_CNT2_REG	include/s3c24x0.h	/^    S3C24X0_REG8 OUT_FIFO_CNT2_REG;$/;"	m	struct:__anon16
+P	include/rsa.h	/^    mpi P;      \/*!<  1st prime factor  *\/$/;"	m	struct:__anon31
+P1	rsa.c	/^    mpi P1, Q1, H, G;$/;"	l
+P1	rsa.c	/^    mpi TN, P1, Q1, H, G;$/;"	l
+PACON	include/s3c24x0.h	/^    S3C24X0_REG32 PACON;$/;"	m	struct:__anon20
+PADAT	include/s3c24x0.h	/^    S3C24X0_REG32 PADAT;$/;"	m	struct:__anon20
+PBCON	include/s3c24x0.h	/^    S3C24X0_REG32 PBCON;$/;"	m	struct:__anon20
+PBDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PBDAT;$/;"	m	struct:__anon20
+PBUP	include/s3c24x0.h	/^    S3C24X0_REG32 PBUP;$/;"	m	struct:__anon20
+PCCON	include/s3c24x0.h	/^    S3C24X0_REG32 PCCON;$/;"	m	struct:__anon20
+PCDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PCDAT;$/;"	m	struct:__anon20
+PCUP	include/s3c24x0.h	/^    S3C24X0_REG32 PCUP;$/;"	m	struct:__anon20
+PDCON	include/s3c24x0.h	/^    S3C24X0_REG32 PDCON;$/;"	m	struct:__anon20
+PDDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PDDAT;$/;"	m	struct:__anon20
+PDUP	include/s3c24x0.h	/^    S3C24X0_REG32 PDUP;$/;"	m	struct:__anon20
+PECON	include/s3c24x0.h	/^    S3C24X0_REG32 PECON;$/;"	m	struct:__anon20
+PEDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PEDAT;$/;"	m	struct:__anon20
+PEUP	include/s3c24x0.h	/^    S3C24X0_REG32 PEUP;$/;"	m	struct:__anon20
+PFCON	include/s3c24x0.h	/^    S3C24X0_REG32 PFCON;$/;"	m	struct:__anon20
+PFDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PFDAT;$/;"	m	struct:__anon20
+PFUP	include/s3c24x0.h	/^    S3C24X0_REG32 PFUP;$/;"	m	struct:__anon20
+PGCON	include/s3c24x0.h	/^    S3C24X0_REG32 PGCON;$/;"	m	struct:__anon20
+PGDAT	include/s3c24x0.h	/^    S3C24X0_REG32 PGDAT;$/;"	m	struct:__anon20
+PGUP	include/s3c24x0.h	/^    S3C24X0_REG32 PGUP;$/;"	m	struct:__anon20
+PLUS	common.c	64;"	d	file:
+PRIORITY	include/s3c24x0.h	/^    S3C24X0_REG32 PRIORITY;$/;"	m	struct:__anon5
+PRIORITY_OFFSET	include/s3c2440.h	169;"	d
+PRIORITY_REG	include/s3c2440.h	178;"	d
+PSDIV_405	include/config.h	19;"	d
+PTLEN	rsa.c	481;"	d	file:
+PWR_REG	include/s3c24x0.h	/^    S3C24X0_REG8 PWR_REG;$/;"	m	struct:__anon16
+Q	include/rsa.h	/^    mpi Q;      \/*!<  2nd prime factor  *\/$/;"	m	struct:__anon31
+Q1	rsa.c	/^    mpi P1, Q1, H, G;$/;"	l
+Q1	rsa.c	/^    mpi TN, P1, Q1, H, G;$/;"	l
+QP	include/rsa.h	/^    mpi QP;     \/*!<  inverse of Q % P  *\/$/;"	m	struct:__anon31
+R	bignum.c	/^    mpi W, R, T, A, RR;$/;"	l
+RAM_DEBUG	makefile	/^RAM_DEBUG=y$/;"	m
+RANLIB	makefile	/^RANLIB  = $(CROSS_COMPILE)RANLIB$/;"	m
+REDLUT	include/s3c24x0.h	/^    S3C24X0_REG32 REDLUT;$/;"	m	struct:__anon9
+REFCNT	mem_init.S	/^#define REFCNT			0x0459$/;"	d
+REFCNT	mem_init.S	/^#define REFCNT          1012$/;"	d
+REFEN	mem_init.S	/^#define REFEN			0x1	\/* Refresh enable *\/$/;"	d
+REFRESH	include/s3c24x0.h	/^    S3C24X0_REG32 REFRESH;$/;"	m	struct:__anon3
+REFRESH_OFFSET	include/s3c2440.h	89;"	d
+REFRESH_REG	include/s3c2440.h	103;"	d
+REG_NFADDR	include/nand.h	214;"	d
+REG_NFADDR	include/nand.h	229;"	d
+REG_NFADDR	nand.h	214;"	d
+REG_NFADDR	nand.h	229;"	d
+REG_NFCMD	include/nand.h	213;"	d
+REG_NFCMD	include/nand.h	228;"	d
+REG_NFCMD	nand.h	213;"	d
+REG_NFCMD	nand.h	228;"	d
+REG_NFCONF	include/nand.h	212;"	d
+REG_NFCONF	include/nand.h	226;"	d
+REG_NFCONF	nand.h	212;"	d
+REG_NFCONF	nand.h	226;"	d
+REG_NFCONT	include/nand.h	227;"	d
+REG_NFCONT	nand.h	227;"	d
+REG_NFDATA	include/nand.h	215;"	d
+REG_NFDATA	include/nand.h	230;"	d
+REG_NFDATA	nand.h	215;"	d
+REG_NFDATA	nand.h	230;"	d
+REG_NFDATA16	include/nand.h	231;"	d
+REG_NFDATA16	nand.h	231;"	d
+REG_NFSTAT	include/nand.h	216;"	d
+REG_NFSTAT	include/nand.h	232;"	d
+REG_NFSTAT	nand.h	216;"	d
+REG_NFSTAT	nand.h	232;"	d
+RN	include/rsa.h	/^    mpi RN;     \/*!<  cached R^2 mod N  *\/$/;"	m	struct:__anon31
+ROM_BASE0	include/s3c2440.h	56;"	d
+ROM_BASE1	include/s3c2440.h	57;"	d
+RP	include/rsa.h	/^    mpi RP;     \/*!<  cached R^2 mod P  *\/$/;"	m	struct:__anon31
+RQ	include/rsa.h	/^    mpi RQ;     \/*!<  cached R^2 mod Q  *\/$/;"	m	struct:__anon31
+RR	bignum.c	/^    mpi RR, T, W[64];$/;"	l
+RR	bignum.c	/^    mpi W, R, T, A, RR;$/;"	l
+RSA_CRYPT	include/rsa.h	31;"	d
+RSA_MD2	include/rsa.h	25;"	d
+RSA_MD4	include/rsa.h	26;"	d
+RSA_MD5	include/rsa.h	27;"	d
+RSA_RAW	include/rsa.h	24;"	d
+RSA_SHA1	include/rsa.h	28;"	d
+RSA_SIGN	include/rsa.h	30;"	d
+RTCALM	include/s3c24x0.h	/^    S3C24X0_REG8 RTCALM;$/;"	m	struct:__anon21
+RTCALM_REG	include/s3c2440.h	526;"	d
+RTCCON	include/s3c24x0.h	/^    S3C24X0_REG8 RTCCON;$/;"	m	struct:__anon21
+RTCCON_REG	include/s3c2440.h	524;"	d
+RTCRST	include/s3c24x0.h	/^    S3C24X0_REG8 RTCRST;$/;"	m	struct:__anon21
+S3C2400_ADC	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C2400_ADC;$/;"	t	typeref:struct:__anon22
+S3C2400_MMC	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C2400_MMC;$/;"	t	typeref:struct:__anon26
+S3C2410_ADC	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C2410_ADC;$/;"	t	typeref:struct:__anon23
+S3C2410_ECCBYTES	include/s3c2440.h	63;"	d
+S3C2410_ECCSIZE	include/s3c2440.h	62;"	d
+S3C2410_GetBase_ADC	include/s3c2440.h	/^static inline S3C2410_ADC *S3C2410_GetBase_ADC(void)$/;"	f
+S3C2410_GetBase_NAND	include/s3c2440.h	/^static inline S3C2410_NAND *S3C2410_GetBase_NAND(void)$/;"	f
+S3C2410_GetBase_SDI	include/s3c2440.h	/^static inline S3C2410_SDI *S3C2410_GetBase_SDI(void)$/;"	f
+S3C2410_NAND	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C2410_NAND;$/;"	t	typeref:struct:__anon10
+S3C2410_SDI	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C2410_SDI;$/;"	t	typeref:struct:__anon27
+S3C24X0_CLOCK_POWER	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_CLOCK_POWER;$/;"	t	typeref:struct:__anon8
+S3C24X0_DMA	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_DMA;$/;"	t	typeref:struct:__anon6
+S3C24X0_DMAS	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_DMAS;$/;"	t	typeref:struct:__anon7
+S3C24X0_GPIO	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_GPIO;$/;"	t	typeref:struct:__anon20
+S3C24X0_GetBase_CLOCK_POWER	include/s3c2440.h	/^static inline S3C24X0_CLOCK_POWER *S3C24X0_GetBase_CLOCK_POWER(void)$/;"	f
+S3C24X0_GetBase_DMAS	include/s3c2440.h	/^static inline S3C24X0_DMAS *S3C24X0_GetBase_DMAS(void)$/;"	f
+S3C24X0_GetBase_GPIO	include/s3c2440.h	/^static inline S3C24X0_GPIO *S3C24X0_GetBase_GPIO(void)$/;"	f
+S3C24X0_GetBase_I2C	include/s3c2440.h	/^static inline S3C24X0_I2C *S3C24X0_GetBase_I2C(void)$/;"	f
+S3C24X0_GetBase_I2S	include/s3c2440.h	/^static inline S3C24X0_I2S *S3C24X0_GetBase_I2S(void)$/;"	f
+S3C24X0_GetBase_INTERRUPT	include/s3c2440.h	/^static inline S3C24X0_INTERRUPT *S3C24X0_GetBase_INTERRUPT(void)$/;"	f
+S3C24X0_GetBase_LCD	include/s3c2440.h	/^static inline S3C24X0_LCD *S3C24X0_GetBase_LCD(void)$/;"	f
+S3C24X0_GetBase_MEMCTL	include/s3c2440.h	/^static inline S3C24X0_MEMCTL *S3C24X0_GetBase_MEMCTL(void)$/;"	f
+S3C24X0_GetBase_RTC	include/s3c2440.h	/^static inline S3C24X0_RTC *S3C24X0_GetBase_RTC(void)$/;"	f
+S3C24X0_GetBase_SPI	include/s3c2440.h	/^static inline S3C24X0_SPI *S3C24X0_GetBase_SPI(void)$/;"	f
+S3C24X0_GetBase_TIMERS	include/s3c2440.h	/^static inline S3C24X0_TIMERS *S3C24X0_GetBase_TIMERS(void)$/;"	f
+S3C24X0_GetBase_UART	include/s3c2440.h	/^static inline S3C24X0_UART *S3C24X0_GetBase_UART(S3C24X0_UARTS_NR nr)$/;"	f
+S3C24X0_GetBase_USB_DEVICE	include/s3c2440.h	/^static inline S3C24X0_USB_DEVICE *S3C24X0_GetBase_USB_DEVICE(void)$/;"	f
+S3C24X0_GetBase_USB_HOST	include/s3c2440.h	/^static inline S3C24X0_USB_HOST *S3C24X0_GetBase_USB_HOST(void)$/;"	f
+S3C24X0_GetBase_WATCHDOG	include/s3c2440.h	/^static inline S3C24X0_WATCHDOG *S3C24X0_GetBase_WATCHDOG(void)$/;"	f
+S3C24X0_I2C	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_I2C;$/;"	t	typeref:struct:__anon18
+S3C24X0_I2S	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_I2S;$/;"	t	typeref:struct:__anon19
+S3C24X0_INTERRUPT	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_INTERRUPT;$/;"	t	typeref:struct:__anon5
+S3C24X0_LCD	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_LCD;$/;"	t	typeref:struct:__anon9
+S3C24X0_MEMCTL	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_MEMCTL;$/;"	t	typeref:struct:__anon3
+S3C24X0_REG16	include/s3c24x0.h	/^typedef volatile u16 S3C24X0_REG16;$/;"	t
+S3C24X0_REG32	include/s3c24x0.h	/^typedef volatile u32 S3C24X0_REG32;$/;"	t
+S3C24X0_REG8	include/s3c24x0.h	/^typedef volatile u8 S3C24X0_REG8;$/;"	t
+S3C24X0_RTC	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_RTC;$/;"	t	typeref:struct:__anon21
+S3C24X0_SPI	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_SPI;$/;"	t	typeref:struct:__anon25
+S3C24X0_SPI_CHANNEL	include/s3c24x0.h	/^} __attribute__ ((__packed__)) S3C24X0_SPI_CHANNEL;$/;"	t	typeref:struct:__anon24
+S3C24X0_SPI_CHANNELS	include/s3c2440.h	42;"	d
+S3C24X0_TIMER	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_TIMER;$/;"	t	typeref:struct:__anon12
+S3C24X0_TIMERS	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_TIMERS;$/;"	t	typeref:struct:__anon13
+S3C24X0_UART	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_UART;$/;"	t	typeref:struct:__anon11
+S3C24X0_UART0	include/s3c2440.h	/^    S3C24X0_UART0,$/;"	e	enum:__anon28
+S3C24X0_UART1	include/s3c2440.h	/^    S3C24X0_UART1,$/;"	e	enum:__anon28
+S3C24X0_UARTS_NR	include/s3c2440.h	/^} S3C24X0_UARTS_NR;$/;"	t	typeref:enum:__anon28
+S3C24X0_UART_CHANNELS	include/s3c2440.h	41;"	d
+S3C24X0_USB_DEVICE	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_USB_DEVICE;$/;"	t	typeref:struct:__anon16
+S3C24X0_USB_DEV_DMAS	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_USB_DEV_DMAS;$/;"	t	typeref:struct:__anon15
+S3C24X0_USB_DEV_FIFOS	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_USB_DEV_FIFOS;$/;"	t	typeref:struct:__anon14
+S3C24X0_USB_HOST	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_USB_HOST;$/;"	t	typeref:struct:__anon4
+S3C24X0_WATCHDOG	include/s3c24x0.h	/^} \/*__attribute__((__packed__))*\/ S3C24X0_WATCHDOG;$/;"	t	typeref:struct:__anon17
+SDIBSIZE	include/s3c24x0.h	/^    S3C24X0_REG32 SDIBSIZE;$/;"	m	struct:__anon27
+SDICARG	include/s3c24x0.h	/^    S3C24X0_REG32 SDICARG;$/;"	m	struct:__anon27
+SDICCON	include/s3c24x0.h	/^    S3C24X0_REG32 SDICCON;$/;"	m	struct:__anon27
+SDICON	include/s3c24x0.h	/^    S3C24X0_REG32 SDICON;$/;"	m	struct:__anon27
+SDICSTA	include/s3c24x0.h	/^    S3C24X0_REG32 SDICSTA;$/;"	m	struct:__anon27
+SDIDAT	include/s3c24x0.h	/^    S3C24X0_REG8 SDIDAT;$/;"	m	struct:__anon27
+SDIDCNT	include/s3c24x0.h	/^    S3C24X0_REG32 SDIDCNT;$/;"	m	struct:__anon27
+SDIDCON	include/s3c24x0.h	/^    S3C24X0_REG32 SDIDCON;$/;"	m	struct:__anon27
+SDIDSTA	include/s3c24x0.h	/^    S3C24X0_REG32 SDIDSTA;$/;"	m	struct:__anon27
+SDIDTIMER	include/s3c24x0.h	/^    S3C24X0_REG32 SDIDTIMER;$/;"	m	struct:__anon27
+SDIFSTA	include/s3c24x0.h	/^    S3C24X0_REG32 SDIFSTA;$/;"	m	struct:__anon27
+SDIIMSK	include/s3c24x0.h	/^    S3C24X0_REG32 SDIIMSK;$/;"	m	struct:__anon27
+SDIPRE	include/s3c24x0.h	/^    S3C24X0_REG32 SDIPRE;$/;"	m	struct:__anon27
+SDIRSP0	include/s3c24x0.h	/^    S3C24X0_REG32 SDIRSP0;$/;"	m	struct:__anon27
+SDIRSP1	include/s3c24x0.h	/^    S3C24X0_REG32 SDIRSP1;$/;"	m	struct:__anon27
+SDIRSP2	include/s3c24x0.h	/^    S3C24X0_REG32 SDIRSP2;$/;"	m	struct:__anon27
+SDIRSP3	include/s3c24x0.h	/^    S3C24X0_REG32 SDIRSP3;$/;"	m	struct:__anon27
+SECSPERDAY	include/linux/time.h	16;"	d
+SECSPERHOUR	include/linux/time.h	15;"	d
+SECSPERMIN	include/linux/time.h	12;"	d
+SIGN	common.c	63;"	d	file:
+SKIP_BAD_BLOCK	include/nand.h	242;"	d
+SKIP_BAD_BLOCK	nand.h	242;"	d
+SLPEN_OFFSET	include/s3c2440.h	274;"	d
+SLPEN_REG	include/s3c2440.h	336;"	d
+SMRDATA	mem_init.S	/^SMRDATA:$/;"	l
+SOBJS	makefile	/^SOBJS   := start.o mem_init.o$/;"	m
+SPACE	common.c	65;"	d	file:
+SPCON	include/s3c24x0.h	/^    S3C24X0_REG32 SPCON;$/;"	m	struct:__anon24
+SPCONSLP_OFFSET	include/s3c2440.h	273;"	d
+SPCONSLP_REG	include/s3c2440.h	335;"	d
+SPCON_OFFSET	include/s3c2440.h	255;"	d
+SPCON_REG	include/s3c2440.h	317;"	d
+SPECIAL	common.c	67;"	d	file:
+SPPIN	include/s3c24x0.h	/^    S3C24X0_REG32 SPPIN;$/;"	m	struct:__anon24
+SPPRE	include/s3c24x0.h	/^    S3C24X0_REG32 SPPRE;$/;"	m	struct:__anon24
+SPRDAT	include/s3c24x0.h	/^    S3C24X0_REG32 SPRDAT;$/;"	m	struct:__anon24
+SPSTA	include/s3c24x0.h	/^    S3C24X0_REG32 SPSTA;$/;"	m	struct:__anon24
+SPTDAT	include/s3c24x0.h	/^    S3C24X0_REG32 SPTDAT;$/;"	m	struct:__anon24
+SRCPND	include/s3c24x0.h	/^    S3C24X0_REG32 SRCPND;$/;"	m	struct:__anon5
+SRCPND_OFFSET	include/s3c2440.h	166;"	d
+SRCPND_REG	include/s3c2440.h	175;"	d
+SRC_TOP	makefile	/^SRC_TOP=$(CURDIR)$/;"	m
+STRIP	makefile	/^STRIP   = $(CROSS_COMPILE)strip$/;"	m
+SUBSRCPND	include/s3c24x0.h	/^    S3C24X0_REG32 SUBSRCPND;$/;"	m	struct:__anon5
+SUBSRCPND_OFFSET	include/s3c2440.h	172;"	d
+SUBSRCPND_REG	include/s3c2440.h	181;"	d
+SZ_128K	include/asm/sizes.h	32;"	d
+SZ_128M	include/asm/sizes.h	43;"	d
+SZ_16K	include/asm/sizes.h	30;"	d
+SZ_16M	include/asm/sizes.h	40;"	d
+SZ_1G	include/asm/sizes.h	47;"	d
+SZ_1K	include/asm/sizes.h	27;"	d
+SZ_1M	include/asm/sizes.h	36;"	d
+SZ_256K	include/asm/sizes.h	33;"	d
+SZ_256M	include/asm/sizes.h	44;"	d
+SZ_2G	include/asm/sizes.h	48;"	d
+SZ_2M	include/asm/sizes.h	37;"	d
+SZ_32M	include/asm/sizes.h	41;"	d
+SZ_4K	include/asm/sizes.h	28;"	d
+SZ_4M	include/asm/sizes.h	38;"	d
+SZ_512K	include/asm/sizes.h	34;"	d
+SZ_512M	include/asm/sizes.h	45;"	d
+SZ_64K	include/asm/sizes.h	31;"	d
+SZ_64M	include/asm/sizes.h	42;"	d
+SZ_8K	include/asm/sizes.h	29;"	d
+SZ_8M	include/asm/sizes.h	39;"	d
+S_FP	start.S	/^#define S_FP		44$/;"	d
+S_FRAME_SIZE	start.S	/^#define S_FRAME_SIZE	72$/;"	d
+S_IP	start.S	/^#define S_IP		48$/;"	d
+S_LR	start.S	/^#define S_LR		56$/;"	d
+S_OLD_R0	start.S	/^#define S_OLD_R0	68$/;"	d
+S_PC	start.S	/^#define S_PC		60$/;"	d
+S_PSR	start.S	/^#define S_PSR		64$/;"	d
+S_R0	start.S	/^#define S_R0		0$/;"	d
+S_R1	start.S	/^#define S_R1		4$/;"	d
+S_R10	start.S	/^#define S_R10		40$/;"	d
+S_R2	start.S	/^#define S_R2		8$/;"	d
+S_R3	start.S	/^#define S_R3		12$/;"	d
+S_R4	start.S	/^#define S_R4		16$/;"	d
+S_R5	start.S	/^#define S_R5		20$/;"	d
+S_R6	start.S	/^#define S_R6		24$/;"	d
+S_R7	start.S	/^#define S_R7		28$/;"	d
+S_R8	start.S	/^#define S_R8		32$/;"	d
+S_R9	start.S	/^#define S_R9		36$/;"	d
+S_SP	start.S	/^#define S_SP		52$/;"	d
+T	bignum.c	/^        mpi *T = A; A = X; B = T;$/;"	l
+T	bignum.c	/^    mpi RR, T, W[64];$/;"	l
+T	bignum.c	/^    mpi T;$/;"	l
+T	bignum.c	/^    mpi W, R, T, A, RR;$/;"	l
+T	rsa.c	/^    mpi T, T1, T2;$/;"	l
+T	rsa.c	/^    mpi T;$/;"	l
+T1	bignum.c	/^    mpi X, Y, Z, T1, T2;$/;"	l
+T1	rsa.c	/^    mpi T, T1, T2;$/;"	l
+T2	bignum.c	/^    mpi X, Y, Z, T1, T2;$/;"	l
+T2	rsa.c	/^    mpi T, T1, T2;$/;"	l
+TA	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+TA	bignum.c	/^    mpi TA, TB;$/;"	l
+TA	bignum.c	/^    mpi TG, TA, TB;$/;"	l
+TACLS	k9f2g08.c	63;"	d	file:
+TB	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+TB	bignum.c	/^    mpi TA, TB;$/;"	l
+TB	bignum.c	/^    mpi TB;$/;"	l
+TB	bignum.c	/^    mpi TG, TA, TB;$/;"	l
+TCFG0	include/s3c24x0.h	/^    S3C24X0_REG32 TCFG0;$/;"	m	struct:__anon13
+TCFG0_DZONE	include/s3c2440.h	496;"	d
+TCFG0_PRE0	include/s3c2440.h	498;"	d
+TCFG0_PRE1	include/s3c2440.h	497;"	d
+TCFG0_REG	include/s3c2440.h	472;"	d
+TCFG1	include/s3c24x0.h	/^    S3C24X0_REG32 TCFG1;$/;"	m	struct:__anon13
+TCFG1_REG	include/s3c2440.h	473;"	d
+TCMPB	include/s3c24x0.h	/^    S3C24X0_REG32 TCMPB;$/;"	m	struct:__anon12
+TCMPB0_REG	include/s3c2440.h	476;"	d
+TCMPB1_REG	include/s3c2440.h	479;"	d
+TCMPB2_REG	include/s3c2440.h	482;"	d
+TCMPB3_REG	include/s3c2440.h	485;"	d
+TCNTB	include/s3c24x0.h	/^    S3C24X0_REG32 TCNTB;$/;"	m	struct:__anon12
+TCNTB0_REG	include/s3c2440.h	475;"	d
+TCNTB1_REG	include/s3c2440.h	478;"	d
+TCNTB2_REG	include/s3c2440.h	481;"	d
+TCNTB3_REG	include/s3c2440.h	484;"	d
+TCNTB4	include/s3c24x0.h	/^    S3C24X0_REG32 TCNTB4;$/;"	m	struct:__anon13
+TCNTB4_REG	include/s3c2440.h	487;"	d
+TCNTO	include/s3c24x0.h	/^    S3C24X0_REG32 TCNTO;$/;"	m	struct:__anon12
+TCNTO0_REG	include/s3c2440.h	477;"	d
+TCNTO1_REG	include/s3c2440.h	480;"	d
+TCNTO2_REG	include/s3c2440.h	483;"	d
+TCNTO3_REG	include/s3c2440.h	486;"	d
+TCNTO4	include/s3c24x0.h	/^    S3C24X0_REG32 TCNTO4;$/;"	m	struct:__anon13
+TCNTO4_REG	include/s3c2440.h	488;"	d
+TCON	include/s3c24x0.h	/^    S3C24X0_REG32 TCON;$/;"	m	struct:__anon13
+TCON_3_AUTO	include/s3c2440.h	504;"	d
+TCON_3_INVERT	include/s3c2440.h	507;"	d
+TCON_3_MAN	include/s3c2440.h	510;"	d
+TCON_3_ONOFF	include/s3c2440.h	513;"	d
+TCON_4_AUTO	include/s3c2440.h	499;"	d
+TCON_4_ONOFF	include/s3c2440.h	501;"	d
+TCON_4_UPDATE	include/s3c2440.h	500;"	d
+TCON_REG	include/s3c2440.h	474;"	d
+TEXT_BASE	makefile	/^       TEXT_BASE=0x00000000$/;"	m
+TEXT_BASE	makefile	/^       TEXT_BASE=0x33f80000$/;"	m
+TEXT_BASE	makefile	/^TEXT_BASE=0x33f80000$/;"	m
+TG	bignum.c	/^    mpi TG, TA, TB;$/;"	l
+TICNT	include/s3c24x0.h	/^    S3C24X0_REG8 TICNT;$/;"	m	struct:__anon21
+TICNT_REG	include/s3c2440.h	525;"	d
+TIMER3_ATLAOD_OFF	include/s3c2440.h	506;"	d
+TIMER3_ATLOAD_ON	include/s3c2440.h	505;"	d
+TIMER3_IVT_OFF	include/s3c2440.h	509;"	d
+TIMER3_IVT_ON	include/s3c2440.h	508;"	d
+TIMER3_MANUP	include/s3c2440.h	511;"	d
+TIMER3_NOP	include/s3c2440.h	512;"	d
+TIMER3_OFF	include/s3c2440.h	515;"	d
+TIMER3_ON	include/s3c2440.h	514;"	d
+TN	rsa.c	/^    mpi TN, P1, Q1, H, G;$/;"	l
+TPAL	include/s3c24x0.h	/^    S3C24X0_REG32 TPAL;$/;"	m	struct:__anon9
+TREFMD	mem_init.S	/^#define TREFMD			0x0	\/* CBR(CAS before RAS)\/Auto refresh *\/$/;"	d
+TU	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+TV	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+TWRPH0	k9f2g08.c	64;"	d	file:
+TWRPH1	k9f2g08.c	65;"	d	file:
+Tchr	mem_init.S	/^#define Tchr			0x2	\/* 3clk *\/$/;"	d
+Trc	mem_init.S	/^#define Trc			0x3	\/* 7clk *\/$/;"	d
+Trp	mem_init.S	/^#define Trp         0x0 \/* 2clk *\/$/;"	d
+Trp	mem_init.S	/^#define Trp         0x2 \/* 4clk *\/$/;"	d
+U	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+U	bignum.c	/^    mpi U;$/;"	l
+U1	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+U2	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+UART_ERR_MASK	include/s3c2440.h	465;"	d
+UBLB	mem_init.S	/^#define UBLB			(0x1<<3)$/;"	d
+UBRDIV	include/s3c24x0.h	/^    S3C24X0_REG32 UBRDIV;$/;"	m	struct:__anon11
+UBRDIV0_OFFSET	include/s3c2440.h	425;"	d
+UBRDIV0_REG	include/s3c2440.h	437;"	d
+UBRDIV1_REG	include/s3c2440.h	449;"	d
+UBRDIV2_REG	include/s3c2440.h	461;"	d
+UCON	include/s3c24x0.h	/^    S3C24X0_REG32 UCON;$/;"	m	struct:__anon11
+UCON0_OFFSET	include/s3c2440.h	416;"	d
+UCON0_REG	include/s3c2440.h	428;"	d
+UCON1_REG	include/s3c2440.h	440;"	d
+UCON2_REG	include/s3c2440.h	452;"	d
+UData	include/asm/hardware.h	16;"	d
+UData	include/asm/hardware.h	7;"	d
+UERSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 UERSTAT;$/;"	m	struct:__anon11
+UERSTAT0_OFFSET	include/s3c2440.h	420;"	d
+UERSTAT0_REG	include/s3c2440.h	432;"	d
+UERSTAT1_REG	include/s3c2440.h	444;"	d
+UERSTAT2_REG	include/s3c2440.h	456;"	d
+UFCON	include/s3c24x0.h	/^    S3C24X0_REG32 UFCON;$/;"	m	struct:__anon11
+UFCON0_OFFSET	include/s3c2440.h	417;"	d
+UFCON0_REG	include/s3c2440.h	429;"	d
+UFCON1_REG	include/s3c2440.h	441;"	d
+UFCON2_REG	include/s3c2440.h	453;"	d
+UFSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 UFSTAT;$/;"	m	struct:__anon11
+UFSTAT0_OFFSET	include/s3c2440.h	421;"	d
+UFSTAT0_REG	include/s3c2440.h	433;"	d
+UFSTAT1_REG	include/s3c2440.h	445;"	d
+UFSTAT2_REG	include/s3c2440.h	457;"	d
+ULCON	include/s3c24x0.h	/^    S3C24X0_REG32 ULCON;$/;"	m	struct:__anon11
+ULCON0_OFFSET	include/s3c2440.h	415;"	d
+ULCON0_REG	include/s3c2440.h	427;"	d
+ULCON1_REG	include/s3c2440.h	439;"	d
+ULCON2_REG	include/s3c2440.h	451;"	d
+UMCON	include/s3c24x0.h	/^    S3C24X0_REG32 UMCON;$/;"	m	struct:__anon11
+UMCON0_OFFSET	include/s3c2440.h	418;"	d
+UMCON0_REG	include/s3c2440.h	430;"	d
+UMCON1_REG	include/s3c2440.h	442;"	d
+UMCON2_REG	include/s3c2440.h	454;"	d
+UMSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 UMSTAT;$/;"	m	struct:__anon11
+UMSTAT0_OFFSET	include/s3c2440.h	422;"	d
+UMSTAT0_REG	include/s3c2440.h	434;"	d
+UMSTAT1_REG	include/s3c2440.h	446;"	d
+UMSTAT2_REG	include/s3c2440.h	458;"	d
+UPLLCON	include/s3c24x0.h	/^    S3C24X0_REG32 UPLLCON;$/;"	m	struct:__anon8
+UPLLCON_OFFSET	include/s3c2440.h	192;"	d
+UPLLCON_REG	include/s3c2440.h	200;"	d
+URXH	include/s3c24x0.h	/^    S3C24X0_REG8 URXH;$/;"	m	struct:__anon11
+URXH0_OFFSET	include/s3c2440.h	424;"	d
+URXH0_REG	include/s3c2440.h	436;"	d
+URXH1_REG	include/s3c2440.h	448;"	d
+URXH2_REG	include/s3c2440.h	460;"	d
+USB_DEVICE_PHYS_ADR	include/s3c2440.h	543;"	d
+USB_INT_EN_REG	include/s3c24x0.h	/^    S3C24X0_REG8 USB_INT_EN_REG;$/;"	m	struct:__anon16
+USB_INT_REG	include/s3c24x0.h	/^    S3C24X0_REG8 USB_INT_REG;$/;"	m	struct:__anon16
+UTRSTAT	include/s3c24x0.h	/^    S3C24X0_REG32 UTRSTAT;$/;"	m	struct:__anon11
+UTRSTAT0_OFFSET	include/s3c2440.h	419;"	d
+UTRSTAT0_REG	include/s3c2440.h	431;"	d
+UTRSTAT1_REG	include/s3c2440.h	443;"	d
+UTRSTAT2_REG	include/s3c2440.h	455;"	d
+UTRSTAT_RX_READY	include/s3c2440.h	464;"	d
+UTRSTAT_TX_EMPTY	include/s3c2440.h	463;"	d
+UTXH	include/s3c24x0.h	/^    S3C24X0_REG8 UTXH;$/;"	m	struct:__anon11
+UTXH0_OFFSET	include/s3c2440.h	423;"	d
+UTXH0_REG	include/s3c2440.h	435;"	d
+UTXH1_REG	include/s3c2440.h	447;"	d
+UTXH2_REG	include/s3c2440.h	459;"	d
+V	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+V1	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+V2	bignum.c	/^    mpi G, TA, TU, U1, U2, TB, TV, V1, V2;$/;"	l
+W	bignum.c	/^    mpi RR, T, W[64];$/;"	l
+W	bignum.c	/^    mpi W, R, T, A, RR;$/;"	l
+WAIT	mem_init.S	/^#define WAIT			(0x1<<2)$/;"	d
+WTCNT	include/s3c24x0.h	/^    S3C24X0_REG32 WTCNT;$/;"	m	struct:__anon17
+WTCNT_OFFSET	include/s3c2440.h	404;"	d
+WTCNT_REG	include/s3c2440.h	408;"	d
+WTCON	include/s3c24x0.h	/^    S3C24X0_REG32 WTCON;$/;"	m	struct:__anon17
+WTCON_OFFSET	include/s3c2440.h	402;"	d
+WTCON_OFFSET	include/s3c2440.h	622;"	d
+WTCON_REG	include/s3c2440.h	406;"	d
+WTDAT	include/s3c24x0.h	/^    S3C24X0_REG32 WTDAT;$/;"	m	struct:__anon17
+WTDAT_OFFSET	include/s3c2440.h	403;"	d
+WTDAT_REG	include/s3c2440.h	407;"	d
+X	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+X	bignum.c	/^    mpi X, Y, Z, T1, T2;$/;"	l
+XMODEM_ACK	xmodem.c	15;"	d	file:
+XMODEM_BLOCK_SIZE	xmodem.c	20;"	d	file:
+XMODEM_CAN	xmodem.c	17;"	d	file:
+XMODEM_EOF	xmodem.c	18;"	d	file:
+XMODEM_EOT	xmodem.c	14;"	d	file:
+XMODEM_NAK	xmodem.c	16;"	d	file:
+XMODEM_SOH	xmodem.c	12;"	d	file:
+XMODEM_STX	xmodem.c	13;"	d	file:
+Y	bignum.c	/^    mpi A, E, N, X, Y, U, V;$/;"	l
+Y	bignum.c	/^    mpi X, Y, Z, T1, T2;$/;"	l
+Y	bignum.c	/^    mpi Y;$/;"	l
+YEAR_BASE	include/linux/time.h	20;"	d
+Z	bignum.c	/^    mpi X, Y, Z, T1, T2;$/;"	l
+ZEROPAD	common.c	62;"	d	file:
+ZEXPORT	crc32.c	18;"	d	file:
+_AND	include/linux/time.h	8;"	d
+_ARCH_HARDWARE_H_	include/asm/hardware.h	2;"	d
+_ARM_ERRNO_H	include/asm/errno.h	2;"	d
+_B	bignum.c	/^    mpi _B;$/;"	l
+_BIGNUM_H	include/bignum.h	5;"	d
+_BN_ASM_H	include/bn_asm.h	8;"	d
+_C	include/linux/ctype.h	12;"	d
+_CADDR_T	include/linux/types.h	78;"	d
+_CLOCK_T	include/linux/types.h	73;"	d
+_CONST	include/linux/time.h	7;"	d
+_CRT_SECURE_NO_DEPRECATE	bignum.c	28;"	d	file:
+_CRT_SECURE_NO_DEPRECATE	rsa.c	28;"	d	file:
+_D	include/linux/ctype.h	11;"	d
+_DEFUN	include/linux/time.h	6;"	d
+_L	include/linux/ctype.h	10;"	d
+_LAST_ERRNO	include/asm/errno.h	136;"	d
+_LINUX_BITOPS_H	include/linux/bitops.h	2;"	d
+_LINUX_CONFIG_H	include/linux/config.h	2;"	d
+_LINUX_CTYPE_H	include/linux/ctype.h	2;"	d
+_LINUX_POSIX_TYPES_H	include/linux/posix_types.h	2;"	d
+_LINUX_STDDEF_H	include/linux/stddef.h	2;"	d
+_LINUX_STRING_H_	include/linux/string.h	2;"	d
+_LINUX_TIME_H	include/linux/time.h	2;"	d
+_LINUX_TYPES_H	include/linux/types.h	2;"	d
+_P	include/linux/ctype.h	13;"	d
+_PTRDIFF_T	include/linux/types.h	63;"	d
+_REENT_ONLY	include/linux/time.h	10;"	d
+_RSA_H	include/rsa.h	5;"	d
+_S	include/linux/ctype.h	14;"	d
+_SIZE_T	include/linux/types.h	53;"	d
+_SP	include/linux/ctype.h	16;"	d
+_SSIZE_T	include/linux/types.h	58;"	d
+_TEXT_BASE	mem_init.S	/^_TEXT_BASE:$/;"	l
+_TEXT_BASE	start.S	/^_TEXT_BASE:$/;"	l
+_TIME_T	include/linux/types.h	68;"	d
+_U	include/linux/ctype.h	9;"	d
+_X	include/linux/ctype.h	15;"	d
+__ARCH_ARM_POSIX_TYPES_H	include/asm/posix_types.h	14;"	d
+__ASM_ARM_IO_H	include/asm/io.h	21;"	d
+__ASM_ARM_TYPES_H	include/asm/types.h	2;"	d
+__BIT_TYPES_DEFINED__	include/linux/types.h	95;"	d
+__COMMON_H	include/common.h	11;"	d
+__CONFIG_H	include/config.h	11;"	d
+__FDELT	include/linux/posix_types.h	30;"	d
+__FDELT	include/linux/posix_types.h	31;"	d
+__FDMASK	include/linux/posix_types.h	33;"	d
+__FDMASK	include/linux/posix_types.h	34;"	d
+__FDSET_LONGS	include/linux/posix_types.h	27;"	d
+__FDSET_LONGS	include/linux/posix_types.h	28;"	d
+__FD_CLR	include/asm/posix_types.h	66;"	d
+__FD_CLR	include/asm/posix_types.h	67;"	d
+__FD_ISSET	include/asm/posix_types.h	70;"	d
+__FD_ISSET	include/asm/posix_types.h	71;"	d
+__FD_SET	include/asm/posix_types.h	62;"	d
+__FD_SET	include/asm/posix_types.h	63;"	d
+__FD_SETSIZE	include/linux/posix_types.h	24;"	d
+__FD_SETSIZE	include/linux/posix_types.h	25;"	d
+__FD_ZERO	include/asm/posix_types.h	74;"	d
+__FD_ZERO	include/asm/posix_types.h	75;"	d
+__LINUX_MTD_NAND_H	include/nand.h	19;"	d
+__LINUX_MTD_NAND_H	nand.h	19;"	d
+__NFDBITS	include/linux/posix_types.h	21;"	d
+__NFDBITS	include/linux/posix_types.h	22;"	d
+__REG	include/asm/hardware.h	18;"	d
+__REG	include/asm/hardware.h	9;"	d
+__REG2	include/asm/hardware.h	14;"	d
+__REG2	include/asm/hardware.h	23;"	d
+__REGb	include/asm/hardware.h	13;"	d
+__REGb	include/asm/hardware.h	22;"	d
+__REGi	include/asm/hardware.h	11;"	d
+__REGi	include/asm/hardware.h	20;"	d
+__REGl	include/asm/hardware.h	10;"	d
+__REGl	include/asm/hardware.h	19;"	d
+__REGw	include/asm/hardware.h	12;"	d
+__REGw	include/asm/hardware.h	21;"	d
+__S3C2440_H__	include/s3c2440.h	31;"	d
+__S3C24X0_H__	include/s3c24x0.h	32;"	d
+___strtok	include/linux/string.h	/^    extern char *___strtok;$/;"	x
+__arch_getb	include/asm/io.h	59;"	d
+__arch_getl	include/asm/io.h	61;"	d
+__arch_getw	include/asm/io.h	60;"	d
+__arch_ioremap	include/asm/io.h	185;"	d
+__arch_iounmap	include/asm/io.h	194;"	d
+__arch_putb	include/asm/io.h	63;"	d
+__arch_putl	include/asm/io.h	65;"	d
+__arch_putw	include/asm/io.h	64;"	d
+__cpu_to_le32	crc32.c	13;"	d	file:
+__ismask	include/linux/ctype.h	20;"	d
+__kernel_caddr_t	include/asm/posix_types.h	/^typedef char *__kernel_caddr_t;$/;"	t
+__kernel_clock_t	include/asm/posix_types.h	/^typedef long __kernel_clock_t;$/;"	t
+__kernel_daddr_t	include/asm/posix_types.h	/^typedef int __kernel_daddr_t;$/;"	t
+__kernel_dev_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_dev_t;$/;"	t
+__kernel_fd_set	include/linux/posix_types.h	/^} __kernel_fd_set;$/;"	t	typeref:struct:__anon29
+__kernel_fsid_t	include/asm/posix_types.h	/^} __kernel_fsid_t;$/;"	t	typeref:struct:__anon1
+__kernel_gid16_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_gid16_t;$/;"	t
+__kernel_gid32_t	include/asm/posix_types.h	/^typedef unsigned int __kernel_gid32_t;$/;"	t
+__kernel_gid_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_gid_t;$/;"	t
+__kernel_ino_t	include/asm/posix_types.h	/^typedef unsigned long __kernel_ino_t;$/;"	t
+__kernel_ipc_pid_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_ipc_pid_t;$/;"	t
+__kernel_key_t	include/linux/posix_types.h	/^typedef int __kernel_key_t;$/;"	t
+__kernel_loff_t	include/asm/posix_types.h	/^typedef long long __kernel_loff_t;$/;"	t
+__kernel_mode_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_mode_t;$/;"	t
+__kernel_nlink_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_nlink_t;$/;"	t
+__kernel_off_t	include/asm/posix_types.h	/^typedef long __kernel_off_t;$/;"	t
+__kernel_old_gid_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_old_gid_t;$/;"	t
+__kernel_old_uid_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_old_uid_t;$/;"	t
+__kernel_pid_t	include/asm/posix_types.h	/^typedef int __kernel_pid_t;$/;"	t
+__kernel_ptrdiff_t	include/asm/posix_types.h	/^typedef int __kernel_ptrdiff_t;$/;"	t
+__kernel_sighandler_t	include/linux/posix_types.h	/^typedef void (*__kernel_sighandler_t) (int);$/;"	t
+__kernel_size_t	include/asm/posix_types.h	/^typedef unsigned int __kernel_size_t;$/;"	t
+__kernel_ssize_t	include/asm/posix_types.h	/^typedef int __kernel_ssize_t;$/;"	t
+__kernel_suseconds_t	include/asm/posix_types.h	/^typedef long __kernel_suseconds_t;$/;"	t
+__kernel_time_t	include/asm/posix_types.h	/^typedef long __kernel_time_t;$/;"	t
+__kernel_uid16_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_uid16_t;$/;"	t
+__kernel_uid32_t	include/asm/posix_types.h	/^typedef unsigned int __kernel_uid32_t;$/;"	t
+__kernel_uid_t	include/asm/posix_types.h	/^typedef unsigned short __kernel_uid_t;$/;"	t
+__raw_base_readb	include/asm/io.h	100;"	d
+__raw_base_readl	include/asm/io.h	102;"	d
+__raw_base_readw	include/asm/io.h	101;"	d
+__raw_base_writeb	include/asm/io.h	96;"	d
+__raw_base_writel	include/asm/io.h	98;"	d
+__raw_base_writew	include/asm/io.h	97;"	d
+__raw_readb	include/asm/io.h	79;"	d
+__raw_readl	include/asm/io.h	81;"	d
+__raw_readw	include/asm/io.h	80;"	d
+__raw_writeb	include/asm/io.h	75;"	d
+__raw_writel	include/asm/io.h	77;"	d
+__raw_writew	include/asm/io.h	76;"	d
+__s16	include/asm/types.h	/^typedef __signed__ short __s16;$/;"	t
+__s32	include/asm/types.h	/^typedef __signed__ int __s32;$/;"	t
+__s64	include/asm/types.h	/^__extension__ typedef __signed__ long long __s64;$/;"	t
+__s8	include/asm/types.h	/^typedef __signed__ char __s8;$/;"	t
+__sizes_h	include/asm/sizes.h	24;"	d
+__tm_gmtoff	include/linux/time.h	/^    long int __tm_gmtoff;       \/* Seconds east of UTC.  *\/$/;"	m	struct:tm
+__tm_zone	include/linux/time.h	/^    __const char *__tm_zone;    \/* Timezone abbreviation.  *\/$/;"	m	struct:tm
+__tolower	include/linux/ctype.h	/^static inline unsigned char __tolower(unsigned char c)$/;"	f
+__toupper	include/linux/ctype.h	/^static inline unsigned char __toupper(unsigned char c)$/;"	f
+__u16	include/asm/types.h	/^typedef unsigned short __u16;$/;"	t
+__u32	include/asm/types.h	/^typedef unsigned int __u32;$/;"	t
+__u64	include/asm/types.h	/^__extension__ typedef unsigned long long __u64;$/;"	t
+__u8	include/asm/types.h	/^typedef unsigned char __u8;$/;"	t
+_armboot_start	start.S	/^_armboot_start:$/;"	l
+_bignum_src	bignum.c	/^static const char _bignum_src[] = "_bignum_src";$/;"	v	file:
+_bss_end	start.S	/^_bss_end:$/;"	l
+_bss_start	start.S	/^_bss_start:$/;"	l
+_ctype	include/linux/ctype.h	/^extern unsigned char _ctype[];$/;"	x
+_data_abort	start.S	/^_data_abort:		.word data_abort$/;"	l
+_fiq	start.S	/^_fiq:			.word fiq$/;"	l
+_irq	start.S	/^_irq:			.word irq$/;"	l
+_not_used	start.S	/^_not_used:		.word not_used$/;"	l
+_prefetch_abort	start.S	/^_prefetch_abort:	.word prefetch_abort$/;"	l
+_software_interrupt	start.S	/^_software_interrupt:	.word software_interrupt$/;"	l
+_start	start.S	/^_start:	b	start_code$/;"	l
+_undefined_instruction	start.S	/^_undefined_instruction:	.word undefined_instruction$/;"	l
+addr	bootstrap.c	/^    char *addr = (char *)0x36000000;$/;"	l
+addr	bootstrap.c	/^    char *addr = (char *)TEXT_BASE;$/;"	l
+addr	k9f2g08.c	/^    ulong   addr;$/;"	l
+addr	k9f2g08.c	/^    ulong addr;$/;"	l
+args	bignum.c	/^    va_list args;$/;"	l
+args	common.c	/^    va_list args;$/;"	l
+b	crc32.c	/^    const uint32_t *b =(const uint32_t *)buf;$/;"	l
+bad_block_offset	include/nand.h	/^    int bad_block_offset; $/;"	m	struct:boot_nand_t
+bad_block_offset	nand.h	/^    int bad_block_offset; $/;"	m	struct:boot_nand_t
+base	common.c	/^    int i, base;$/;"	l
+beep	led_beep.c	/^void beep(int count)$/;"	f
+biH	bignum.c	/^        x <<= biH;$/;"	l
+biH	include/bignum.h	34;"	d
+biL	include/bignum.h	33;"	d
+block_num	include/nand.h	/^    int block_num;$/;"	m	struct:boot_nand_t
+block_num	k9f2g08.c	/^    int     block_num, ret=0;$/;"	l
+block_num	k9f2g08.c	/^    ulong block_num;$/;"	l
+block_num	nand.h	/^    int block_num;$/;"	m	struct:boot_nand_t
+block_num	xmodem.c	/^    unsigned char c, block_num, check_sum;$/;"	l
+block_number	xmodem.c	/^    unsigned char c, block_number = 1;$/;"	l
+block_shift	k9f2g08.c	/^    int     block_shift = generic_ffs(nand->block_size)-1;$/;"	l
+block_size	include/nand.h	/^    int block_size; $/;"	m	struct:boot_nand_t
+block_size	nand.h	/^    int block_size; $/;"	m	struct:boot_nand_t
+block_start	k9f2g08.c	/^    ulong   block_start; \/*Block start address*\/$/;"	l
+block_start	k9f2g08.c	/^    ulong block_start;$/;"	l
+boot_nand_t	include/nand.h	/^struct boot_nand_t$/;"	s
+boot_nand_t	nand.h	/^struct boot_nand_t$/;"	s
+bootstrap_main	bootstrap.c	/^int bootstrap_main(void)$/;"	f
+buf	bootstrap.c	/^    char    buf[0x20000];$/;"	l
+buf	rsa.c	/^    unsigned char *p, buf[512];$/;"	l
+buf	rsa.c	/^    unsigned char *p, c, buf[512];$/;"	l
+bufsize	bignum.c	/^    int bufsize, nblimbs, nbits;$/;"	l
+bytes	k9f2g08.c	/^    ulong  i, bytes;$/;"	l
+bytes	k9f2g08.c	/^    ulong bytes = 0;$/;"	l
+bytes	k9f2g08.c	/^    ulong bytes;$/;"	l
+c	bignum.c	/^    t_int *o, *p, c;$/;"	l
+c	bignum.c	/^    t_int c = 0;$/;"	l
+c	bignum.c	/^    t_int c, z;$/;"	l
+c	common.c	/^    char c, sign, tmp[66];$/;"	l
+c	crc32.c	/^  uint32_t c;$/;"	l
+c	rsa.c	/^    unsigned char *p, c, buf[512];$/;"	l
+c	xmodem.c	/^    unsigned char c, block_num, check_sum;$/;"	l
+c	xmodem.c	/^    unsigned char c, block_number = 1;$/;"	l
+caddr_t	include/linux/types.h	/^typedef __kernel_caddr_t caddr_t;$/;"	t
+ch	include/s3c24x0.h	/^    S3C24X0_SPI_CHANNEL ch[S3C24X0_SPI_CHANNELS];$/;"	m	struct:__anon25
+ch	include/s3c24x0.h	/^    S3C24X0_TIMER ch[4];$/;"	m	struct:__anon13
+check_signature	include/asm/io.h	/^static inline int check_signature(unsigned long io_addr, const unsigned char *signature, int length)$/;"	f
+check_signature	include/asm/io.h	270;"	d
+check_sum	xmodem.c	/^    unsigned char c, block_num, check_sum;$/;"	l
+ciL	include/bignum.h	32;"	d
+cl	common.c	/^    unsigned long cl = 0;$/;"	l
+clear_bss	start.S	/^clear_bss:$/;"	l
+clock_t	include/linux/types.h	/^typedef __kernel_clock_t clock_t;$/;"	t
+cnt	xmodem.c	/^              long cnt = 0;$/;"	l
+cnt	xmodem.c	/^    long cnt = 0;$/;"	l
+count	bignum.c	/^    int i, j, count = 0;$/;"	l
+count	bignum.c	/^    int ret, count;$/;"	l
+cpu_to_le32	crc32.c	14;"	d	file:
+crc32	crc32.c	/^uint32_t ZEXPORT crc32 (uint32_t crc, const uchar *p, uint len)$/;"	f
+crc32_no_comp	crc32.c	/^uint32_t ZEXPORT crc32_no_comp(uint32_t crc, const uchar *buf, uint len)$/;"	f
+crc_table	crc32.c	/^local const uint32_t crc_table[256] = {$/;"	v
+crc_table	crc32.c	/^local uint32_t crc_table[256];$/;"	v
+crc_table_empty	crc32.c	/^local int crc_table_empty = 1;$/;"	v
+d	bignum.c	/^    t_int d;$/;"	l
+d	bignum.c	/^    t_int u0, u1, *d;$/;"	l
+daddr_t	include/linux/types.h	/^typedef __kernel_daddr_t daddr_t;$/;"	t
+data	k9f2g08.c	/^    char data = 0xEE;$/;"	l
+data	k9f2g08.c	/^    char data;$/;"	l
+data_abort	start.S	/^data_abort:$/;"	l
+day_name	include/linux/time.h	/^    static _CONST char day_name[7][3] = {$/;"	v
+days	include/linux/time.h	/^    days = ((long)*tim_p) \/ SECSPERDAY;$/;"	m	struct:res
+days	include/linux/time.h	/^    long days, rem;$/;"	m	struct:res
+dbg_mode	bootstrap.c	/^int dbg_mode(struct boot_nand_t *nand)$/;"	f
+dbg_print	include/common.h	21;"	d
+dbg_print	include/common.h	23;"	d
+delay	led_beep.c	/^inline void delay(unsigned long loops)$/;"	f
+dev_t	include/linux/types.h	/^typedef __kernel_dev_t dev_t;$/;"	t
+digits	common.c	/^    const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";$/;"	l
+dma	include/s3c24x0.h	/^    S3C24X0_DMA dma[4];$/;"	m	struct:__anon7
+dma	include/s3c24x0.h	/^    S3C24X0_USB_DEV_DMAS dma[5];$/;"	m	struct:__anon16
+dma_addr_t	include/asm/types.h	/^typedef u32 dma_addr_t;$/;"	t
+do_data_abort	interrupt.c	/^void do_data_abort(void)$/;"	f
+do_div	common.c	71;"	d	file:
+do_div	common.c	78;"	d	file:
+do_fiq	interrupt.c	/^void do_fiq(void)$/;"	f
+do_go_exec	bootstrap.c	/^unsigned long do_go_exec (ulong (*entry)(int, char * const []), int argc, char * const argv[])$/;"	f
+do_irq	interrupt.c	/^void do_irq(void)$/;"	f
+do_not_used	interrupt.c	/^void do_not_used(void)$/;"	f
+do_prefetch_abort	interrupt.c	/^void do_prefetch_abort(void)$/;"	f
+do_software_interrupt	interrupt.c	/^void do_software_interrupt(void)$/;"	f
+do_undefined_instruction	interrupt.c	/^void do_undefined_instruction(void)$/;"	f
+ei	bignum.c	/^    t_int ei, mm, state;$/;"	l
+erase_size	bootstrap.c	/^    ulong erase_size;$/;"	l
+eth_io_copy_and_sum	include/asm/io.h	239;"	d
+eth_io_copy_and_sum	include/asm/io.h	268;"	d
+fTCFG0_DZONE	include/s3c2440.h	491;"	d
+fTCFG0_PRE0	include/s3c2440.h	493;"	d
+fTCFG0_PRE1	include/s3c2440.h	492;"	d
+fTCFG1_MUX4	include/s3c2440.h	494;"	d
+f_fname	include/linux/types.h	/^    char f_fname[6];$/;"	m	struct:ustat
+f_fpack	include/linux/types.h	/^    char f_fpack[6];$/;"	m	struct:ustat
+f_tfree	include/linux/types.h	/^    __kernel_daddr_t f_tfree;$/;"	m	struct:ustat
+f_tinode	include/linux/types.h	/^    __kernel_ino_t f_tinode;$/;"	m	struct:ustat
+failed	k9f2g08.c	/^    int     failed = 0;$/;"	l
+fd_set	include/linux/types.h	/^typedef __kernel_fd_set fd_set;$/;"	t
+fds_bits	include/linux/posix_types.h	/^    unsigned long fds_bits[__FDSET_LONGS];$/;"	m	struct:__anon29
+field_width	common.c	/^    int field_width;            \/* width of output field *\/$/;"	l
+fifo	include/s3c24x0.h	/^    S3C24X0_USB_DEV_FIFOS fifo[5];$/;"	m	struct:__anon16
+fiq	start.S	/^fiq:$/;"	l
+flags	common.c	/^    int flags;                  \/* flags to number() *\/$/;"	l
+gccincdir	makefile	/^gccincdir := $(shell $(CC) -print-file-name=include)$/;"	m
+generic_ffs	include/linux/bitops.h	/^static inline int generic_ffs(int x)$/;"	f
+generic_hweight16	include/linux/bitops.h	/^static inline unsigned int generic_hweight16(unsigned int w)$/;"	f
+generic_hweight32	include/linux/bitops.h	/^static inline unsigned int generic_hweight32(unsigned int w)$/;"	f
+generic_hweight8	include/linux/bitops.h	/^static inline unsigned int generic_hweight8(unsigned int w)$/;"	f
+gid16_t	include/linux/types.h	/^typedef __kernel_gid16_t gid16_t;$/;"	t
+gid_t	include/linux/types.h	/^typedef __kernel_gid32_t gid_t;$/;"	t
+gid_t	include/linux/types.h	/^typedef __kernel_gid_t gid_t;$/;"	t
+i	bignum.c	/^    int i, j, count = 0;$/;"	l
+i	bignum.c	/^    int i, j, n, ilen;$/;"	l
+i	bignum.c	/^    int i, j;$/;"	l
+i	bignum.c	/^    int i, n, m;$/;"	l
+i	bignum.c	/^    int i, v0, v1;$/;"	l
+i	bignum.c	/^    int i;$/;"	l
+i	bignum.c	/^    int ret, i, j, k, l;$/;"	l
+i	bignum.c	/^    int ret, i, j, n;$/;"	l
+i	bignum.c	/^    int ret, i, j, s, xs;$/;"	l
+i	bignum.c	/^    int ret, i, j, wsize, wbits;$/;"	l
+i	bignum.c	/^    int ret, i, j;$/;"	l
+i	bignum.c	/^    int ret, i, n, t, k;$/;"	l
+i	bignum.c	/^    int ret, i, v0, t1;$/;"	l
+i	bignum.c	/^    int ret, i;$/;"	l
+i	bootstrap.c	/^    int i;$/;"	l
+i	common.c	/^    int i = 0;$/;"	l
+i	common.c	/^    int i, base;$/;"	l
+i	common.c	/^    int i;$/;"	l
+i	common.c	/^    uint i;$/;"	l
+i	k9f2g08.c	/^    int i, ret = -1;$/;"	l
+i	k9f2g08.c	/^    int i;$/;"	l
+i	k9f2g08.c	/^    ulong  i, bytes;$/;"	l
+i	led_beep.c	/^    int i;$/;"	l
+i	xmodem.c	/^    int i;$/;"	l
+id	include/nand.h	/^    int id;$/;"	m	struct:boot_nand_t
+id	k9f2g08.c	/^    unsigned short id = 0;$/;"	l
+id	nand.h	/^    int id;$/;"	m	struct:boot_nand_t
+ilen	bignum.c	/^    int i, j, n, ilen;$/;"	l
+inb	include/asm/io.h	140;"	d
+inb_p	include/asm/io.h	156;"	d
+init_led_beep	led_beep.c	/^void init_led_beep(void)$/;"	f
+inl	include/asm/io.h	142;"	d
+inl_p	include/asm/io.h	158;"	d
+ino_t	include/linux/types.h	/^typedef __kernel_ino_t ino_t;$/;"	t
+insb	include/asm/io.h	148;"	d
+insb_p	include/asm/io.h	163;"	d
+insl	include/asm/io.h	150;"	d
+insl_p	include/asm/io.h	165;"	d
+insw	include/asm/io.h	149;"	d
+insw_p	include/asm/io.h	164;"	d
+int16_t	include/linux/types.h	/^typedef __s16 int16_t;$/;"	t
+int32_t	include/linux/types.h	/^typedef __s32 int32_t;$/;"	t
+int64_t	include/linux/types.h	/^typedef __s64 int64_t;$/;"	t
+int8_t	include/linux/types.h	/^typedef __s8 int8_t;$/;"	t
+inw	include/asm/io.h	141;"	d
+inw_p	include/asm/io.h	157;"	d
+ioremap	include/asm/io.h	197;"	d
+ioremap_nocache	include/asm/io.h	198;"	d
+iounmap	include/asm/io.h	199;"	d
+ip	common.c	/^                  int *ip = va_arg(args, int *);$/;"	l
+ip	common.c	/^                  long *ip = va_arg(args, long *);$/;"	l
+ip	include/linux/time.h	/^    _CONST int *ip;$/;"	m	struct:res
+ip	include/linux/time.h	/^    ip = mon_lengths[yleap];$/;"	m	struct:res
+irq	start.S	/^irq:$/;"	l
+is_bad_block	k9f2g08.c	/^int is_bad_block(struct boot_nand_t *nand, ulong addr)$/;"	f
+is_digit	common.c	51;"	d	file:
+isa_check_signature	include/asm/io.h	/^isa_check_signature(unsigned long io_addr, const unsigned char *signature, int length)$/;"	f
+isa_check_signature	include/asm/io.h	326;"	d
+isa_eth_io_copy_and_sum	include/asm/io.h	290;"	d
+isa_eth_io_copy_and_sum	include/asm/io.h	323;"	d
+isa_memcpy_fromio	include/asm/io.h	287;"	d
+isa_memcpy_fromio	include/asm/io.h	320;"	d
+isa_memcpy_toio	include/asm/io.h	288;"	d
+isa_memcpy_toio	include/asm/io.h	321;"	d
+isa_memset_io	include/asm/io.h	286;"	d
+isa_memset_io	include/asm/io.h	319;"	d
+isa_readb	include/asm/io.h	280;"	d
+isa_readb	include/asm/io.h	313;"	d
+isa_readl	include/asm/io.h	282;"	d
+isa_readl	include/asm/io.h	315;"	d
+isa_readw	include/asm/io.h	281;"	d
+isa_readw	include/asm/io.h	314;"	d
+isa_writeb	include/asm/io.h	283;"	d
+isa_writeb	include/asm/io.h	316;"	d
+isa_writel	include/asm/io.h	285;"	d
+isa_writel	include/asm/io.h	318;"	d
+isa_writew	include/asm/io.h	284;"	d
+isa_writew	include/asm/io.h	317;"	d
+isalnum	include/linux/ctype.h	22;"	d
+isalpha	include/linux/ctype.h	23;"	d
+isascii	include/linux/ctype.h	34;"	d
+iscntrl	include/linux/ctype.h	24;"	d
+isdigit	include/linux/ctype.h	25;"	d
+isgraph	include/linux/ctype.h	26;"	d
+isleap	include/linux/time.h	24;"	d
+islower	include/linux/ctype.h	27;"	d
+isprint	include/linux/ctype.h	28;"	d
+ispunct	include/linux/ctype.h	29;"	d
+isspace	include/linux/ctype.h	30;"	d
+isupper	include/linux/ctype.h	31;"	d
+isxdigit	include/linux/ctype.h	32;"	d
+j	bignum.c	/^    int i, j, count = 0;$/;"	l
+j	bignum.c	/^    int i, j, n, ilen;$/;"	l
+j	bignum.c	/^    int i, j;$/;"	l
+j	bignum.c	/^    int ret, i, j, k, l;$/;"	l
+j	bignum.c	/^    int ret, i, j, n;$/;"	l
+j	bignum.c	/^    int ret, i, j, s, xs;$/;"	l
+j	bignum.c	/^    int ret, i, j, wsize, wbits;$/;"	l
+j	bignum.c	/^    int ret, i, j;$/;"	l
+k	bignum.c	/^    int ret, i, j, k, l;$/;"	l
+k	bignum.c	/^    int ret, i, n, t, k;$/;"	l
+k	bignum.c	/^    int ret, k, n;$/;"	l
+k	crc32.c	/^  int n, k;$/;"	l
+key_t	include/linux/types.h	/^typedef __kernel_key_t key_t;$/;"	t
+l	bignum.c	/^    int ret, i, j, k, l;$/;"	l
+le32_to_cpu	crc32.c	15;"	d	file:
+left	k9f2g08.c	/^    ulong left;$/;"	l
+len	common.c	/^    int len;$/;"	l
+len	include/rsa.h	/^    int len;    \/*!<  size(N) in chars  *\/$/;"	m	struct:__anon31
+len	rsa.c	/^    int len;$/;"	l
+len	rsa.c	/^    int ret, len;$/;"	l
+local	crc32.c	17;"	d	file:
+loff_t	include/linux/types.h	/^typedef __kernel_loff_t loff_t;$/;"	t
+m	bignum.c	/^    int i, n, m;$/;"	l
+m0	bignum.c	/^    t_int x, m0 = N->p[0];$/;"	l
+main	rsa.c	/^int main ( void )$/;"	f
+make_crc_table	crc32.c	/^local void make_crc_table()$/;"	f
+map_physmem	include/asm/io.h	/^static inline void *map_physmem(phys_addr_t paddr, unsigned long len, unsigned long flags)$/;"	f
+mark_bad_block	k9f2g08.c	/^int mark_bad_block(struct boot_nand_t *nand, ulong addr)$/;"	f
+md5sum	rsa.c	/^    unsigned char md5sum[16];$/;"	l
+mem_init	mem_init.S	/^mem_init:$/;"	l
+memcpy_fromio	include/asm/io.h	236;"	d
+memcpy_toio	include/asm/io.h	237;"	d
+memset	common.c	/^void * memset(void * s,int c,size_t count)$/;"	f
+memset_io	include/asm/io.h	235;"	d
+mm	bignum.c	/^    t_int ei, mm, state;$/;"	l
+mode_t	include/linux/types.h	/^typedef __kernel_mode_t mode_t;$/;"	t
+mon_lengths	include/linux/time.h	/^    static _CONST int mon_lengths[2][MONSPERYEAR] = {$/;"	m	struct:res
+mon_name	include/linux/time.h	/^    static _CONST char mon_name[12][3] = {$/;"	v
+mpi	include/bignum.h	/^mpi;$/;"	t	typeref:struct:__anon30
+mpi_add_abs	bignum.c	/^int mpi_add_abs( mpi *X, mpi *A, mpi *B )$/;"	f
+mpi_add_int	bignum.c	/^int mpi_add_int( mpi *X, mpi *A, int b )$/;"	f
+mpi_add_mpi	bignum.c	/^int mpi_add_mpi( mpi *X, mpi *A, mpi *B )$/;"	f
+mpi_cmp_abs	bignum.c	/^int mpi_cmp_abs( mpi *X, mpi *Y )$/;"	f
+mpi_cmp_int	bignum.c	/^int mpi_cmp_int( mpi *X, int z )$/;"	f
+mpi_cmp_mpi	bignum.c	/^int mpi_cmp_mpi( mpi *X, mpi *Y )$/;"	f
+mpi_copy	bignum.c	/^int mpi_copy( mpi *X, mpi *Y )$/;"	f
+mpi_div_int	bignum.c	/^int mpi_div_int( mpi *Q, mpi *R, mpi *A, int b )$/;"	f
+mpi_div_mpi	bignum.c	/^int mpi_div_mpi( mpi *Q, mpi *R, mpi *A, mpi *B )$/;"	f
+mpi_exp_mod	bignum.c	/^int mpi_exp_mod( mpi *X, mpi *A, mpi *E, mpi *N, mpi *_RR )$/;"	f
+mpi_export	bignum.c	/^int mpi_export( mpi *X, unsigned char *buf, int *buflen )$/;"	f
+mpi_free	bignum.c	/^void mpi_free( mpi *X, ... )$/;"	f
+mpi_gcd	bignum.c	/^int mpi_gcd( mpi *G, mpi *A, mpi *B )$/;"	f
+mpi_gen_prime	bignum.c	/^int mpi_gen_prime( mpi *X, int nbits, int dh_flag,$/;"	f
+mpi_get_digit	bignum.c	/^static int mpi_get_digit( t_int *d, int radix, char c )$/;"	f	file:
+mpi_grow	bignum.c	/^int mpi_grow( mpi *X, int nblimbs )$/;"	f
+mpi_import	bignum.c	/^int mpi_import( mpi *X, unsigned char *buf, int buflen )$/;"	f
+mpi_init	bignum.c	/^void mpi_init( mpi *X, ... )$/;"	f
+mpi_inv_mod	bignum.c	/^int mpi_inv_mod( mpi *X, mpi *A, mpi *N )$/;"	f
+mpi_is_prime	bignum.c	/^int mpi_is_prime( mpi *X )$/;"	f
+mpi_lsb	bignum.c	/^int mpi_lsb( mpi *X )$/;"	f
+mpi_lset	bignum.c	/^int mpi_lset( mpi *X, int z )$/;"	f
+mpi_mod_int	bignum.c	/^int mpi_mod_int( t_int *r, mpi *A, int b )$/;"	f
+mpi_mod_mpi	bignum.c	/^int mpi_mod_mpi( mpi *R, mpi *A, mpi *B )$/;"	f
+mpi_montg_init	bignum.c	/^static void mpi_montg_init( t_int *mm, mpi *N )$/;"	f	file:
+mpi_montmul	bignum.c	/^static void mpi_montmul( mpi *A, mpi *B, mpi *N, t_int mm, mpi *T )$/;"	f	file:
+mpi_montred	bignum.c	/^static void mpi_montred( mpi *A, mpi *N, t_int mm, mpi *T )$/;"	f	file:
+mpi_mul_hlp	bignum.c	/^static void mpi_mul_hlp( int i, t_int *s, t_int *d, t_int b )$/;"	f	file:
+mpi_mul_int	bignum.c	/^int mpi_mul_int( mpi *X, mpi *A, t_int b )$/;"	f
+mpi_mul_mpi	bignum.c	/^int mpi_mul_mpi( mpi *X, mpi *A, mpi *B )$/;"	f
+mpi_read	bignum.c	/^int mpi_read( mpi *X, char *s, int radix )$/;"	f
+mpi_recurse_showf	bignum.c	/^static int mpi_recurse_showf( mpi *X, int radix, FILE *fout )$/;"	f	file:
+mpi_self_test	bignum.c	/^int mpi_self_test( void )$/;"	f
+mpi_shift_l	bignum.c	/^int mpi_shift_l( mpi *X, int count )$/;"	f
+mpi_shift_r	bignum.c	/^int mpi_shift_r( mpi *X, int count )$/;"	f
+mpi_show	bignum.c	/^int mpi_show( char *name, mpi *X, int radix )$/;"	f
+mpi_showf	bignum.c	/^int mpi_showf( char *name, mpi *X, int radix, FILE *fout )$/;"	f
+mpi_size	bignum.c	/^int mpi_size( mpi *X )$/;"	f
+mpi_sub_abs	bignum.c	/^int mpi_sub_abs( mpi *X, mpi *A, mpi *B )$/;"	f
+mpi_sub_hlp	bignum.c	/^static void mpi_sub_hlp( int n, t_int *s, t_int *d )$/;"	f	file:
+mpi_sub_int	bignum.c	/^int mpi_sub_int( mpi *X, mpi *A, int b )$/;"	f
+mpi_sub_mpi	bignum.c	/^int mpi_sub_mpi( mpi *X, mpi *A, mpi *B )$/;"	f
+mpi_swap	bignum.c	/^void mpi_swap( mpi *X, mpi *Y )$/;"	f
+n	bignum.c	/^    int i, j, n, ilen;$/;"	l
+n	bignum.c	/^    int i, n, m;$/;"	l
+n	bignum.c	/^    int n = X->n;$/;"	l
+n	bignum.c	/^    int ret, i, j, n;$/;"	l
+n	bignum.c	/^    int ret, i, n, t, k;$/;"	l
+n	bignum.c	/^    int ret, k, n;$/;"	l
+n	bignum.c	/^    int ret, n;$/;"	l
+n	crc32.c	/^  int n, k;$/;"	l
+n	include/bignum.h	/^    int n;              \/*!<  total # of limbs  *\/$/;"	m	struct:__anon30
+nand	bootstrap.c	/^    struct boot_nand_t nand;$/;"	l
+nand_clear_RnB	include/nand.h	220;"	d
+nand_clear_RnB	include/nand.h	236;"	d
+nand_clear_RnB	nand.h	220;"	d
+nand_clear_RnB	nand.h	236;"	d
+nand_deselect	include/nand.h	219;"	d
+nand_deselect	include/nand.h	235;"	d
+nand_deselect	nand.h	219;"	d
+nand_deselect	nand.h	235;"	d
+nand_detect_RnB	include/nand.h	221;"	d
+nand_detect_RnB	include/nand.h	237;"	d
+nand_detect_RnB	nand.h	221;"	d
+nand_detect_RnB	nand.h	237;"	d
+nand_ecc_modes_t	include/nand.h	/^} nand_ecc_modes_t;$/;"	t	typeref:enum:__anon2
+nand_ecc_modes_t	nand.h	/^} nand_ecc_modes_t;$/;"	t	typeref:enum:__anon32
+nand_erase	k9f2g08.c	/^int nand_erase(struct boot_nand_t *nand, ulong start_addr, ulong size, int skip_bad)$/;"	f
+nand_erase_block	k9f2g08.c	/^int nand_erase_block(struct boot_nand_t *nand, ulong block_num) $/;"	f
+nand_id	k9f2g08.c	/^    unsigned short nand_id;$/;"	l
+nand_init	k9f2g08.c	/^int nand_init(struct boot_nand_t *nand)$/;"	f
+nand_read	k9f2g08.c	/^int nand_read(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf)$/;"	f
+nand_read_id	k9f2g08.c	/^static unsigned short nand_read_id(void)$/;"	f	file:
+nand_read_page	k9f2g08.c	/^int nand_read_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)$/;"	f
+nand_read_spare	k9f2g08.c	/^int nand_read_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf)$/;"	f
+nand_scrub	k9f2g08.c	/^void nand_scrub(struct boot_nand_t *nand)$/;"	f
+nand_select	include/nand.h	218;"	d
+nand_select	include/nand.h	234;"	d
+nand_select	nand.h	218;"	d
+nand_select	nand.h	234;"	d
+nand_wait_RnB	include/nand.h	222;"	d
+nand_wait_RnB	include/nand.h	238;"	d
+nand_wait_RnB	nand.h	222;"	d
+nand_wait_RnB	nand.h	238;"	d
+nand_write	k9f2g08.c	/^int nand_write(struct boot_nand_t *nand, ulong start_addr, ulong size, char *buf)$/;"	f
+nand_write_page	k9f2g08.c	/^int nand_write_page(struct boot_nand_t *nand, ulong page_num, ulong offset, char *data, ulong size)$/;"	f
+nand_write_spare	k9f2g08.c	/^int nand_write_spare(struct boot_nand_t *nand, ulong page_addr, int size, char *buf)$/;"	f
+nb_pad	rsa.c	/^    int nb_pad;$/;"	l
+nbits	bignum.c	/^    int bufsize, nblimbs, nbits;$/;"	l
+nblimbs	bignum.c	/^    int bufsize, nblimbs, nbits;$/;"	l
+nlink_t	include/linux/types.h	/^typedef __kernel_nlink_t nlink_t;$/;"	t
+not_used	start.S	/^not_used:$/;"	l
+num	common.c	/^    unsigned long long num;$/;"	l
+num	common.c	/^    unsigned long num;$/;"	l
+number	common.c	/^static char *number(char *str, long long num, unsigned int base, int size, int precision, int type)$/;"	f	file:
+o	bignum.c	/^    t_int *o, *p, c;$/;"	l
+off_t	include/linux/types.h	/^typedef __kernel_off_t off_t;$/;"	t
+offsetof	include/linux/stddef.h	15;"	d
+offsetof	include/linux/stddef.h	16;"	d
+old_gid_t	include/linux/types.h	/^typedef __kernel_old_gid_t old_gid_t;$/;"	t
+old_uid_t	include/linux/types.h	/^typedef __kernel_old_uid_t old_uid_t;$/;"	t
+outb	include/asm/io.h	136;"	d
+outb_p	include/asm/io.h	153;"	d
+outl	include/asm/io.h	138;"	d
+outl_p	include/asm/io.h	155;"	d
+outsb	include/asm/io.h	144;"	d
+outsb_p	include/asm/io.h	160;"	d
+outsl	include/asm/io.h	146;"	d
+outsl_p	include/asm/io.h	162;"	d
+outsw	include/asm/io.h	145;"	d
+outsw_p	include/asm/io.h	161;"	d
+outw	include/asm/io.h	137;"	d
+outw_p	include/asm/io.h	154;"	d
+p	bignum.c	/^    t_int *o, *p, c;$/;"	l
+p	bignum.c	/^    t_int p[1];$/;"	l
+p	bignum.c	/^    unsigned char *p;$/;"	l
+p	crc32.c	/^	 uint8_t *p = (uint8_t *)(b + 1) - 1;$/;"	l
+p	crc32.c	/^	 uint8_t *p = (uint8_t *)b;$/;"	l
+p	crc32.c	/^  static const Byte p[] = {0,1,2,4,5,7,8,10,11,12,16,22,23,26};$/;"	l	file:
+p	include/bignum.h	/^    unsigned long long *p;           \/*!<  pointer to limbs  *\/$/;"	m	struct:__anon30
+p	rsa.c	/^    unsigned char *p = output;$/;"	l
+p	rsa.c	/^    unsigned char *p = sig;$/;"	l
+p	rsa.c	/^    unsigned char *p, buf[512];$/;"	l
+p	rsa.c	/^    unsigned char *p, c, buf[512];$/;"	l
+page_mask	k9f2g08.c	/^    ulong page_mask = nand->page_size-1;$/;"	l
+page_num	k9f2g08.c	/^    ulong page_num;$/;"	l
+page_offset	k9f2g08.c	/^    ulong page_offset;$/;"	l
+page_shift	k9f2g08.c	/^    int  page_shift = generic_ffs(nand->page_size)-1;$/;"	l
+page_size	include/nand.h	/^    int page_size; $/;"	m	struct:boot_nand_t
+page_size	nand.h	/^    int page_size; $/;"	m	struct:boot_nand_t
+phys_addr_t	include/asm/types.h	/^typedef unsigned long phys_addr_t;$/;"	t
+phys_size_t	include/asm/types.h	/^typedef unsigned long phys_size_t;$/;"	t
+pid_t	include/linux/types.h	/^typedef __kernel_pid_t pid_t;$/;"	t
+poly	crc32.c	/^  uLong poly;		\/* polynomial exclusive-or pattern *\/$/;"	l
+precision	common.c	/^    int precision;              \/* min. # of digits for integers; max$/;"	l
+prefetch_abort	start.S	/^prefetch_abort:$/;"	l
+print_buf	bootstrap.c	/^void print_buf(char *prompt, char *buf, int len)$/;"	f
+printbuffer	common.c	/^    char printbuffer[CFG_PBSIZE];$/;"	l
+printf	common.c	/^void printf(const char *fmt, ...)$/;"	f
+ptr	k9f2g08.c	/^    uchar  *ptr = (uchar *)data;$/;"	l
+ptr8	k9f2g08.c	/^    uchar  *ptr8 = (uchar *)data;$/;"	l
+ptrdiff_t	include/linux/types.h	/^typedef __kernel_ptrdiff_t ptrdiff_t;$/;"	t
+qualifier	common.c	/^    int qualifier;              \/* 'h', 'l', or 'q' for integer fields *\/$/;"	l
+r	bignum.c	/^            t_dbl r;$/;"	l
+r	bignum.c	/^        t_int r;$/;"	l
+r	bignum.c	/^    t_int r;$/;"	l
+r	include/linux/bitops.h	/^    int r = 1;$/;"	l
+r	xmodem.c	/^    int r, receiving = 0;$/;"	l
+r0	bignum.c	/^    t_int r0 = 0, r1;$/;"	l
+r1	bignum.c	/^    t_int r0 = 0, r1;$/;"	l
+readb	include/asm/io.h	227;"	d
+readb	include/asm/io.h	261;"	d
+readb	include/asm/io.h	87;"	d
+readl	include/asm/io.h	229;"	d
+readl	include/asm/io.h	263;"	d
+readl	include/asm/io.h	89;"	d
+readw	include/asm/io.h	228;"	d
+readw	include/asm/io.h	262;"	d
+readw	include/asm/io.h	88;"	d
+receiving	xmodem.c	/^    int r, receiving = 0;$/;"	l
+rem	include/linux/time.h	/^    long days, rem;$/;"	m	struct:res
+rem	include/linux/time.h	/^    rem %= SECSPERHOUR;$/;"	m	struct:res
+rem	include/linux/time.h	/^    rem = ((long)*tim_p) % SECSPERDAY;$/;"	m	struct:res
+rem_len	crc32.c	/^    size_t rem_len;$/;"	l
+res	include/linux/bitops.h	/^    unsigned int res = (w & 0x55) + ((w >> 1) & 0x55);$/;"	l
+res	include/linux/bitops.h	/^    unsigned int res = (w & 0x5555) + ((w >> 1) & 0x5555);$/;"	l
+res	include/linux/bitops.h	/^    unsigned int res = (w & 0x55555555) + ((w >> 1) & 0x55555555);$/;"	l
+res	include/linux/time.h	/^                                _CONST time_t * tim_p _AND struct tm *res)$/;"	s
+res	include/s3c24x0.h	/^    S3C24X0_REG32 res[1];$/;"	m	struct:__anon6
+res	include/s3c24x0.h	/^    S3C24X0_REG32 res[2];$/;"	m	struct:__anon24
+res	include/s3c24x0.h	/^    S3C24X0_REG32 res[7];$/;"	m	struct:__anon6
+res	include/s3c24x0.h	/^    S3C24X0_REG32 res[8];$/;"	m	struct:__anon9
+res	include/s3c24x0.h	/^    S3C24X0_REG8 res[3];$/;"	m	struct:__anon14
+res	include/s3c24x0.h	/^    S3C24X0_REG8 res[3];$/;"	m	struct:__anon27
+res1	include/s3c24x0.h	/^    S3C24X0_REG16 res1;$/;"	m	struct:__anon19
+res1	include/s3c24x0.h	/^    S3C24X0_REG32 res1[2];$/;"	m	struct:__anon20
+res1	include/s3c24x0.h	/^    S3C24X0_REG8 res1[3];$/;"	m	struct:__anon11
+res1	include/s3c24x0.h	/^    S3C24X0_REG8 res1[3];$/;"	m	struct:__anon15
+res1	include/s3c24x0.h	/^    S3C24X0_REG8 res1[3];$/;"	m	struct:__anon16
+res1	include/s3c24x0.h	/^    S3C24X0_REG8 res1[3];$/;"	m	struct:__anon26
+res1	include/s3c24x0.h	/^    S3C24X0_REG8 res1[67];$/;"	m	struct:__anon21
+res10	include/s3c24x0.h	/^    S3C24X0_REG16 res10;$/;"	m	struct:__anon26
+res10	include/s3c24x0.h	/^    S3C24X0_REG8 res10[3];$/;"	m	struct:__anon21
+res10	include/s3c24x0.h	/^    S3C24X0_REG8 res10[7];$/;"	m	struct:__anon16
+res11	include/s3c24x0.h	/^    S3C24X0_REG8 res11[3];$/;"	m	struct:__anon16
+res11	include/s3c24x0.h	/^    S3C24X0_REG8 res11[3];$/;"	m	struct:__anon21
+res11	include/s3c24x0.h	/^    S3C24X0_REG8 res11[3];$/;"	m	struct:__anon26
+res12	include/s3c24x0.h	/^    S3C24X0_REG8 res12[3];$/;"	m	struct:__anon16
+res12	include/s3c24x0.h	/^    S3C24X0_REG8 res12[3];$/;"	m	struct:__anon21
+res13	include/s3c24x0.h	/^    S3C24X0_REG8 res13[3];$/;"	m	struct:__anon21
+res13	include/s3c24x0.h	/^    S3C24X0_REG8 res13[7];$/;"	m	struct:__anon16
+res14	include/s3c24x0.h	/^    S3C24X0_REG8 res14[3];$/;"	m	struct:__anon16
+res14	include/s3c24x0.h	/^    S3C24X0_REG8 res14[3];$/;"	m	struct:__anon21
+res15	include/s3c24x0.h	/^    S3C24X0_REG8 res15[3];$/;"	m	struct:__anon16
+res15	include/s3c24x0.h	/^    S3C24X0_REG8 res15[3];$/;"	m	struct:__anon21
+res16	include/s3c24x0.h	/^    S3C24X0_REG8 res16[3];$/;"	m	struct:__anon16
+res16	include/s3c24x0.h	/^    S3C24X0_REG8 res16[3];$/;"	m	struct:__anon21
+res17	include/s3c24x0.h	/^    S3C24X0_REG8 res17[3];$/;"	m	struct:__anon21
+res2	include/s3c24x0.h	/^    S3C24X0_REG16 res2;$/;"	m	struct:__anon19
+res2	include/s3c24x0.h	/^    S3C24X0_REG32 res2;$/;"	m	struct:__anon20
+res2	include/s3c24x0.h	/^    S3C24X0_REG8 res2[3];$/;"	m	struct:__anon11
+res2	include/s3c24x0.h	/^    S3C24X0_REG8 res2[3];$/;"	m	struct:__anon15
+res2	include/s3c24x0.h	/^    S3C24X0_REG8 res2[3];$/;"	m	struct:__anon16
+res2	include/s3c24x0.h	/^    S3C24X0_REG8 res2[3];$/;"	m	struct:__anon21
+res2	include/s3c24x0.h	/^    S3C24X0_REG8 res2[3];$/;"	m	struct:__anon26
+res3	include/s3c24x0.h	/^    S3C24X0_REG16 res3;$/;"	m	struct:__anon19
+res3	include/s3c24x0.h	/^    S3C24X0_REG32 res3;$/;"	m	struct:__anon20
+res3	include/s3c24x0.h	/^    S3C24X0_REG8 res3[11];$/;"	m	struct:__anon21
+res3	include/s3c24x0.h	/^    S3C24X0_REG8 res3[3];$/;"	m	struct:__anon15
+res3	include/s3c24x0.h	/^    S3C24X0_REG8 res3[3];$/;"	m	struct:__anon16
+res3	include/s3c24x0.h	/^    S3C24X0_REG8 res3[3];$/;"	m	struct:__anon26
+res4	include/s3c24x0.h	/^    S3C24X0_REG16 res4;$/;"	m	struct:__anon19
+res4	include/s3c24x0.h	/^    S3C24X0_REG32 res4;$/;"	m	struct:__anon20
+res4	include/s3c24x0.h	/^    S3C24X0_REG8 res4[15];$/;"	m	struct:__anon16
+res4	include/s3c24x0.h	/^    S3C24X0_REG8 res4[3];$/;"	m	struct:__anon15
+res4	include/s3c24x0.h	/^    S3C24X0_REG8 res4[3];$/;"	m	struct:__anon21
+res4	include/s3c24x0.h	/^    S3C24X0_REG8 res4[3];$/;"	m	struct:__anon26
+res5	include/s3c24x0.h	/^    S3C24X0_REG16 res5;$/;"	m	struct:__anon19
+res5	include/s3c24x0.h	/^    S3C24X0_REG16 res5;$/;"	m	struct:__anon26
+res5	include/s3c24x0.h	/^    S3C24X0_REG32 res5;$/;"	m	struct:__anon20
+res5	include/s3c24x0.h	/^    S3C24X0_REG8 res5[3];$/;"	m	struct:__anon15
+res5	include/s3c24x0.h	/^    S3C24X0_REG8 res5[3];$/;"	m	struct:__anon16
+res5	include/s3c24x0.h	/^    S3C24X0_REG8 res5[3];$/;"	m	struct:__anon21
+res6	include/s3c24x0.h	/^    S3C24X0_REG32 res6;$/;"	m	struct:__anon20
+res6	include/s3c24x0.h	/^    S3C24X0_REG8 res6[15];$/;"	m	struct:__anon16
+res6	include/s3c24x0.h	/^    S3C24X0_REG8 res6[3];$/;"	m	struct:__anon15
+res6	include/s3c24x0.h	/^    S3C24X0_REG8 res6[3];$/;"	m	struct:__anon21
+res6	include/s3c24x0.h	/^    S3C24X0_REG8 res6[3];$/;"	m	struct:__anon26
+res7	include/s3c24x0.h	/^    S3C24X0_REG16 res7;$/;"	m	struct:__anon26
+res7	include/s3c24x0.h	/^    S3C24X0_REG32 res7;$/;"	m	struct:__anon20
+res7	include/s3c24x0.h	/^    S3C24X0_REG8 res7[3];$/;"	m	struct:__anon16
+res7	include/s3c24x0.h	/^    S3C24X0_REG8 res7[3];$/;"	m	struct:__anon21
+res8	include/s3c24x0.h	/^    S3C24X0_REG32 res8;$/;"	m	struct:__anon20
+res8	include/s3c24x0.h	/^    S3C24X0_REG8 res8[3];$/;"	m	struct:__anon16
+res8	include/s3c24x0.h	/^    S3C24X0_REG8 res8[3];$/;"	m	struct:__anon21
+res8	include/s3c24x0.h	/^    S3C24X0_REG8 res8[3];$/;"	m	struct:__anon26
+res9	include/s3c24x0.h	/^    S3C24X0_REG8 res9[3];$/;"	m	struct:__anon16
+res9	include/s3c24x0.h	/^    S3C24X0_REG8 res9[3];$/;"	m	struct:__anon21
+res9	include/s3c24x0.h	/^    S3C24X0_REG8 res9[3];$/;"	m	struct:__anon26
+ret	bignum.c	/^    int ret, count;$/;"	l
+ret	bignum.c	/^    int ret, i, j, k, l;$/;"	l
+ret	bignum.c	/^    int ret, i, j, n;$/;"	l
+ret	bignum.c	/^    int ret, i, j, s, xs;$/;"	l
+ret	bignum.c	/^    int ret, i, j, wsize, wbits;$/;"	l
+ret	bignum.c	/^    int ret, i, j;$/;"	l
+ret	bignum.c	/^    int ret, i, n, t, k;$/;"	l
+ret	bignum.c	/^    int ret, i, v0, t1;$/;"	l
+ret	bignum.c	/^    int ret, i;$/;"	l
+ret	bignum.c	/^    int ret, k, n;$/;"	l
+ret	bignum.c	/^    int ret, n;$/;"	l
+ret	bignum.c	/^    int ret, s = A->s;$/;"	l
+ret	bignum.c	/^    int ret;$/;"	l
+ret	k9f2g08.c	/^    int     block_num, ret=0;$/;"	l
+ret	k9f2g08.c	/^    int     ret = 0;$/;"	l
+ret	k9f2g08.c	/^    int    ret;$/;"	l
+ret	k9f2g08.c	/^    int  ret;$/;"	l
+ret	k9f2g08.c	/^    int i, ret = -1;$/;"	l
+ret	rsa.c	/^    int ret = 0;$/;"	l
+ret	rsa.c	/^    int ret, len;$/;"	l
+ret	rsa.c	/^    int ret;$/;"	l
+retval	include/asm/io.h	/^    int retval = 0;$/;"	l
+rsa	rsa.c	/^    rsa_context rsa;$/;"	l
+rsa_check_privkey	rsa.c	/^int rsa_check_privkey( rsa_context *ctx )$/;"	f
+rsa_check_pubkey	rsa.c	/^int rsa_check_pubkey( rsa_context *ctx )$/;"	f
+rsa_ciphertext	rsa.c	/^    unsigned char rsa_ciphertext[CTLEN];$/;"	l
+rsa_context	include/rsa.h	/^rsa_context;$/;"	t	typeref:struct:__anon31
+rsa_decrypted	rsa.c	/^    unsigned char rsa_decrypted[PTLEN];$/;"	l
+rsa_free	rsa.c	/^void rsa_free( rsa_context *ctx )$/;"	f
+rsa_gen_key	rsa.c	/^int rsa_gen_key( rsa_context *ctx, int nbits, int exponent,$/;"	f
+rsa_pkcs1_decrypt	rsa.c	/^int rsa_pkcs1_decrypt( rsa_context   *ctx,$/;"	f
+rsa_pkcs1_encrypt	rsa.c	/^int rsa_pkcs1_encrypt( rsa_context   *ctx,$/;"	f
+rsa_pkcs1_sign	rsa.c	/^int rsa_pkcs1_sign( rsa_context   *ctx,  int alg_id,$/;"	f
+rsa_pkcs1_verify	rsa.c	/^int rsa_pkcs1_verify( rsa_context   *ctx,  int alg_id,$/;"	f
+rsa_plaintext	rsa.c	/^    unsigned char rsa_plaintext[PTLEN];$/;"	l
+rsa_private	rsa.c	/^int rsa_private( rsa_context   *ctx,$/;"	f
+rsa_public	rsa.c	/^int rsa_public( rsa_context   *ctx,$/;"	f
+s	bignum.c	/^    int ret, i, j, s, xs;$/;"	l
+s	bignum.c	/^    int ret, s = A->s;$/;"	l
+s	common.c	/^    const char *s;$/;"	l
+s	include/bignum.h	/^    int s;              \/*!<  integer sign      *\/$/;"	m	struct:__anon30
+s16	include/asm/types.h	/^typedef signed short s16;$/;"	t
+s32	include/asm/types.h	/^typedef signed int s32;$/;"	t
+s64	include/asm/types.h	/^typedef signed long long s64;$/;"	t
+s8	common.c	/^    char *s8;$/;"	l
+s8	include/asm/types.h	/^typedef signed char s8;$/;"	t
+sc	common.c	/^    const char *sc;$/;"	l
+serial_init	serial.c	/^void serial_init(void)$/;"	f
+serial_is_recv_enable	serial.c	/^int serial_is_recv_enable(void)$/;"	f
+serial_puts	serial.c	/^void serial_puts(const char *s)$/;"	f
+serial_recv_byte	serial.c	/^int serial_recv_byte(void)$/;"	f
+serial_send_byte	serial.c	/^void serial_send_byte(char c)$/;"	f
+sign	common.c	/^    char c, sign, tmp[66];$/;"	l
+size	bootstrap.c	/^    long size;$/;"	l
+size	xmodem.c	/^    long size = 0;$/;"	l
+size_t	include/linux/types.h	/^typedef __kernel_size_t size_t;$/;"	t
+skip_atoi	common.c	/^static int skip_atoi(const char **s)$/;"	f	file:
+sl	common.c	/^    unsigned long *sl = (unsigned long *) s;$/;"	l
+small_prime	bignum.c	/^static const int small_prime[] =$/;"	v	file:
+software_interrupt	start.S	/^software_interrupt:$/;"	l
+spare_size	include/nand.h	/^    int spare_size; $/;"	m	struct:boot_nand_t
+spare_size	nand.h	/^    int spare_size; $/;"	m	struct:boot_nand_t
+sprintf	common.c	/^int sprintf(char *buf, const char *fmt, ...)$/;"	f
+ssize_t	include/linux/types.h	/^typedef __kernel_ssize_t ssize_t;$/;"	t
+stack_setup	start.S	/^stack_setup:$/;"	l
+start_code	start.S	/^start_code:$/;"	l
+stat	k9f2g08.c	/^    uchar   stat;$/;"	l
+stat	k9f2g08.c	/^    uchar  stat;$/;"	l
+state	bignum.c	/^    t_int ei, mm, state;$/;"	l
+str	common.c	/^    char *str;$/;"	l
+strnlen	common.c	/^size_t strnlen(const char *s, size_t count)$/;"	f
+suseconds_t	include/linux/types.h	/^typedef __kernel_suseconds_t suseconds_t;$/;"	t
+sync	include/asm/io.h	/^static inline void sync(void)$/;"	f
+t	bignum.c	/^    int ret, i, n, t, k;$/;"	l
+t1	bignum.c	/^    int ret, i, v0, t1;$/;"	l
+t_dbl	include/bignum.h	/^typedef unsigned long long t_dbl;$/;"	t
+t_dbl	include/bignum.h	/^typedef unsigned long t_dbl;$/;"	t
+t_int	include/bignum.h	/^typedef unsigned int  t_int;$/;"	t
+t_int	include/bignum.h	/^typedef unsigned long t_int;$/;"	t
+tab	crc32.c	/^    const uint32_t *tab = crc_table;$/;"	l
+test_block	bootstrap.c	/^    ulong  test_block = 0x0;  \/*0x1860000 is bad block*\/$/;"	l
+time_t	include/linux/types.h	/^typedef __kernel_time_t time_t;$/;"	t
+tm	include/linux/time.h	/^    struct tm tm;$/;"	v	typeref:struct:tm
+tm	include/linux/time.h	/^struct tm$/;"	s
+tm_gmtoff	include/linux/time.h	/^    long int tm_gmtoff;         \/* Seconds east of UTC.  *\/$/;"	m	struct:tm
+tm_hour	include/linux/time.h	/^    int tm_hour;                \/* Hours.       [0-23] *\/$/;"	m	struct:tm
+tm_isdst	include/linux/time.h	/^    int tm_isdst;               \/* DST.         [-1\/0\/1] *\/$/;"	m	struct:tm
+tm_mday	include/linux/time.h	/^    int tm_mday;                \/* Day.         [1-31] *\/$/;"	m	struct:tm
+tm_min	include/linux/time.h	/^    int tm_min;                 \/* Minutes.     [0-59] *\/$/;"	m	struct:tm
+tm_mon	include/linux/time.h	/^    int tm_mon;                 \/* Month.       [0-11] *\/$/;"	m	struct:tm
+tm_sec	include/linux/time.h	/^    int tm_sec;                 \/* Seconds.     [0-60] (1 leap second) *\/$/;"	m	struct:tm
+tm_wday	include/linux/time.h	/^    int tm_wday;                \/* Day of week. [0-6] *\/$/;"	m	struct:tm
+tm_yday	include/linux/time.h	/^    int tm_yday;                \/* Days in year.[0-365] *\/$/;"	m	struct:tm
+tm_year	include/linux/time.h	/^    int tm_year;                \/* Year - 1900.  *\/$/;"	m	struct:tm
+tm_zone	include/linux/time.h	/^    __const char *tm_zone;      \/* Timezone abbreviation.  *\/$/;"	m	struct:tm
+tmp	common.c	/^    char c, sign, tmp[66];$/;"	l
+toascii	include/linux/ctype.h	35;"	d
+tole	crc32.c	20;"	d	file:
+tolower	include/linux/ctype.h	51;"	d
+toupper	include/linux/ctype.h	52;"	d
+turn_led_off	led_beep.c	/^void turn_led_off(int led)$/;"	f
+turn_led_on	led_beep.c	/^void turn_led_on(int led)$/;"	f
+u0	bignum.c	/^    t_int u0, u1, *d;$/;"	l
+u1	bignum.c	/^    t_int u0, u1, *d;$/;"	l
+u16	include/asm/types.h	/^typedef unsigned short u16;$/;"	t
+u32	include/asm/types.h	/^typedef unsigned int u32;$/;"	t
+u64	include/asm/types.h	/^typedef unsigned long long u64;$/;"	t
+u8	include/asm/types.h	/^typedef unsigned char u8;$/;"	t
+u_char	include/linux/types.h	/^typedef unsigned char u_char;$/;"	t
+u_int	include/linux/types.h	/^typedef unsigned int u_int;$/;"	t
+u_int16_t	include/linux/types.h	/^typedef __u16 u_int16_t;$/;"	t
+u_int32_t	include/linux/types.h	/^typedef __u32 u_int32_t;$/;"	t
+u_int64_t	include/linux/types.h	/^typedef __u64 u_int64_t;$/;"	t
+u_int8_t	include/linux/types.h	/^typedef __u8 u_int8_t;$/;"	t
+u_long	include/linux/types.h	/^typedef unsigned long u_long;$/;"	t
+u_short	include/linux/types.h	/^typedef unsigned short u_short;$/;"	t
+uart	serial.c	/^    S3C24X0_UART *const uart = (S3C24X0_UART *) ELFIN_UART_BASE;$/;"	l
+uchar	include/common.h	/^typedef unsigned char uchar;$/;"	t
+uid16_t	include/linux/types.h	/^typedef __kernel_uid16_t uid16_t;$/;"	t
+uid_t	include/linux/types.h	/^typedef __kernel_uid32_t uid_t;$/;"	t
+uid_t	include/linux/types.h	/^typedef __kernel_uid_t uid_t;$/;"	t
+uint	include/linux/types.h	/^typedef unsigned int uint;$/;"	t
+uint16_t	include/linux/types.h	/^typedef __u16 uint16_t;$/;"	t
+uint32_t	include/linux/types.h	/^typedef __u32 uint32_t;$/;"	t
+uint64_t	include/linux/types.h	/^typedef __u64 uint64_t;$/;"	t
+uint8_t	include/linux/types.h	/^typedef __u8 uint8_t;$/;"	t
+ulong	include/linux/types.h	/^typedef unsigned long ulong;$/;"	t
+umode_t	include/asm/types.h	/^typedef unsigned short umode_t;$/;"	t
+unchar	include/linux/types.h	/^typedef unsigned char unchar;$/;"	t
+undefined_instruction	start.S	/^undefined_instruction:$/;"	l
+unmap_physmem	include/asm/io.h	/^static inline void unmap_physmem(void *vaddr, unsigned long flags)$/;"	f
+ushort	include/linux/types.h	/^typedef unsigned short ushort;$/;"	t
+ustat	include/linux/types.h	/^struct ustat$/;"	s
+v0	bignum.c	/^    int i, v0, v1;$/;"	l
+v0	bignum.c	/^    int ret, i, v0, t1;$/;"	l
+v1	bignum.c	/^    int i, v0, v1;$/;"	l
+val	include/asm/posix_types.h	/^    int val[2];$/;"	m	struct:__anon1
+ver	include/rsa.h	/^    int ver;    \/*!<  should be 0       *\/$/;"	m	struct:__anon31
+vsprintf	common.c	/^int vsprintf(char *buf, const char *fmt, va_list args)$/;"	f
+vu_char	include/common.h	/^typedef volatile unsigned char vu_char;$/;"	t
+vu_int	include/common.h	/^typedef volatile unsigned int vu_int;$/;"	t
+vu_long	include/common.h	/^typedef volatile unsigned long vu_long;$/;"	t
+vu_short	include/common.h	/^typedef volatile unsigned short vu_short;$/;"	t
+wbits	bignum.c	/^    int ret, i, j, wsize, wbits;$/;"	l
+writeb	include/asm/io.h	231;"	d
+writeb	include/asm/io.h	264;"	d
+writeb	include/asm/io.h	83;"	d
+writel	include/asm/io.h	233;"	d
+writel	include/asm/io.h	266;"	d
+writel	include/asm/io.h	85;"	d
+writew	include/asm/io.h	232;"	d
+writew	include/asm/io.h	265;"	d
+writew	include/asm/io.h	84;"	d
+wsize	bignum.c	/^    int ret, i, j, wsize, wbits;$/;"	l
+x	bignum.c	/^    t_int x, m0 = N->p[0];$/;"	l
+x	bignum.c	/^    t_int x, y, z;$/;"	l
+xmodem_read_block	xmodem.c	/^static int xmodem_read_block(unsigned char block_number, char *buf)$/;"	f	file:
+xmodem_recv	xmodem.c	/^long xmodem_recv(char *buf)$/;"	f
+xmodem_wait	xmodem.c	/^static int xmodem_wait(void)$/;"	f	file:
+xs	bignum.c	/^    int ret, i, j, s, xs;$/;"	l
+y	bignum.c	/^    t_int x, y, z;$/;"	l
+y	include/linux/time.h	/^    int y;$/;"	m	struct:res
+y	include/linux/time.h	/^    y = EPOCH_YEAR;$/;"	m	struct:res
+year_lengths	include/linux/time.h	/^    static _CONST int year_lengths[2] = {$/;"	m	struct:res
+yleap	include/linux/time.h	/^    int yleap;$/;"	m	struct:res
+z	bignum.c	/^    t_int c, z;$/;"	l
+z	bignum.c	/^    t_int x, y, z;$/;"	l
+z	bignum.c	/^    t_int z = 1;$/;"	l
