@@ -89,6 +89,7 @@ version:
 $(APP_BINARY_NAME):	$(OBJS) 
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 	$(STRIP) $(APP_BINARY_NAME)
+	@rm -f *.o
 
 %.o : %.c
 	$(CC)  -c $< $(CFLAGS)

@@ -27,8 +27,6 @@
 #include <locale.h>
 #include "gsmmux.h" /* Add by guowenxue */
 
-//#include "nls.h"
-
 #define dbg(format, arg...) \
 	do { if (debug) fprintf(stderr , "%s:" format "\n" , progname , ## arg); } while (0)
 
@@ -49,7 +47,7 @@ static const char *progname;
 static int debug = 0;
 struct gsm_config c;
 
-#define N_GSM0710   21  /*  GSM 0710 Mux */ 
+#define N_GSM0710   21  /*  GSM 0710 Mux ,Add by guowenxue */ 
 
 /* currently supported line disciplines, plus some aliases */
 static const struct ld_entry
@@ -60,7 +58,7 @@ static const struct ld_entry
 ld_table[] =
 {
     {
-    "GSM0701", N_GSM0710},
+    "GSM0701", N_GSM0710}, /*   GSM 0710 Mux ,Add by guowenxue */ 
     {
     "TTY", N_TTY},
     {
@@ -278,6 +276,7 @@ int main(int argc, char **argv)
 
     dbg("set to raw %d %c%c%c: cflag=0x%x", speed, bits, parity, stop, ts.c_cflag);
 
+    /* AT_CMUX=0 and sleep() ,Add by guowenxue */
     write(tty_fd, "AT+CMUX=0\r", 10);
     sleep(3);
 
@@ -287,6 +286,7 @@ int main(int argc, char **argv)
 
     dbg("line discipline set to %d", ldisc);
 
+    /* Add by guowenxue */
     /*  get n_gsm configuration */
     ioctl(tty_fd, GSMIOC_GETCONF, &c);
     /*  we are initiator and need encoding 0 (basic) */
@@ -297,6 +297,7 @@ int main(int argc, char **argv)
     c.mtu = 127;
     /*  set the new configuration */
     ioctl(tty_fd, GSMIOC_SETCONF, &c);
+    /* Add by guowenxue end*/
 
     /* Go into background if not in debug mode. */
     if (!debug && daemon(0, 0) < 0)

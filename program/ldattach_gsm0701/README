@@ -1,0 +1,86 @@
+
+
+Author:  Guo Wenxue <guowenxue@gmail.com>
+  Date:  2011.10.11
+--------------
+The ldattach program used to open a serial device and attach a line discipline on it, in order 
+to implement GSM0701 multiplexer protocol on SIMCOM SIM900 GPRS module, I modify it to support
+GSM0701 discipline as the guide of "linux-3.0/Documentation/serial/n_gsm.txt".
+
+Orignal ldattach program source code can get from follow sites:
+ftp://ftp.irisa.fr/pub/OpenBSD/src/sbin/ldattach/ldattach.c
+https://laas.mine.nu/uclibc/util-linux-ng-2.14.2/sys-utils/ldattach.c 
+
+
+Another GSM0701 Implement source code named gsmmux+ussp can refer to:
+http://koti.mbnet.fi/toukka/
+
+Follow content will introduce how to implement the GSM0701 multiplexer on Linux-3.0 Kernel on 
+AT91SAM9260 board with GSM Module SIM900:
+--------------
+
+1. Choose follow option when do "make menuconfig" before cross compile linux kernel:
+       Device Drivers  --->
+           Character devices  --->
+                  <*> GSM MUX line discipline support (EXPERIMENTAL)
+   The GSM0701 Multiplexer driver is linux-3.0/drivers/tty/n_gsm.c
+
+2. When Linux system start up, if the n_gsm driver is build in the kernel, then we can skip 
+   this step, or we should install the driver first(or in the system init script).
+      /tmp >: insmod n_gsm.ko debug=1
+      /tmp >: cat /proc/devices | grep gsm
+      248 gsmtty
+      /tmp >: ls /dev/gsmtty*
+      /dev/gsmtty0  /dev/gsmtty1  /dev/gsmtty2  /dev/gsmtty3
+
+3. Power on the SIM900 GPRS module:
+      /tmp >: comport -ioctl /dev/gprs 1074028593 1
+      ioctl (/dev/gprs, 1074028593, 1) returned 0
+      /usr/sbin >: comport -d /dev/gsmtty1
+      aatt++ccggmmmm
+
+      SIMCOM_SIM900
+
+      OK
+
+4. Run the ldattach program on background:
+      tmp >: ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3 
+      /tmp >: ps | grep ldattach 
+      23512 root       580 S    ./ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3 
+      23556 root      1276 S    grep ldattachd 
+
+   "ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3" Description:
+       /dev/ttyS3:  The GPRS module physical TTY channel
+   -8n1 -s 115200:  configure ttyS3 line mode as 115200,8N1
+          GSM0701:  This is the line discipline I added based on original ldattach program.
+
+5. Now we can use the virtual TTY channel to chat with GPRS module now.
+     /usr/sbin >: comport -d /dev/gsmtty0
+     Failed to open /dev/gsmtty0 with baudrate 115200, . RetCode [0x05]
+     /usr/sbin >: comport -d /dev/gsmtty1
+     aatt++ccggmmmm
+
+     SIMCOM_SIM900
+
+     OK
+     /usr/sbin >: comport -d /dev/gsmtty2
+     aatt++ccggmmmm
+
+     SIMCOM_SIM900
+
+     OK
+     /usr/sbin >: comport -d /dev/gsmtty3
+     aatt++ccggmmmm
+
+     SIMCOM_SIM900
+
+     OK
+
+
+WARNNING:
+I. Don't know why does virtaul TTY channel0 created by n_gsm.c is not avialable on SIM900; 
+II. We must close the virtual TTY (/dev/gsmtty*) device before close  Modem TTY channel 
+   /dev/ttyS3(by kill ldattach program).
+   If kill ldattach before /dev/gsmtty*, then all the program who hold /dev/gsmtty*, dropbear,
+   console precesses  will goes to "deep sleep", and system seems hang up. 
+      
