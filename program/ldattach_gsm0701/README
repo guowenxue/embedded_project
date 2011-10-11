@@ -15,7 +15,7 @@ https://laas.mine.nu/uclibc/util-linux-ng-2.14.2/sys-utils/ldattach.c
 Another GSM0701 Implement source code named gsmmux+ussp can refer to:
 http://koti.mbnet.fi/toukka/
 
-Follow content will introduce how to implement the GSM0701 multiplexer on Linux-3.0 Kernel on 
+Follow content will introduce how to implement the GSM0701 multiplexer in Linux-3.0 Kernel on 
 AT91SAM9260 board with GSM Module SIM900:
 --------------
 
@@ -36,7 +36,7 @@ AT91SAM9260 board with GSM Module SIM900:
 3. Power on the SIM900 GPRS module:
       /tmp >: comport -ioctl /dev/gprs 1074028593 1
       ioctl (/dev/gprs, 1074028593, 1) returned 0
-      /usr/sbin >: comport -d /dev/gsmtty1
+      /usr/sbin >: comport -d /dev/ttyS3
       aatt++ccggmmmm
 
       SIMCOM_SIM900
