@@ -14,23 +14,13 @@ Resolving deltas: 100% (155/155), done.
 [guowenxue@localhost guowenxue]$ cd
 [guowenxue@localhost ~]$ ln -s /usr/.devices_group/guowenxue/embedded_project workpath
 [guowenxue@localhost ~]$ ls workpath/
-apps  bootloader  crosstool  drivers  kernel  program  README  rootfs
+doc  platform  program  README
 
 
 II.  Project source code despcriton:
-1, apps: It's some common applications, such as dropbear, mplayer build shell script, which used to cross 
-         compile them for my embedded systems.
+1,      doc:  Some documents written by me to introduce how to build the cross compiler, kernel, etc.
+2, platform:  This is some source code(linux kernel/rootfs/bootloader) for my ARM board, which include:
+              AT91SAM9260/9G20, S3C2440/S3C2410/S3C2416,NNC710.
+              Or some common application such dropbear,file,mplayer cross compile shell script
+3,  program:  It's some program/library written by me.
 
-2, bootloader:  It's the U-BOOT build shell script and patch for my embedded platform.
-
-3, crosstool:   It's the buildroot-2011.02 cross compiler default configures for my embedded platform.
-
-4, drivers:     It's the common drivers for my embedded platform driver, which include WiFi AP/STA driver, 
-                LED,KEY,Buzzer common driver etc.
-
-5, kernel:      It's the Linux kernel patch and build shell script for my embedded platform, which support 
-                linux-2.6.24, linux-2.6.38 till now.
-
-6, program:     It's some program/library written by me.
-
-7, rootfs:      It's the rootfs generate image/tools for my embedded system.
