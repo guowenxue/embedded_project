@@ -82,8 +82,11 @@ crwxr-xr-x  1 root root 4, 64 May 16 15:00 dev/ttyS0
 -------------------------
 4. Copy the shared libraries from cross compiler to the root filesystem /lib path 
 
-[guowenxue@localhost rootfs]$ cp -af /opt/buildroot-2011.02/arm920t/usr/arm-linux/sysroot/lib/*so* lib/ 
-[guowenxue@localhost rootfs]$ cp -af /opt/buildroot-2011.02/arm920t/usr/arm-linux/lib/*so* lib/
+[guowenxue@localhost rootfs]$ sudo cp -af /opt/buildroot-2011.02/arm920t/usr/lib/*.so* lib/ 
+[guowenxue@localhost rootfs]$ sudo cp -af /opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/lib/*.so* lib/
+[guowenxue@localhost rootfs]$ sudo cp -af /opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/lib/*.so* lib/
+[guowenxue@localhost rootfs]$ sudo cp -af /opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/lib/*.so* lib/
+[guowenxue@localhost rootfs]$ sudo cp -af /opt/buildroot-2011.02/arm920t/usr/arm-unknown-linux-uclibcgnueabi/sysroot/usr/lib/*.so* usr/lib/
 
 
 -------------------------
