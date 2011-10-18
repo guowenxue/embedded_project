@@ -1,5 +1,5 @@
 #*********************************************************************************
-#      Copyright:  (C) 2011 Guo Wenxue<guowenxue@gmail.com>
+#      Copyright:  (C) 2011 China Undergraduate Embedded League(CUEL)
 #                  All rights reserved.
 #
 #       Filename:  Makefile
@@ -98,7 +98,7 @@ tag:
 	@cscope -Rbq
 
 install:
-	@cp ${LIBS} ${INSTPATH}
+	@cp $(APP_BINARY_NAME) ${INSTPATH}
 
 clean: 
 	@rm -f version.h 
