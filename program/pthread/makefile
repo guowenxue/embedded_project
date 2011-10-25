@@ -16,7 +16,7 @@
 PWD=$(shell pwd)
 INSTPATH=/tftp
 
-APP_BINARY_NAME = test
+APP_BINARY_NAME = pthread
 ARCH?=i386
 #ARCH?=arm926t
 
@@ -24,7 +24,7 @@ LINK_MODE=STATIC
 MODE=PRODUCTION
 DEBUG=1
 
-#LDFLAGS+=-lpthread
+LDFLAGS+=-lpthread
 CFLAGS+=-Wall -Werror
 
 ifeq ("${MODE}", "PRODUCTION")
