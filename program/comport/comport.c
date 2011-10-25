@@ -187,13 +187,13 @@ void usage(char *name)
     printf("Usage2: comport [-i <driver port> <cmd> <arg>][--help][--version]\n");
     printf(" -d[device  ]  device name\n");
     printf(" -b[baudrate]  device baudrate (115200, 57600, 19200, 9600), default is 115200\n");
-    printf("-s[settings]  device settings as like 8N1N(default setting)\n");
+    printf(" -s[settings]  device settings as like 8N1N(default setting)\n");
     printf("                 - data bits: 8, 7\n");
     printf("                 - parity: N=None, O=Odd, E=Even, S=Space\n");
     printf("                 - stop bits: 1, 0\n");
     printf("                 - flow control: N=None, H=Hardware, S=Software, B=Both\n");
     printf(" -x[hex     ]  display received data in hex format\n");
-    printf(" -i[octl    ]  ioctl system call (cmd & arg only support int)\n");
+    printf(" -i[ioctl   ]  ioctl system call (cmd & arg only support int)\n");
     printf(" -h[help    ]  Display this help information\n");
     printf(" -v[version ]  Display the program version\n");
 
