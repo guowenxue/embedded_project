@@ -2,6 +2,9 @@
 
 Author:  Guo Wenxue <guowenxue@gmail.com>
   Date:  2011.10.11
+
+Modify by guowenxue
+  Date:  2011.10.26  Add patch for Linux-3.0 to support auto create device node in /dev 
 --------------
 The ldattach program used to open a serial device and attach a line discipline on it, in order 
 to implement GSM0701 multiplexer protocol on SIMCOM SIM900 GPRS module, I modify it to support
@@ -25,15 +28,86 @@ AT91SAM9260 board with GSM Module SIM900:
                   <*> GSM MUX line discipline support (EXPERIMENTAL)
    The GSM0701 Multiplexer driver is linux-3.0/drivers/tty/n_gsm.c
 
-2. When Linux system start up, if the n_gsm driver is build in the kernel, then we can skip 
-   this step, or we should install the driver first(or in the system init script).
+2. In Linux Kernel, apply follow patch to let linux kernel auto create device node when system
+  start:
+diff -Nuar linux-3.0/drivers/tty/n_gsm.c linux-3.0-concentrator/drivers/tty/n_gsm.c
+--- linux-3.0/drivers/tty/n_gsm.c   2011-07-22 02:17:23.000000000 +0000
++++ linux-3.0-concentrator/drivers/tty/n_gsm.c  2011-10-21 15:43:50.407109928 +0000
+@@ -249,6 +249,7 @@
+ #define MAX_MUX        4           /* 256 minors */
+ static struct gsm_mux *gsm_mux[MAX_MUX];   /* GSM muxes */
+ static spinlock_t gsm_mux_lock;
++static struct class *dev_class = NULL;  /* Add by guowenxue */
+
+ /*
+  * This section of the driver logic implements the GSM encodings
+@@ -2751,6 +2752,8 @@
+
+ static int __init gsm_init(void)
+ {
++    int   i, result;     /* add by guowenxue  */
++
+    /* Fill in our line protocol discipline, and register it */
+    int status = tty_register_ldisc(N_GSM0710, &tty_ldisc_packet);
+    if (status != 0) {
+@@ -2787,17 +2790,47 @@
+        pr_err("gsm_init: tty registration failed.\n");
+        return -EBUSY;
+    }
++
++    /* Add by guowenxue */
++    dev_class = class_create(THIS_MODULE, gsm_tty_driver->name); 
++    if(IS_ERR(dev_class)) 
++    { 
++        printk("%s driver create class failture\n", gsm_tty_driver->name); 
++        result =  -ENOMEM; 
++        goto ERROR; 
++    }
++
++    for(i=gsm_tty_driver->minor_start; i<MAX_MUX; i++)
++    {
++        device_create(dev_class, NULL, MKDEV(gsm_tty_driver->major, i), NULL, "%s%u", gsm_tty_driver->name, i);
++    }
++    /* Add by guowenxue end */
++
+    pr_debug("gsm_init: loaded as %d,%d.\n",
+            gsm_tty_driver->major, gsm_tty_driver->minor_start);
+    return 0;
++
++ERROR:
++    tty_unregister_driver(gsm_tty_driver);
++    put_tty_driver(gsm_tty_driver);
++    return result;
+ }
+
+ static void __exit gsm_exit(void)
+ {
+    int status = tty_unregister_ldisc(N_GSM0710);
++    int i;
+    if (status != 0)
+        pr_err("n_gsm: can't unregister line discipline (err = %d)\n",
+                                status);
++    /* Add by guowenxue  */
++    for(i=gsm_tty_driver->minor_start; i<MAX_MUX; i++)
++    {
++        device_destroy(dev_class, MKDEV(gsm_tty_driver->major, i));
++    }
++    class_destroy(dev_class);
++    /* Add end */
++
+    tty_unregister_driver(gsm_tty_driver);
+    put_tty_driver(gsm_tty_driver);
+ }
+
+3. When Linux system start up, if the n_gsm driver is build in the kernel, then we can skip 
+   this step goto 4, or we should install the driver first(or in the system init script).
       /tmp >: insmod n_gsm.ko debug=1
       /tmp >: cat /proc/devices | grep gsm
       248 gsmtty
       /tmp >: ls /dev/gsmtty*
       /dev/gsmtty0  /dev/gsmtty1  /dev/gsmtty2  /dev/gsmtty3
 
-3. Power on the SIM900 GPRS module:
+4. Power on the SIM900 GPRS module:
       /tmp >: comport -ioctl /dev/gprs 1074028593 1
       ioctl (/dev/gprs, 1074028593, 1) returned 0
       /usr/sbin >: comport -d /dev/ttyS3
@@ -43,7 +117,7 @@ AT91SAM9260 board with GSM Module SIM900:
 
       OK
 
-4. Run the ldattach program on background:
+5. Run the ldattach program on background:
       tmp >: ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3 
       /tmp >: ps | grep ldattach 
       23512 root       580 S    ./ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3 
@@ -54,7 +128,7 @@ AT91SAM9260 board with GSM Module SIM900:
    -8n1 -s 115200:  configure ttyS3 line mode as 115200,8N1
           GSM0701:  This is the line discipline I added based on original ldattach program.
 
-5. Now we can use the virtual TTY channel to chat with GPRS module now.
+6. Now we can use the virtual TTY channel to chat with GPRS module now.
      /usr/sbin >: comport -d /dev/gsmtty0
      Failed to open /dev/gsmtty0 with baudrate 115200, . RetCode [0x05]
      /usr/sbin >: comport -d /dev/gsmtty1
@@ -76,6 +150,59 @@ AT91SAM9260 board with GSM Module SIM900:
 
      OK
 
+7. GSM0701 Test Result:
+
+~ >: comport -ioctl /dev/gprs 1074028593 1        #Power On GPRS module
+ioctl (/dev/gprs, 1074028593, 1) returned 0
+~ >: ldattach -8n1 -s 115200 GSM0701 /dev/ttyS3
+~ >: sh /etc/ppp/ppp-on
+~ >: ps | grep pppd
+  790 root       872 S    /usr/sbin/pppd debug /dev/gsmtty3 115200 nocrtscts modem lock user cmnet noipdefault defaultroute 0.0.0.
+~ >: ifconfig ppp0
+ppp0      Link encap:Point-to-Point Protocol  
+          inet addr:10.215.173.220  P-t-P:192.200.1.21  Mask:255.255.255.255
+          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1500  Metric:1
+          RX packets:6 errors:1 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:3 
+          RX bytes:208 (208.0 B)  TX bytes:245 (245.0 B)
+~ >: ping 4.2.2.2
+PING 4.2.2.2 (4.2.2.2): 56 data bytes
+64 bytes from 4.2.2.2: seq=0 ttl=45 time=898.685 ms
+^C
+--- 4.2.2.2 ping statistics ---
+2 packets transmitted, 1 packets received, 50% packet loss
+round-trip min/avg/max = 898.685/898.685/898.685 ms
+
+~ >: comport -d /dev/gsmtty2
+Open device "/dev/gsmtty2"
+aattee00
+
+OK
+at+cmgf=1
+
+OK
+at+cscs="GSM"
+
+OK
+at+cmgs="13554373241"
+
+> Hello Guo Wenxue^Z
+
++CMGS: 62
+
+OK
+^C
+~ >: ping 4.2.2.2
+PING 4.2.2.2 (4.2.2.2): 56 data bytes
+64 bytes from 4.2.2.2: seq=0 ttl=45 time=673.468 ms
+^C
+--- 4.2.2.2 ping statistics ---
+2 packets transmitted, 1 packets received, 50% packet loss
+round-trip min/avg/max = 673.468/673.468/673.468 ms
+~ >: uname -a
+Linux localhost 3.0.0 #27 Fri Oct 21 14:44:47 UTC 2011 armv5tejl GNU/Linux
+
 
 WARNNING:
 I. Don't know why does virtaul TTY channel0 created by n_gsm.c is not avialable on SIM900; 
@@ -84,3 +211,79 @@ II. We must close the virtual TTY (/dev/gsmtty*) device before close  Modem TTY 
    If kill ldattach before /dev/gsmtty*, then all the program who hold /dev/gsmtty*, dropbear,
    console precesses  will goes to "deep sleep", and system seems hang up. 
       
+
+
+B.T.W: PPP connect shell script:
+
+
+~ >: cat /etc/ppp/ppp-on
+#!/bin/sh
+#
+# Script to initiate a ppp connection. This is the first part of the
+# pair of scripts. This is not a secure pair of scripts as the codes
+# are visible with the 'ps' command.  However, it is simple.
+#
+# These are the parameters. Change as needed.
+TELEPHONE=*99***1#      # The telephone number for the connection
+ACCOUNT=                # The account name for logon (as in 'George Burns')
+PASSWORD=               # The password for this account (and 'Gracie Allen')
+LOCAL_IP=0.0.0.0        # Local IP address if known. Dynamic = 0.0.0.0
+REMOTE_IP=0.0.0.0       # Remote IP address if desired. Normally 0.0.0.0
+NETMASK=255.255.255.0   # The proper netmask if needed
+#
+# Export them so that they will be available at 'ppp-on-dialer' time.
+export TELEPHONE ACCOUNT PASSWORD
+# 
+# This is the location of the script which dials the phone and logs
+# in.  Please use the absolute file name as the $PATH variable is not
+# used on the connect option.  (To do so on a 'root' account would be
+# a security hole so don't ask.)
+#
+DIALER_SCRIPT=/etc/ppp/ppp-on-dialer
+#
+# Initiate the connection
+# 
+
+# I put most of the common options on this command. Please, don't
+# forget the 'lock' option or some programs such as mgetty will not
+# work. The asyncmap and escape will permit the PPP link to work with
+# a telnet or rlogin connection. You are welcome to make any changes
+# as desired. Don't use the 'defaultroute' option if you currently
+# have a default route to an ethernet gateway.
+#
+#exec /usr/sbin/pppd debug lock nocrtscts modem  /dev/ttyS3  115200 \
+#       asyncmap 20A0000 escape FF kdebug 0 $LOCAL_IP:$REMOTE_IP \
+#       noipdefault netmask $NETMASK defaultroute connect $DIALER_SCRIPT
+
+#exec /usr/sbin/pppd debug /dev/ttyS3 115200 nocrtscts modem lock \
+
+exec /usr/sbin/pppd debug /dev/gsmtty3 115200 nocrtscts modem lock \
+user "cmnet" noipdefault defaultroute $LOCAL_IP:$REMOTE_IP \
+connect $DIALER_SCRIPT
+
+
+~ >: cat /etc/ppp/ppp-on-dialer 
+#!/bin/sh
+#
+# This is part 2 of the ppp-on script. It will perform the connection
+# protocol for the desired connection.
+#        OK             ATDT$TELEPHONE                  \
+#
+exec chat -v                                            \
+        TIMEOUT         3                               \
+        ABORT           "ERROR"                         \
+        ABORT           "NO DIALTONE"                   \
+        ABORT           "NO CARRIER"                    \
+        ABORT           '\nBUSY\r'                      \
+        ABORT           '\nNO ANSWER\r'                 \
+        ABORT           '\nRINGING\r\n\r\nRINGING\r'    \
+        TIMEOUT         30                              \
+        ''              \rAT                            \
+        'OK'            ATH0                            \
+        'OK'            ATE0                            \
+        OK              'AT+CGDCONT=1,"IP","CMNET"'     \
+        OK              ATDT*99***1#
+        CONNECT         ''                              \
+#       ogin:--ogin:    $ACCOUNT                        \
+#       assword:        $PASSWORD
+
