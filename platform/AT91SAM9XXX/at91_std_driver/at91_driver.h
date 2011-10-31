@@ -1,5 +1,5 @@
 /********************************************************************************
- *      Copyright:  (C) 2011 R&D of San Fran Electronics Co., LTD  
+ *      Copyright:  (C) GuoWenxue <guowenxue@gmail.com>  
  *                  All rights reserved.
  *
  *       Filename:  at91_driver.h
@@ -65,6 +65,7 @@
 #include <asm/arch/at91_rtt.h>
 #include <asm/arch/cpu.h>
 #endif
+#include "plat_ioctl.h"
 
 /* ===========================================================================
  *         AT91SAM9XXX device driver common macro definition 
@@ -78,6 +79,9 @@
 
 #define INPUT                       1
 #define OUTPUT                      0
+
+#define OFF                         0
+#define ON                          1
 
 #define ENABLE                      1
 #define DISABLE                     0

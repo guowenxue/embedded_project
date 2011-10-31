@@ -27,19 +27,8 @@
 #define DEV_MAJOR                 0 /*  dynamic major by default */ 
 #endif
 
-#define LED_OFF                   (0<<0)
-#define LED_ON                    (1<<0)
-
-
-struct led_device
-{
-      struct at91_led_info *leds;
-      int                  nleds;
-      struct cdev          cdev;
-};
 
 /* ============================ Led Driver Part ===============================*/
-static struct cdev dev_cdev;
 static struct class *dev_class = NULL;
 
 static int debug = DISABLE;
@@ -55,16 +44,17 @@ struct at91_led_info
     unsigned char           num;              /* The LED number  */
     unsigned int            gpio;             /* Which GPIO the LED used */  
     unsigned char           active_level;     /* The GPIO pin level(HIGHLEVEL or LOWLEVEL) to turn on or off  */
-    unsigned char           status;           /* Current LED status: LED_OFF, LED_ON */
+    unsigned char           status;           /* Current LED status: OFF/ON */
     unsigned char           blink;            /* Blink or not */           
 };
 
-/*  The LED plaotform device private data structure */
+/*  The LED platform device private data structure */
 struct at91_led_platform_data
 {
     struct at91_led_info    *leds;
     int                     nleds;
 };
+
 
 /*  LED hardware informtation data*/ 
 static struct at91_led_info  at91_leds[] = {
@@ -72,38 +62,51 @@ static struct at91_led_info  at91_leds[] = {
         .num = 1,
         .gpio = AT91_PIN_PA26,
         .active_level = LOWLEVEL,
-        .status = LED_ON,
+        .status = ON,
         .blink = ENABLE,
     },
     [1] = {
         .num = 2,
         .gpio = AT91_PIN_PC3,
         .active_level = LOWLEVEL,
-        .status = LED_OFF,
+        .status = OFF,
         .blink = DISABLE,
     },
     [2] = {
         .num = 3,
         .gpio = AT91_PIN_PC7,
         .active_level = LOWLEVEL,
-        .status = LED_OFF,
+        .status = OFF,
         .blink = DISABLE,
     },
     [3] = { 
         .num = 4,
         .gpio = AT91_PIN_PC12,
         .active_level = LOWLEVEL,
-        .status = LED_OFF,
+        .status = OFF,
         .blink = DISABLE,
     }, 
     [4] = {
         .num = 5,
         .gpio = AT91_PIN_PB21,
         .active_level = LOWLEVEL,
-        .status = LED_OFF,
+        .status = OFF,
         .blink = DISABLE,
     },
 };
+
+/*  The LED platform device private data */
+static struct at91_led_platform_data at91_led_data = {
+    .leds = at91_leds,
+    .nleds = ARRAY_SIZE(at91_leds),
+};
+
+/* Used to pass the at91_leds[] to led_open(),led_ioctl() */
+struct led_device
+{
+    struct at91_led_platform_data   *data;
+    struct cdev                     cdev;
+} led_device;
 
 static void platform_led_release(struct device * dev)
 {
@@ -118,12 +121,6 @@ static void platform_led_release(struct device * dev)
          at91_set_gpio_value(pdata->leds[i].gpio, ~pdata->leds[i].active_level); 
     }
 }
-
-/*  The LED platform device private data */
-static struct at91_led_platform_data at91_led_data = {
-    .leds = at91_leds,
-    .nleds = ARRAY_SIZE(at91_leds),
-};
 
 static struct platform_device at91_led_device = {
     .name    = "at91_led",
@@ -146,7 +143,7 @@ void led_timer_handle(unsigned long data)
 
     for(i=0; i<pdata->nleds; i++) 
     { 
-        if(LED_ON == pdata->leds[i].status)
+        if(ON == pdata->leds[i].status)
         {
               at91_set_gpio_value(pdata->leds[i].gpio, pdata->leds[i].active_level); 
         }
@@ -168,6 +165,13 @@ void led_timer_handle(unsigned long data)
 
 static int led_open(struct inode *inode, struct file *file)
 { 
+    struct led_device *pdev ;
+    struct at91_led_platform_data *pdata;
+
+    pdev = container_of(inode->i_cdev,struct led_device, cdev);
+    pdata = pdev->data;
+
+    file->private_data = pdata;
     return 0;
 }
 
@@ -177,9 +181,68 @@ static int led_release(struct inode *inode, struct file *file)
     return 0;
 }
 
+static void print_led_help(void)
+{
+    printk("Follow is the ioctl() command for LED driver:\n");
+    printk("Enable Driver debug command: %u\n", SET_DRV_DEBUG);
+    printk("Get Driver verion  command : %u\n", GET_DRV_VER);
+    printk("Turn LED on command        : %u\n", LED_ON);
+    printk("Turn LED off command       : %u\n", LED_OFF);
+    printk("Turn LED blink command     : %u\n", LED_BLINK);
+}
+
 /* compatible with kernel version >=2.6.38*/
 static long led_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 { 
+    struct at91_led_platform_data *pdata = file->private_data;
+
+    switch (cmd)
+    {
+        case SET_DRV_DEBUG:
+            dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable");
+            debug = (0==arg) ? DISABLE : ENABLE;
+            break;
+        case GET_DRV_VER:
+            print_version(DRV_VERSION);
+            return DRV_VERSION;
+
+        case LED_OFF:
+            if(pdata->nleds <= arg)
+            {
+               printk("LED%ld doesn't exist\n", arg);  
+               return -ENOTTY;
+            }
+            pdata->leds[arg].status = OFF;
+            pdata->leds[arg].blink = DISABLE;
+            break;
+
+        case LED_ON:
+            if(pdata->nleds <= arg)
+            {
+               printk("LED%ld doesn't exist\n", arg);  
+               return -ENOTTY;
+            }
+            pdata->leds[arg].status = ON;
+            pdata->leds[arg].blink = DISABLE;
+            break;
+
+        case LED_BLINK:
+            if(pdata->nleds <= arg)
+            {
+               printk("LED%ld doesn't exist\n", arg);  
+               return -ENOTTY;
+            }
+            pdata->leds[arg].blink = ENABLE;
+            pdata->leds[arg].status = ON;
+            break;
+
+        default: 
+            dbg_print("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd); 
+            print_led_help();
+            return -EINVAL;
+
+    }
+
     return 0;
 }
 
@@ -202,7 +265,7 @@ static int at91_led_probe(struct platform_device *dev)
     /* Initialize the LED status */
     for(i=0; i<pdata->nleds; i++)
     {
-         if(LED_ON == pdata->leds[i].status)
+         if(ON == pdata->leds[i].status)
          {
             at91_set_gpio_output(pdata->leds[i].gpio, pdata->leds[i].active_level); 
          }
@@ -232,10 +295,12 @@ static int at91_led_probe(struct platform_device *dev)
     }
 
     /* Initialize cdev structure and register it*/
-    cdev_init (&dev_cdev, &led_fops);
-    dev_cdev.owner  = THIS_MODULE;
+    memset(&led_device, 0, sizeof(led_device));
+    led_device.data = dev->dev.platform_data;
+    cdev_init (&(led_device.cdev), &led_fops);
+    led_device.cdev.owner  = THIS_MODULE;
 
-    result = cdev_add (&dev_cdev, devno , 1); 
+    result = cdev_add (&(led_device.cdev), devno , 1); 
     if (result) 
     { 
         printk (KERN_NOTICE "error %d add led device", result); 
@@ -262,12 +327,12 @@ static int at91_led_probe(struct platform_device *dev)
     blink_timer.data = (unsigned long)pdata;
     add_timer(&blink_timer); 
 
-    printk("%s driver version %d.%d.%d initiliazed\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
+    printk("%s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
     return 0;
                
 
 ERROR: 
-    cdev_del(&dev_cdev); 
+    cdev_del(&(led_device.cdev)); 
     unregister_chrdev_region(devno, 1); 
     return result;
 
@@ -282,7 +347,7 @@ static int at91_led_remove(struct platform_device *dev)
     device_destroy(dev_class, devno); 
     class_destroy(dev_class); 
     
-    cdev_del(&dev_cdev); 
+    cdev_del(&(led_device.cdev)); 
     unregister_chrdev_region(devno, 1); 
     printk("%s driver removed\n", DEV_NAME);
 
@@ -348,3 +413,4 @@ MODULE_ALIAS("platform:AT91SAM9260_led");
 module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
+
