@@ -15,7 +15,7 @@
 #define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX LED driver"
 
-/*  Driver version*/
+/* Driver version*/
 #define DRV_MAJOR_VER             1
 #define DRV_MINOR_VER             0
 #define DRV_REVER_VER             0
@@ -27,14 +27,9 @@
 #define DEV_MAJOR                 0 /*  dynamic major by default */ 
 #endif
 
-
-/* ============================ Led Driver Part ===============================*/
-static struct class *dev_class = NULL;
-
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
-static struct timer_list blink_timer;
 
 
 /* ============================ Platform Device part ===============================*/
@@ -101,11 +96,12 @@ static struct at91_led_platform_data at91_led_data = {
     .nleds = ARRAY_SIZE(at91_leds),
 };
 
-/* Used to pass the at91_leds[] to led_open(),led_ioctl() */
 struct led_device
 {
     struct at91_led_platform_data   *data;
     struct cdev                     cdev;
+    struct class                    *dev_class;
+    struct timer_list               blink_timer;
 } led_device;
 
 static void platform_led_release(struct device * dev)
@@ -136,7 +132,7 @@ static struct platform_device at91_led_device = {
 
 /* ===================== led device driver part ===========================*/
 
-void led_timer_handle(unsigned long data)
+void led_timer_handler(unsigned long data)
 { 
     int  i; 
     struct at91_led_platform_data *pdata = (struct at91_led_platform_data *)data;
@@ -158,7 +154,7 @@ void led_timer_handle(unsigned long data)
             pdata->leds[i].status = pdata->leds[i].status ^ 0x01;  
         }
 
-        mod_timer(&blink_timer, jiffies + 40);
+        mod_timer(&(led_device.blink_timer), jiffies + 40);
     }
 }
 
@@ -275,7 +271,7 @@ static int at91_led_probe(struct platform_device *dev)
          }
     }
 
-    /*  Alloc for the device for driver */
+    /*  Alloc the device for driver */
     if (0 != dev_major) 
     { 
         devno = MKDEV(dev_major, dev_minor); 
@@ -294,7 +290,7 @@ static int at91_led_probe(struct platform_device *dev)
         return result; 
     }
 
-    /* Initialize cdev structure and register it*/
+    /* Initialize button structure and register cdev*/
     memset(&led_device, 0, sizeof(led_device));
     led_device.data = dev->dev.platform_data;
     cdev_init (&(led_device.cdev), &led_fops);
@@ -303,12 +299,12 @@ static int at91_led_probe(struct platform_device *dev)
     result = cdev_add (&(led_device.cdev), devno , 1); 
     if (result) 
     { 
-        printk (KERN_NOTICE "error %d add led device", result); 
+        printk (KERN_NOTICE "error %d add %s device", result, DEV_NAME); 
         goto ERROR; 
     } 
     
-    dev_class = class_create(THIS_MODULE, DEV_NAME); 
-    if(IS_ERR(dev_class)) 
+    led_device.dev_class = class_create(THIS_MODULE, DEV_NAME); 
+    if(IS_ERR(led_device.dev_class)) 
     { 
         printk("%s driver create class failture\n",DEV_NAME); 
         result =  -ENOMEM; 
@@ -316,23 +312,26 @@ static int at91_led_probe(struct platform_device *dev)
     }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)     
-    device_create(dev_class, NULL, devno, NULL, DEV_NAME);
+    device_create(led_device.dev_class, NULL, devno, NULL, DEV_NAME);
 #else
-    device_create (dev_class, NULL, devno, DEV_NAME);
+    device_create (led_device.dev_class, NULL, devno, DEV_NAME);
 #endif
 
     /*  Initial the LED blink timer */
-    init_timer(&blink_timer);
-    blink_timer.function = led_timer_handle;
-    blink_timer.data = (unsigned long)pdata;
-    add_timer(&blink_timer); 
+    init_timer(&(led_device.blink_timer));
+    led_device.blink_timer.function = led_timer_handler;
+    led_device.blink_timer.data = (unsigned long)pdata;
+    add_timer(&(led_device.blink_timer)); 
 
     printk("%s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
+
     return 0;
                
 
 ERROR: 
+    printk("%s driver version %d.%d.%d install failure.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
     cdev_del(&(led_device.cdev)); 
+
     unregister_chrdev_region(devno, 1); 
     return result;
 
@@ -342,12 +341,13 @@ static int at91_led_remove(struct platform_device *dev)
 {
     dev_t devno = MKDEV(dev_major, dev_minor);
 
-    del_timer(&blink_timer);
 
-    device_destroy(dev_class, devno); 
-    class_destroy(dev_class); 
-    
+    del_timer(&(led_device.blink_timer));
+
     cdev_del(&(led_device.cdev)); 
+    device_destroy(led_device.dev_class, devno); 
+    class_destroy(led_device.dev_class); 
+    
     unregister_chrdev_region(devno, 1); 
     printk("%s driver removed\n", DEV_NAME);
 
@@ -405,12 +405,13 @@ static void at91_led_exit(void)
 module_init(at91_led_init);
 module_exit(at91_led_exit);
 
-MODULE_AUTHOR("GuoWenxue <guowenxue@gmail.com>");
-MODULE_DESCRIPTION("AT91SAM9260 LED driver");
-MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:AT91SAM9260_led");
-
 module_param(debug, int, S_IRUGO);
 module_param(dev_major, int, S_IRUGO);
 module_param(dev_minor, int, S_IRUGO);
+
+MODULE_AUTHOR(DRV_AUTHOR);
+MODULE_DESCRIPTION(DRV_DESC);
+MODULE_LICENSE("GPL");
+MODULE_ALIAS("platform:AT91SAM9260_led");
+
 

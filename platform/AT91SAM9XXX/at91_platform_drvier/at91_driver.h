@@ -31,6 +31,9 @@
 #include <linux/string.h>
 #include <linux/bcd.h>
 #include <linux/miscdevice.h>
+#include <linux/poll.h>
+#include <linux/irq.h>
+#include <linux/interrupt.h>
 #include <linux/sysfs.h>
 #include <linux/proc_fs.h>
 #include <linux/rtc.h>
