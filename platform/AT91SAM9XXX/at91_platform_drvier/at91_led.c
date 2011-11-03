@@ -27,6 +27,8 @@
 #define DEV_MAJOR                 0 /*  dynamic major by default */ 
 #endif
 
+#define TIMER_TIMEOUT             40
+
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
@@ -154,7 +156,7 @@ void led_timer_handler(unsigned long data)
             pdata->leds[i].status = pdata->leds[i].status ^ 0x01;  
         }
 
-        mod_timer(&(led_device.blink_timer), jiffies + 40);
+        mod_timer(&(led_device.blink_timer), jiffies + TIMER_TIMEOUT);
     }
 }
 
@@ -321,6 +323,7 @@ static int at91_led_probe(struct platform_device *dev)
     init_timer(&(led_device.blink_timer));
     led_device.blink_timer.function = led_timer_handler;
     led_device.blink_timer.data = (unsigned long)pdata;
+    led_device.blink_timer.expires  = jiffies + TIMER_TIMEOUT;
     add_timer(&(led_device.blink_timer)); 
 
     printk("%s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
