@@ -638,7 +638,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch
 -endif
 diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 --- linux-3.0/.cfg-sam9260	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-11-03 15:54:11.682608098 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-11-03 16:46:02.678496976 +0800
 @@ -0,0 +1,1850 @@
 +#
 +# Automatically generated make config: don't edit
@@ -989,7 +989,8 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# CONFIG_PREEMPT_VOLUNTARY is not set
 +# CONFIG_PREEMPT is not set
 +CONFIG_HZ=100
-+# CONFIG_AEABI is not set
++CONFIG_AEABI=y
++CONFIG_OABI_COMPAT=y
 +# CONFIG_ARCH_SPARSEMEM_DEFAULT is not set
 +# CONFIG_ARCH_SELECT_MEMORY_MODEL is not set
 +CONFIG_HAVE_ARCH_PFN_VALID=y
@@ -1057,7 +1058,6 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +CONFIG_HAVE_AOUT=y
 +# CONFIG_BINFMT_AOUT is not set
 +# CONFIG_BINFMT_MISC is not set
-+# CONFIG_ARTHUR is not set
 +
 +#
 +# Power management options
@@ -2335,7 +2335,6 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# CONFIG_HARDLOCKUP_DETECTOR is not set
 +# CONFIG_SPARSE_RCU_POINTER is not set
 +# CONFIG_DEBUG_MEMORY_INIT is not set
-+CONFIG_FRAME_POINTER=y
 +# CONFIG_SYSCTL_SYSCALL_CHECK is not set
 +CONFIG_HAVE_FUNCTION_TRACER=y
 +CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
@@ -2350,6 +2349,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +CONFIG_HAVE_ARCH_KGDB=y
 +# CONFIG_TEST_KSTRTOX is not set
 +# CONFIG_STRICT_DEVMEM is not set
++CONFIG_ARM_UNWIND=y
 +# CONFIG_DEBUG_USER is not set
 +# CONFIG_OC_ETM is not set
 +
@@ -2492,7 +2492,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 --- linux-3.0/.cfg-sam9g20	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-11-03 16:21:42.377845366 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-11-03 16:46:22.476596394 +0800
 @@ -0,0 +1,1844 @@
 +#
 +# Automatically generated make config: don't edit
@@ -2838,7 +2838,8 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +# CONFIG_PREEMPT_VOLUNTARY is not set
 +# CONFIG_PREEMPT is not set
 +CONFIG_HZ=100
-+# CONFIG_AEABI is not set
++CONFIG_AEABI=y
++CONFIG_OABI_COMPAT=y
 +# CONFIG_ARCH_SPARSEMEM_DEFAULT is not set
 +# CONFIG_ARCH_SELECT_MEMORY_MODEL is not set
 +CONFIG_HAVE_ARCH_PFN_VALID=y
@@ -2906,7 +2907,6 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +CONFIG_HAVE_AOUT=y
 +# CONFIG_BINFMT_AOUT is not set
 +# CONFIG_BINFMT_MISC is not set
-+# CONFIG_ARTHUR is not set
 +
 +#
 +# Power management options
@@ -4183,7 +4183,6 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +# CONFIG_HARDLOCKUP_DETECTOR is not set
 +# CONFIG_SPARSE_RCU_POINTER is not set
 +# CONFIG_DEBUG_MEMORY_INIT is not set
-+CONFIG_FRAME_POINTER=y
 +# CONFIG_SYSCTL_SYSCALL_CHECK is not set
 +CONFIG_HAVE_FUNCTION_TRACER=y
 +CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
@@ -4198,6 +4197,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +CONFIG_HAVE_ARCH_KGDB=y
 +# CONFIG_TEST_KSTRTOX is not set
 +# CONFIG_STRICT_DEVMEM is not set
++CONFIG_ARM_UNWIND=y
 +# CONFIG_DEBUG_USER is not set
 +# CONFIG_OC_ETM is not set
 +
