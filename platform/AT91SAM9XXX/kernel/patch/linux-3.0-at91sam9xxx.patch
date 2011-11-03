@@ -1,6 +1,6 @@
 diff -Nuar linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c
 --- linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c	2011-09-05 09:52:58.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/at91sam9260_devices.c	2011-11-03 15:50:47.545475397 +0800
 @@ -167,22 +167,23 @@
  
  	/* Pins used for MII and RMII */
@@ -54,7 +54,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/at91sam9260_devices.c linux-3.0-at91sam9
  static struct resource uart5_resources[] = {
 diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9260ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9260ek.c	2011-11-03 16:06:57.086731130 +0800
 @@ -49,6 +49,64 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -231,7 +231,26 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/
  };
  
  
-@@ -343,7 +447,8 @@
+@@ -267,10 +371,18 @@
+ };
+ 
+ static struct i2c_board_info __initdata ek_i2c_devices[] = {
++#if 0
+ 	{
+ 		I2C_BOARD_INFO("24c512", 0x50),
+ 		.platform_data = &at24c512,
+ 	},
++#endif 
++    /* Add DS1307 driver by guowenxue  */
++    { 
++        I2C_BOARD_INFO("rtc-ds1307", 0x68), 
++        .type   = "ds1339", 
++    }
++
+ 	/* more devices can be added using expansion connectors */
+ };
+ 
+@@ -343,7 +455,8 @@
  	/* I2C */
  	at91_add_device_i2c(ek_i2c_devices, ARRAY_SIZE(ek_i2c_devices));
  	/* SSC (to AT73C213) */
@@ -243,7 +262,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9260ek.c linux-3.0-at91sam9xxx/
  	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
 diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c
 --- linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/board-sam9g20ek.c	2011-11-03 16:07:43.515731089 +0800
 @@ -48,6 +48,70 @@
  #include "sam9_smc.h"
  #include "generic.h"
@@ -413,7 +432,27 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/
  };
  #endif
  
-@@ -385,6 +490,7 @@
+@@ -362,12 +467,19 @@
+ 
+ 
+ static struct i2c_board_info __initdata ek_i2c_devices[] = {
++#if 0
+         {
+                 I2C_BOARD_INFO("24c512", 0x50)
+         },
+         {
+                 I2C_BOARD_INFO("wm8731", 0x1b)
+         },
++#endif 
++        /*  Add DS1307 driver by guowenxue  */ 
++        { 
++            I2C_BOARD_INFO("rtc-ds1307", 0x68), 
++            .type   = "ds1339", 
++        }
+ };
+ 
+ 
+@@ -385,6 +497,7 @@
  	ek_add_device_nand();
  	/* Ethernet */
  	ek_add_device_macb();
@@ -421,7 +460,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/
  	/* Regulators */
  	ek_add_regulators();
  	/* MMC */
-@@ -395,10 +501,12 @@
+@@ -395,10 +508,12 @@
  	ek_add_device_gpio_leds();
  	/* Push Buttons */
  	ek_add_device_buttons();
@@ -436,7 +475,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/board-sam9g20ek.c linux-3.0-at91sam9xxx/
  MACHINE_START(AT91SAM9G20EK, "Atmel AT91SAM9G20-EK")
 diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h
 --- linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/include/mach/at91sam9260.h	2011-11-03 15:50:47.547471405 +0800
 @@ -133,4 +133,139 @@
  
  #define AT91SAM9G20_UHP_BASE	0x00500000	/* USB Host controller */
@@ -579,7 +618,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/include/mach/at91sam9260.h linux-3.0-at9
  #endif
 diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot
 --- linux-3.0/arch/arm/mach-at91/Makefile.boot	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/arch/arm/mach-at91/Makefile.boot	2011-11-03 15:50:47.547471405 +0800
 @@ -3,16 +3,6 @@
  #   PARAMS_PHYS must be within 4MB of ZRELADDR
  #   INITRD_PHYS must be in RAM
@@ -599,7 +638,7 @@ diff -Nuar linux-3.0/arch/arm/mach-at91/Makefile.boot linux-3.0-at91sam9xxx/arch
 -endif
 diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 --- linux-3.0/.cfg-sam9260	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9260	2011-11-03 15:54:11.682608098 +0800
 @@ -0,0 +1,1850 @@
 +#
 +# Automatically generated make config: don't edit
@@ -1690,7 +1729,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +#
 +# I2C Algorithms
 +#
-+# CONFIG_I2C_ALGOBIT is not set
++CONFIG_I2C_ALGOBIT=y
 +# CONFIG_I2C_ALGOPCF is not set
 +# CONFIG_I2C_ALGOPCA is not set
 +
@@ -1702,7 +1741,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# I2C system bus drivers (mostly embedded / system-on-chip)
 +#
 +# CONFIG_I2C_DESIGNWARE is not set
-+# CONFIG_I2C_GPIO is not set
++CONFIG_I2C_GPIO=y
 +# CONFIG_I2C_OCORES is not set
 +# CONFIG_I2C_PCA_PLATFORM is not set
 +# CONFIG_I2C_PXA_PCI is not set
@@ -2082,7 +2121,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +#
 +# I2C RTC drivers
 +#
-+# CONFIG_RTC_DRV_DS1307 is not set
++CONFIG_RTC_DRV_DS1307=y
 +# CONFIG_RTC_DRV_DS1374 is not set
 +# CONFIG_RTC_DRV_DS1672 is not set
 +# CONFIG_RTC_DRV_DS3232 is not set
@@ -2453,7 +2492,7 @@ diff -Nuar linux-3.0/.cfg-sam9260 linux-3.0-at91sam9xxx/.cfg-sam9260
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 --- linux-3.0/.cfg-sam9g20	1970-01-01 08:00:00.000000000 +0800
-+++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/.cfg-sam9g20	2011-11-03 16:21:42.377845366 +0800
 @@ -0,0 +1,1844 @@
 +#
 +# Automatically generated make config: don't edit
@@ -3538,7 +3577,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +#
 +# I2C Algorithms
 +#
-+# CONFIG_I2C_ALGOBIT is not set
++CONFIG_I2C_ALGOBIT=y
 +# CONFIG_I2C_ALGOPCF is not set
 +# CONFIG_I2C_ALGOPCA is not set
 +
@@ -3550,7 +3589,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +# I2C system bus drivers (mostly embedded / system-on-chip)
 +#
 +# CONFIG_I2C_DESIGNWARE is not set
-+# CONFIG_I2C_GPIO is not set
++CONFIG_I2C_GPIO=y
 +# CONFIG_I2C_OCORES is not set
 +# CONFIG_I2C_PCA_PLATFORM is not set
 +# CONFIG_I2C_PXA_PCI is not set
@@ -3930,7 +3969,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +#
 +# I2C RTC drivers
 +#
-+# CONFIG_RTC_DRV_DS1307 is not set
++CONFIG_RTC_DRV_DS1307=y
 +# CONFIG_RTC_DRV_DS1374 is not set
 +# CONFIG_RTC_DRV_DS1672 is not set
 +# CONFIG_RTC_DRV_DS3232 is not set
@@ -4301,7 +4340,7 @@ diff -Nuar linux-3.0/.cfg-sam9g20 linux-3.0-at91sam9xxx/.cfg-sam9g20
 +# CONFIG_AVERAGE is not set
 diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c
 --- linux-3.0/drivers/mmc/host/at91_mci.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/mmc/host/at91_mci.c	2011-11-03 15:50:47.993470189 +0800
 @@ -743,10 +743,10 @@
  	if (host->board->vcc_pin) {
  		switch (ios->power_mode) {
@@ -4317,7 +4356,7 @@ diff -Nuar linux-3.0/drivers/mmc/host/at91_mci.c linux-3.0-at91sam9xxx/drivers/m
  				break;
 diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-at91sam9xxx/drivers/usb/serial/option.c
 --- linux-3.0/drivers/usb/serial/option.c	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/drivers/usb/serial/option.c	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/drivers/usb/serial/option.c	2011-11-03 15:50:47.994470334 +0800
 @@ -301,6 +301,12 @@
  #define TELIT_PRODUCT_UC864E			0x1003
  #define TELIT_PRODUCT_UC864G			0x1004
@@ -4342,7 +4381,7 @@ diff -Nuar linux-3.0/drivers/usb/serial/option.c linux-3.0-at91sam9xxx/drivers/u
  	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0003, 0xff, 0xff, 0xff) },
 diff -Nuar linux-3.0/Makefile linux-3.0-at91sam9xxx/Makefile
 --- linux-3.0/Makefile	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/Makefile	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/Makefile	2011-11-03 15:50:47.995470433 +0800
 @@ -144,9 +144,9 @@
  # but instead _all depend on modules
  PHONY += all
@@ -4389,7 +4428,7 @@ diff -Nuar linux-3.0/Makefile linux-3.0-at91sam9xxx/Makefile
  # Packaging of the kernel to various formats
 diff -Nuar linux-3.0/scripts/mkcompile_h linux-3.0-at91sam9xxx/scripts/mkcompile_h
 --- linux-3.0/scripts/mkcompile_h	2011-07-22 10:17:23.000000000 +0800
-+++ linux-3.0-at91sam9xxx/scripts/mkcompile_h	2011-09-01 14:16:53.000000000 +0800
++++ linux-3.0-at91sam9xxx/scripts/mkcompile_h	2011-11-03 15:50:47.995470433 +0800
 @@ -27,7 +27,9 @@
  export LC_ALL
  
