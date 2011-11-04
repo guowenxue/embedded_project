@@ -328,7 +328,6 @@ static int at91_button_probe(struct platform_device *dev)
     dev_t devno;
 
 
-
     /* Alloc the device for driver  */ 
     if (0 != dev_major) 
     { 
@@ -445,10 +444,11 @@ fail_reg_plat_dev:
 
 static void at91_button_exit(void)
 {
-    dbg_print("Remove AT91 %s platform device.\n", DEV_NAME);
     platform_driver_unregister(&at91_button_driver);
-    dbg_print("Remove AT91 %s platform driver.\n", DEV_NAME);
+    dbg_print("AT91 %s platform device removed.\n", DEV_NAME);
+
     platform_device_unregister(&at91_button_device);
+    dbg_print("AT91 %s platform driver removed.\n", DEV_NAME);
 }
 
 module_init(at91_button_init);

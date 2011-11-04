@@ -103,6 +103,8 @@
 #define DEV_BUTTON_NAME             "button"
 #define DEV_BUTTON_MAJOR            "211"
 
+#define DEV_GSTTY_NAME              "gstty"
+#define DEV_GSTTY_MAJOR             "212"
 
 /*  ***** Bit Operate Define *****/
 #define SET_BIT(data, i)   ((data) |=  (1 << (i)))    /*   Set the bit "i" in "data" to 1  */

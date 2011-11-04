@@ -326,13 +326,13 @@ static int at91_led_probe(struct platform_device *dev)
     led_device.blink_timer.expires  = jiffies + TIMER_TIMEOUT;
     add_timer(&(led_device.blink_timer)); 
 
-    printk("%s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
+    printk("AT91 %s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
 
     return 0;
                
 
 ERROR: 
-    printk("%s driver version %d.%d.%d install failure.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
+    printk("AT91 %s driver version %d.%d.%d install failure.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER); 
     cdev_del(&(led_device.cdev)); 
 
     unregister_chrdev_region(devno, 1); 
@@ -352,7 +352,7 @@ static int at91_led_remove(struct platform_device *dev)
     class_destroy(led_device.dev_class); 
     
     unregister_chrdev_region(devno, 1); 
-    printk("%s driver removed\n", DEV_NAME);
+    printk("AT91 %s driver removed\n", DEV_NAME);
 
     return 0;
 }
