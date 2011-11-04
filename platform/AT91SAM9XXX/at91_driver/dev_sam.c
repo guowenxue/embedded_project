@@ -142,7 +142,7 @@ static unsigned long at91_css_to_rate(unsigned long css)
             case AT91_PMC_MCKR_CSS_PLLB: 
                     return pllb_rate_hz; 
 #endif
-    } 
+    }
     return 0;
 }
 
@@ -168,7 +168,7 @@ int at91_get_clock(unsigned long main_clock)
         if (regs & AT91_PMC_MDIV)
             freq /= 2;          /* processor clock division */
     }
-    else if(ARCH_ID_AT91SAM9G20 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
+    else if(ARCH_ID_AT91SAM9260 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
     {
         mck_rate_hz = freq / (1 << ((regs & AT91_PMC_MDIV) >> 8)); 
     }
