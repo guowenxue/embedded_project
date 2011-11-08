@@ -16,7 +16,7 @@ EXTRA_CFLAGS+=-D__KERNEL__
 EXTRA_CFLAGS+=-DMODULE
 
 obj-m += s3c_led.o
-#obj-m += s3c_button.o
+obj-m += s3c_button.o
 
 modules:
 	@make -C $(LINUX_SRC) M=$(PWD) modules

@@ -46,7 +46,7 @@ struct s3c_button_info
     unsigned char           num;       /*Button nubmer  */
     char *                  name;      /*Button nubmer  */
     int                     nIRQ;      /*Button IRQ number*/
-    unsigned int            irq_type;  /*Button IRQ flags */
+    unsigned int            setting;   /*Button IRQ Pin Setting*/
     unsigned int            gpio;      /*Button GPIO port */
 };
 
@@ -61,10 +61,31 @@ struct s3c_button_platform_data
 static struct s3c_button_info  s3c_buttons[] = {
     [0] = {
         .num = 1,
-        .name = "restore",
-        .nIRQ = AT91_PIN_PB20,
-        .gpio = AT91_PIN_PB20,
-        .irq_type = AT91_AIC_SRCTYPE_FALLING,
+        .name = "KEY1",
+        .nIRQ = IRQ_EINT0,
+        .gpio = S3C2410_GPF(0),
+        .setting = S3C2410_GPF0_EINT0,
+    },
+    [1] = {
+        .num = 2,
+        .name = "KEY2",
+        .nIRQ = IRQ_EINT2,
+        .gpio = S3C2410_GPF(2),
+        .setting = S3C2410_GPF2_EINT2,
+    },
+    [2] = {
+        .num = 3,
+        .name = "KEY3",
+        .nIRQ = IRQ_EINT3,
+        .gpio = S3C2410_GPF(3),
+        .setting = S3C2410_GPF3_EINT3,
+    },
+    [3] = {
+        .num = 4,
+        .name = "KEY4",
+        .nIRQ = IRQ_EINT4,
+        .gpio = S3C2410_GPF(4),
+        .setting = S3C2410_GPF4_EINT4,
     },
 };
 
@@ -120,8 +141,7 @@ static irqreturn_t s3c_button_intterupt(int irq,void *de_id)
     if(!found) /* An ERROR interrupt  */
         return IRQ_NONE;
 
-    /* Disable current Key interrupt */
-    //disable_irq(pdata->buttons[i].nIRQ);
+    printk("%s pressed.\n", pdata->buttons[i].name);
 
     /* Only when button is up then we will handle this event */
     if(BUTTON_UP  == button_device.status[i])
@@ -139,7 +159,7 @@ static void button_timer_handler(unsigned long data)
 {
     struct s3c_button_platform_data *pdata = button_device.data;
     int num =(int)data;
-    int status = at91_get_gpio_value( pdata->buttons[num].gpio );
+    int status = s3c2410_gpio_getpin( pdata->buttons[num].gpio );
 
     if(LOWLEVEL == status)
     {
@@ -209,15 +229,12 @@ static int button_open(struct inode *inode, struct file *file)
         /* Initialize all the buttons' remove dithering timer */
         setup_timer(&(pdev->timers[i]), button_timer_handler, i);
 
-        /* Pull all the buttons GPIO pin to high level  */
-        at91_set_gpio_input(pdata->buttons[i].gpio, HIGHLEVEL); 
-
-        /* Set all the buttons GPIO to interrupt mode  */
-        at91_set_deglitch(pdata->buttons[i].gpio, 1);   
+        /* Set all the buttons GPIO to EDGE_FALLING interrupt mode */
+        s3c2410_gpio_cfgpin(pdata->buttons[i].gpio, pdata->buttons[i].setting);
+        irq_set_irq_type(pdata->buttons[i].nIRQ, IRQ_TYPE_EDGE_FALLING);
 
         /* Request for button GPIO pin interrupt  */
-        irq_set_irq_type(pdata->buttons[i].nIRQ, pdata->buttons[i].irq_type); 
-        result = request_irq(pdata->buttons[i].nIRQ, s3c_button_intterupt, 0, DEV_NAME, (void *)i);
+        result = request_irq(pdata->buttons[i].nIRQ, s3c_button_intterupt, IRQF_DISABLED, DEV_NAME, (void *)i);
         if( result )
         {
             result = -EBUSY;
