@@ -108,6 +108,8 @@ static irqreturn_t at91_button_intterupt(int irq,void *de_id)
     int found = 0;
     struct at91_button_platform_data *pdata = button_device.data;
 
+    printk("Receive IRQ=%d level=%d status=%d\n", irq, at91_get_gpio_value(irq_to_gpio(irq)),(at91_sys_read(AT91_AIC_SMR(AT91SAM9260_ID_PIOB))>>5)&0x03 );
+
     for(i=0; i<pdata->nbuttons; i++)
     {
         if(irq == pdata->buttons[i].nIRQ)
@@ -118,7 +120,9 @@ static irqreturn_t at91_button_intterupt(int irq,void *de_id)
     }
 
     if(!found) /* An ERROR interrupt  */
+    {
         return IRQ_NONE;
+    }
 
     /* Disable current Key interrupt */
     //disable_irq(pdata->buttons[i].nIRQ);
@@ -209,14 +213,21 @@ static int button_open(struct inode *inode, struct file *file)
         /* Initialize all the buttons' remove dithering timer */
         setup_timer(&(pdev->timers[i]), button_timer_handler, i);
 
-        /* Pull all the buttons GPIO pin to high level  */
-        at91_set_gpio_input(pdata->buttons[i].gpio, HIGHLEVEL); 
+        /* Set this PIN to GPIO input mode */
+        at91_set_gpio_input(pdata->buttons[i].gpio, ENPULLUP); 
 
-        /* Set all the buttons GPIO to interrupt mode  */
+        /* Enable glitch filter for interrupt */
         at91_set_deglitch(pdata->buttons[i].gpio, 1);   
 
-        /* Request for button GPIO pin interrupt  */
+        /* AT91SAM9260 ONLY support both(RISING and FALLING) EDGE triggle */
+#if 0
         irq_set_irq_type(pdata->buttons[i].nIRQ, pdata->buttons[i].irq_type); 
+        at91_sys_write(AT91_AIC_SMR(AT91SAM9260_ID_PIOB), AT91_AIC_SRCTYPE_LOW);
+        at91_sys_write(AT91_AIC_SMR(AT91SAM9260_ID_PIOB), AT91_AIC_SRCTYPE_FALLING);
+        at91_sys_write(AT91_AIC_SMR(AT91SAM9260_ID_PIOB), AT91_AIC_SRCTYPE_HIGH);
+        at91_sys_write(AT91_AIC_SMR(AT91SAM9260_ID_PIOB), AT91_AIC_SRCTYPE_RISING);
+#endif
+        /* Request button GPIO pin interrupt  */
         result = request_irq(pdata->buttons[i].nIRQ, at91_button_intterupt, 0, DEV_NAME, (void *)i);
         if( result )
         {

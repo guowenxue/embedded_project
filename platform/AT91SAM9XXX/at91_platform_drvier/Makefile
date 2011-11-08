@@ -16,7 +16,7 @@ EXTRA_CFLAGS+=-D__KERNEL__
 EXTRA_CFLAGS+=-DMODULE
 
 #obj-m += at91_led.o
-#obj-m += at91_button.o
+obj-m += at91_button.o
 obj-m += at91_gstty.o
 
 modules:

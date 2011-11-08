@@ -15,6 +15,7 @@
 
 #include <mach/at91_tc.h>
 #include <linux/atmel_tc.h>
+#include <mach/at91_pio.h>
 
 #define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX GPIO Simulator UART driver"
@@ -35,7 +36,8 @@ static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
 
-static void __iomem *tcaddr;
+static void __iomem    *tcaddr;
+struct atmel_tc        *tc; 
 
 static struct cdev cdev;
 static struct class *dev_class = NULL;
@@ -55,8 +57,8 @@ static unsigned long cpu_clk_rate_hz;
 
 struct gsuart
 {
-    unsigned int      rxd_gpio;    /* Which PIN used as Receive  */
-    unsigned int      txd_gpio;    /* Which PIN used as Transmit */
+    unsigned int           rxd_gpio;    /* Which PIN used as Receive  */
+    unsigned int           txd_gpio;    /* Which PIN used as Transmit */
 };
 
 static struct gsuart  gsuarts[] = {
@@ -139,10 +141,80 @@ static inline int at91_get_clock(unsigned long main_clock)
     return 0;
 }
 
+
+/* Start the TC channel to provide the receive/send data clock */
+static inline void start_tc(int channel, unsigned long baudrate)
+{
+    /* Clock Disable */
+    __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
+
+    /* All interrupt disable */
+    __raw_writel(0xFF, tcaddr + ATMEL_TC_REG(channel, IDR));  
+
+    /* Choose External Clock1(MCK/2),RC Compare triger */ 
+    __raw_writel(AT91_TC_TIMER_CLOCK1| AT91_TC_CPCTRG, tcaddr + ATMEL_TC_REG(channel, CMR));  
+
+    /* Set the counter value */
+    __raw_writel(65535-(mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
+
+    /* RC compare interrupt enable */ 
+    __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IER));  
+
+    /* software trigger and clock enable */
+    __raw_writel((AT91_TC_SWTRG | AT91_TC_CLKEN), tcaddr + ATMEL_TC_REG(channel, CCR));  
+}
+
+/* Stop the TC channel  */
+static void stop_tc(int channel)
+{
+    /* Disable the RC Compare interrupt  */
+    __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IDR));  
+    /* Disable the RC C  */
+    __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
+}
+
+/* Read the TC_SR register will clear the TC */
+static void clear_tc(int channel)
+{ 
+    __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
+}
+
+#define LEN 16
+static unsigned char data[LEN] = {0}; 
+
+/* This is the Receive Time Counter interrupt handler, which used to provide receive clock  */
 static irqreturn_t gstty_rxdtc_interrupt(int irq, void *dev_id)
 {
-    printk("...\n");
-    
+    static int count = 0;
+    count++;
+
+    if(!(count%1000))
+    {
+        printk("ms=%d count=%d\n",jiffies_to_msecs(jiffies), count); 
+        return IRQ_HANDLED;
+    }
+    else
+        return IRQ_HANDLED;
+
+
+    /* Get AT91_PIN_PB5 Pin value */
+    data[count] = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
+
+    if(count>=LEN)
+    {
+        int i;
+        stop_tc(AT91_TC_CHN0);
+        printk("count=%d\n", count);
+        for(i=0; i<LEN; i++)
+            printk(" data[%d]=%d\n", i, data[i]);
+        memset(data, 0, LEN);
+        count = 0;
+
+        /* Enable AT91_PIN_PB5 pin interrupt */
+        at91_sys_write(AT91_PIOB+PIO_IER, 1<<5);
+    }
+
+    count++;
     return IRQ_HANDLED;
 }
 
@@ -153,39 +225,20 @@ static struct irqaction gstty_rxdtc_irq =
     .handler    = gstty_rxdtc_interrupt,
 };
 
-static inline void start_tc(int channel, unsigned long baudrate)
-{
-    /* Clock Disable */
-    __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
-
-    /* All interrupt disable */
-    __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, IDR));  
-
-    /* Choose External Clock1(MCK/2),RC Compare triger */ 
-    __raw_writel(AT91_TC_TIMER_CLOCK1| AT91_TC_CPCTRG, tcaddr + ATMEL_TC_REG(channel, CMR));  
-
-    /* Set the counter value */
-    __raw_writel((mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
-
-    /* RC compare interrupt enable */ 
-    __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IER));  
-
-
-
-    /* software trigger and clock enable */
-    __raw_writel((AT91_TC_SWTRG | AT91_TC_CLKEN), tcaddr + ATMEL_TC_REG(channel, CCR));  
-}
-
-#if 0
-static void stop_tc(int channel)
-{
-    __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
-}
-#endif
-
+/* This is the RXD GPIO Pin interrupt handler */
 static irqreturn_t recv_intterupt_handler(int irq,void *de_id)
 {
-    printk("Interrupt coming, irq=%d.\n", irq);
+    /* The start bit must be lowlevel */
+    if(HIGHLEVEL == at91_get_gpio_value(irq_to_gpio(irq)) )
+        return IRQ_HANDLED;
+
+    /* Disable AT91_PIN_PB5 pin interrupt */
+    at91_sys_write(AT91_PIOB+PIO_IDR, 1<<5);
+
+    //start_tc(AT91_TC_CHN0, 115200);
+    //start_tc(AT91_TC_CHN0, 115200);
+    start_tc(AT91_TC_CHN0, 1000);
+
     return IRQ_HANDLED;
 }
 
@@ -198,13 +251,9 @@ static int gstty_open(struct inode *inode, struct file *file)
     pgsuart = file->private_data = &gsuarts[num];
     printk("num=%d\n", num);
 
-    /* Set the TXD pin to GPIO output mode */
-    at91_set_gpio_output(pgsuart->txd_gpio, HIGHLEVEL);
-
     /* Set the RXD pin to interrupt mode */
-    at91_set_gpio_input(pgsuart->rxd_gpio, HIGHLEVEL);
+    at91_set_gpio_input(pgsuart->rxd_gpio, ENPULLUP);
     at91_set_deglitch(pgsuart->rxd_gpio, 1);
-    irq_set_irq_type(pgsuart->rxd_gpio, AT91_AIC_SRCTYPE_FALLING);
     result = request_irq(pgsuart->rxd_gpio, recv_intterupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
@@ -250,6 +299,8 @@ static int gstty_release(struct inode *inode, struct file *file)
 
     pgsuart = file->private_data;
 
+    remove_irq(AT91SAM9260_ID_TC0, &gstty_rxdtc_irq);
+
     disable_irq(pgsuart->rxd_gpio);
     free_irq(pgsuart->rxd_gpio, (void *)num);
 
@@ -271,7 +322,6 @@ static int __init at91_gstty_init(void)
 {
     int result = 0;
     dev_t  devno;
-    struct atmel_tc *tc; 
 
     if( 0 != dev_major)
     {
@@ -317,7 +367,7 @@ static int __init at91_gstty_init(void)
 
     at91_get_clock(18432000); /* 18.432 MHz crystal, used to get mck_rate_hz*/ 
 
-    tc = atmel_tc_alloc(AT91_TC_CHN0, "recv_tc");
+    tc = atmel_tc_alloc(AT91_TCBLOCK0, "recv_tc");
     if (!tc) 
     { 
         printk("can't alloc TC for clocksource\n"); 
@@ -325,8 +375,6 @@ static int __init at91_gstty_init(void)
         goto ERROR;
     }
     tcaddr = tc->regs;
-
-    start_tc(0, 115200);
 
     printk("AT91 %s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
     return 0;
@@ -336,12 +384,12 @@ ERROR:
     cdev_del(&cdev);
     unregister_chrdev_region(devno, 1);
 
-
     return result;
 }
 
 static void at91_gstty_exit(void)
 {
+    atmel_tc_free(tc);
 
     device_destroy(dev_class, MKDEV(dev_major, 0));
 
