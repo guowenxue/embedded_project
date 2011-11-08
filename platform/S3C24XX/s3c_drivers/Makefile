@@ -36,7 +36,7 @@ tag:
 clear:
 	@rm -f *.o *.cmd *.mod.c
 	@rm -rf  *~ core .depend  .tmp_versions Module.symvers modules.order -f
-	@rm -f .*ko.cmd .*.o.cmd
+	@rm -f .*ko.cmd .*.o.cmd .*.o.d
 
 clean: clear
 	@rm -f  *.ko
