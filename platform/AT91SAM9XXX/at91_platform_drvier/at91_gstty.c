@@ -16,6 +16,7 @@
 #include <mach/at91_tc.h>
 #include <linux/atmel_tc.h>
 #include <mach/at91_pio.h>
+#include <linux/clk.h>
 
 #define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX GPIO Simulator UART driver"
@@ -36,6 +37,7 @@ static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
 
+
 static void __iomem    *tcaddr;
 struct atmel_tc        *tc; 
 
@@ -50,10 +52,6 @@ static struct class *dev_class = NULL;
 #define AT91_TC_CHN2              2 /* Channel 2 in a TC Block */
 #define ARCH_ID_AT91SAM9260       0x019803a0
 #define ARCH_ID_AT91SAM9G20       0x019905a0
-static unsigned long mck_rate_hz;
-static unsigned long main_clk_rate_hz;
-static unsigned long plla_rate_hz;
-static unsigned long cpu_clk_rate_hz;
 
 struct gsuart
 {
@@ -70,81 +68,14 @@ static struct gsuart  gsuarts[] = {
 #define GSUART_NUMS      ARRAY_SIZE(gsuarts)
 
 
-static u32 at91_pll_rate(u32 freq, u32 reg)
-{ 
-    unsigned mul, div; 
-    
-    div = reg & 0xff; 
-    mul = (reg >> 16) & 0x7ff; 
-    if (div && mul) 
-    { 
-        freq /= div; 
-        freq *= mul + 1; 
-    } 
-    else 
-        freq = 0; 
-    
-    return freq;
-}
-
-static unsigned long at91_css_to_rate(unsigned long css)
-{ 
-    switch (css) 
-    { 
-        case AT91_PMC_CSS_SLOW: 
-            return AT91_SLOW_CLOCK; 
-
-        case AT91_PMC_CSS_MAIN: 
-            return main_clk_rate_hz; 
-
-        case AT91_PMC_CSS_PLLA: 
-            return plla_rate_hz; 
-#if 0 
-        case AT91_PMC_MCKR_CSS_PLLB: 
-            return pllb_rate_hz; 
-#endif 
-    } 
-    return 0;
-}
-
-static inline int at91_get_clock(unsigned long main_clock)
-{ 
-    unsigned regs, freq; 
-    main_clk_rate_hz = main_clock;
-
-    regs = at91_sys_read(AT91_CKGR_PLLAR); 
-    plla_rate_hz = at91_pll_rate(main_clock, regs);
-
-    regs = at91_sys_read(AT91_PMC_MCKR);
-    mck_rate_hz = at91_css_to_rate(regs & AT91_PMC_CSS);
-    freq = mck_rate_hz;
-    freq /= (1 << ((regs & AT91_PMC_PRES) >> 2)); /*  prescale */ 
-
-    if(ARCH_ID_AT91SAM9G20 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
-    {
-        /*  mdiv ; (x >> 7) = ((x >> 8) * 2) */
-        mck_rate_hz = (regs & AT91_PMC_MDIV) ?  freq / ((regs & AT91_PMC_MDIV) >> 7) : freq;
-        if (regs & AT91_PMC_MDIV)
-            freq /= 2;          /*  processor clock division */
-    }
-    else if(ARCH_ID_AT91SAM9260 == (at91_sys_read(AT91_DBGU_CIDR) & ~AT91_CIDR_VERSION))
-    {
-        mck_rate_hz = freq / (1 << ((regs & AT91_PMC_MDIV) >> 8));
-    }
-
-    cpu_clk_rate_hz = freq;
-
-    printk("Clocks: CPU %lu MHz, master %u MHz, main %u.%03u MHz\n",
-            cpu_clk_rate_hz / 1000000, (unsigned) mck_rate_hz / 1000000,
-            (unsigned) main_clk_rate_hz / 1000000, ((unsigned) main_clk_rate_hz % 1000000) / 1000);
-
-    return 0;
-}
-
-
 /* Start the TC channel to provide the receive/send data clock */
 static inline void start_tc(int channel, unsigned long baudrate)
 {
+    unsigned long mck_rate_hz = 0;
+
+    /* Get the MCK */
+    mck_rate_hz = clk_get_rate(tc->clk[channel]);
+
     /* Clock Disable */
     __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
 
@@ -155,10 +86,16 @@ static inline void start_tc(int channel, unsigned long baudrate)
     __raw_writel(AT91_TC_TIMER_CLOCK1| AT91_TC_CPCTRG, tcaddr + ATMEL_TC_REG(channel, CMR));  
 
     /* Set the counter value */
-    __raw_writel(65535-(mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
+    __raw_writel((mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
 
     /* RC compare interrupt enable */ 
     __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IER));  
+
+    /* Clear the TC status  */
+    __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
+
+    /* Enable the TC Clock in AT91_PMC_PCER(Can Read status from AT91_PMC_PCSR) */
+    clk_enable(tc->clk[channel]);
 
     /* software trigger and clock enable */
     __raw_writel((AT91_TC_SWTRG | AT91_TC_CLKEN), tcaddr + ATMEL_TC_REG(channel, CCR));  
@@ -167,8 +104,12 @@ static inline void start_tc(int channel, unsigned long baudrate)
 /* Stop the TC channel  */
 static void stop_tc(int channel)
 {
+    /* Disable the TC Clcok */
+    clk_disable(tc->clk[channel]);
+
     /* Disable the RC Compare interrupt  */
     __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IDR));  
+
     /* Disable the RC C  */
     __raw_writel(AT91_TC_CLKDIS, tcaddr + ATMEL_TC_REG(channel, CCR));  
 }
@@ -179,35 +120,27 @@ static void clear_tc(int channel)
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
 }
 
-#define LEN 16
+#define LEN 8 
 static unsigned char data[LEN] = {0}; 
 
 /* This is the Receive Time Counter interrupt handler, which used to provide receive clock  */
 static irqreturn_t gstty_rxdtc_interrupt(int irq, void *dev_id)
 {
-    static int count = 0;
-    count++;
-
-    if(!(count%1000))
-    {
-        printk("ms=%d count=%d\n",jiffies_to_msecs(jiffies), count); 
-        return IRQ_HANDLED;
-    }
-    else
-        return IRQ_HANDLED;
-
+    static int count=0;
+    clear_tc(AT91_TC_CHN0);
 
     /* Get AT91_PIN_PB5 Pin value */
     data[count] = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
+    //data[count] = at91_get_gpio_value(irq_to_gpio(irq));
 
-    if(count>=LEN)
+    if(count==LEN)
     {
         int i;
         stop_tc(AT91_TC_CHN0);
         printk("count=%d\n", count);
         for(i=0; i<LEN; i++)
             printk(" data[%d]=%d\n", i, data[i]);
-        memset(data, 0, LEN);
+//        memset(data, 0, LEN);
         count = 0;
 
         /* Enable AT91_PIN_PB5 pin interrupt */
@@ -217,13 +150,6 @@ static irqreturn_t gstty_rxdtc_interrupt(int irq, void *dev_id)
     count++;
     return IRQ_HANDLED;
 }
-
-static struct irqaction gstty_rxdtc_irq = 
-{ 
-    .name       = "at91_tick", 
-    .flags      = IRQF_DISABLED | IRQF_TIMER, 
-    .handler    = gstty_rxdtc_interrupt,
-};
 
 /* This is the RXD GPIO Pin interrupt handler */
 static irqreturn_t recv_intterupt_handler(int irq,void *de_id)
@@ -235,9 +161,7 @@ static irqreturn_t recv_intterupt_handler(int irq,void *de_id)
     /* Disable AT91_PIN_PB5 pin interrupt */
     at91_sys_write(AT91_PIOB+PIO_IDR, 1<<5);
 
-    //start_tc(AT91_TC_CHN0, 115200);
-    //start_tc(AT91_TC_CHN0, 115200);
-    start_tc(AT91_TC_CHN0, 1000);
+    start_tc(AT91_TC_CHN0, 1200);
 
     return IRQ_HANDLED;
 }
@@ -261,7 +185,12 @@ static int gstty_open(struct inode *inode, struct file *file)
          return -EBUSY;
     }
 
-    setup_irq(AT91SAM9260_ID_TC0, &gstty_rxdtc_irq);
+    result = request_irq(AT91SAM9260_ID_TC0, gstty_rxdtc_interrupt, 0, DEV_NAME, (void *)num);
+    if( result )
+    {
+         result = -EBUSY; 
+         return -EBUSY;
+    }
 
     return result;
 }
@@ -299,7 +228,8 @@ static int gstty_release(struct inode *inode, struct file *file)
 
     pgsuart = file->private_data;
 
-    remove_irq(AT91SAM9260_ID_TC0, &gstty_rxdtc_irq);
+    disable_irq(AT91SAM9260_ID_TC0);
+    free_irq(AT91SAM9260_ID_TC0,(void *)num);
 
     disable_irq(pgsuart->rxd_gpio);
     free_irq(pgsuart->rxd_gpio, (void *)num);
@@ -365,8 +295,6 @@ static int __init at91_gstty_init(void)
     device_create(dev_class, NULL, devno, "%s%d", DEV_NAME, 0);
 #endif
 
-    at91_get_clock(18432000); /* 18.432 MHz crystal, used to get mck_rate_hz*/ 
-
     tc = atmel_tc_alloc(AT91_TCBLOCK0, "recv_tc");
     if (!tc) 
     { 
@@ -375,6 +303,13 @@ static int __init at91_gstty_init(void)
         goto ERROR;
     }
     tcaddr = tc->regs;
+
+
+#if 0
+    request_mem_region(AT91SAM9260_BASE_TCB0, 0x4000, "recv_tc");
+    tcaddr = ioremap(AT91SAM9260_BASE_TCB0, 0x4000);
+#endif
+
 
     printk("AT91 %s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
     return 0;
@@ -412,3 +347,4 @@ MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:AT91SAM9260_GSTTY");
+
