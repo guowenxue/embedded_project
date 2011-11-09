@@ -256,7 +256,6 @@ static int s3c_led_probe(struct platform_device *dev)
     /* Initialize the LED status */
     for(i=0; i<pdata->nleds; i++)
     {
-         printk("***LED[%d] blink=%d\n", pdata->leds[i].num, pdata->leds[i].blink);
          s3c2410_gpio_cfgpin(pdata->leds[i].gpio, S3C2410_GPIO_OUTPUT);
          if(ON == pdata->leds[i].status)
          {
