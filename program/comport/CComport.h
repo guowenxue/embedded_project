@@ -30,7 +30,7 @@
 #define BUF_64  64
 #define DEVNAME_LEN          64
 
-#define COM_DEBUG
+//#define COM_DEBUG
 #ifdef  COM_DEBUG
 #define COM_PRINT(format,args...) printf(format, ##args)
 #else

@@ -141,8 +141,6 @@ static irqreturn_t s3c_button_intterupt(int irq,void *de_id)
     if(!found) /* An ERROR interrupt  */
         return IRQ_NONE;
 
-    printk("%s pressed.\n", pdata->buttons[i].name);
-
     /* Only when button is up then we will handle this event */
     if(BUTTON_UP  == button_device.status[i])
     {
@@ -167,6 +165,8 @@ static void button_timer_handler(unsigned long data)
         {
             //dbg_print("Key pressed!\n");
             button_device.status[num] = BUTTON_DOWN;
+
+            printk("%s pressed.\n", pdata->buttons[num].name);
 
             /* Wake up the wait queue for read()/poll() */
             button_device.ev_press = 1;
