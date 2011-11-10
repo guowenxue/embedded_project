@@ -73,6 +73,10 @@ static inline void start_tc(int channel, unsigned long baudrate)
 {
     unsigned long mck_rate_hz = 0;
 
+    
+    /* Enable the TC Clock in AT91_PMC_PCER(Can Read status from AT91_PMC_PCSR) */
+    clk_enable(tc->clk[channel]);
+
     /* Get the MCK */
     mck_rate_hz = clk_get_rate(tc->clk[channel]);
 
@@ -85,20 +89,21 @@ static inline void start_tc(int channel, unsigned long baudrate)
     /* Choose External Clock1(MCK/2),RC Compare triger */ 
     __raw_writel(AT91_TC_TIMER_CLOCK1| AT91_TC_CPCTRG, tcaddr + ATMEL_TC_REG(channel, CMR));  
 
+    //printk("mck_rat_hz=%lu RC=%lu\n", mck_rate_hz, mck_rate_hz/(2*baudrate));
     /* Set the counter value */
     __raw_writel((mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
 
     /* RC compare interrupt enable */ 
     __raw_writel((1<<4), tcaddr + ATMEL_TC_REG(channel, IER));  
+    
+    /* TC Channel clock enable */
+    __raw_writel((AT91_TC_CLKEN), tcaddr + ATMEL_TC_REG(channel, CCR));  
 
-    /* Clear the TC status  */
+    /* Clear the TC Channel status  */
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
 
-    /* Enable the TC Clock in AT91_PMC_PCER(Can Read status from AT91_PMC_PCSR) */
-    clk_enable(tc->clk[channel]);
-
-    /* software trigger and clock enable */
-    __raw_writel((AT91_TC_SWTRG | AT91_TC_CLKEN), tcaddr + ATMEL_TC_REG(channel, CCR));  
+    /* TC channel software trigger enable */
+    __raw_writel((AT91_TC_SWTRG ), tcaddr + ATMEL_TC_REG(channel, CCR));  
 }
 
 /* Stop the TC channel  */
@@ -120,48 +125,107 @@ static void clear_tc(int channel)
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
 }
 
-#define LEN 8 
-static unsigned char data[LEN] = {0}; 
 
-/* This is the Receive Time Counter interrupt handler, which used to provide receive clock  */
-static irqreturn_t gstty_rxdtc_interrupt(int irq, void *dev_id)
+/*==============================================================================================
+ *  RXD PIN DATA WAVE:
+ *
+ *              bit0        bit2      bit4
+ *  ____     ________     _______     ____
+ *     |     |      |     |     |     |
+ *     |_____|      |_____|     |_____|
+ *    StartBit        bit1        bit3
+ *
+ * TC Sample Clock:
+ *
+ *          1     3     5      7      9
+ *    __  _____  ____  ____   ____  ____
+ *     |  |   |  |  |  |  |   |  |  |
+ *     |__|   |__|  |__|  |___|  |__|
+ *      0      2     4     6       8
+ *
+ *  TC clock0: It's in RXD start bit circle, we shouldn't use it;
+ *  TC clock1: It's uncertain about I'm in data StartBit or Bit[0], so don't use it.
+ *  TC clock2: It's should in data bit[0] circlue, sample the data;
+ *  TC clock3: It's uncertain about I'm in data bitp[0] or Bit[1], so don't use it.
+ *  TC clock4: It's should in data bit[1] circlue, sample the data;
+ *  TC clock5: It's uncertain about I'm in data bitp[1] or Bit[2], so don't use it.
+ *  ......
+ *
+ *=============================================================================================*/ 
+
+/* This is the Receive Time Counter interrupt handler, which used to provide receive
+ * clock and receive one bit in a clock */
+static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
 {
-    static int count=0;
+    static int             i=0;
+    unsigned int           status = 0;
+    static unsigned  char  ch = 0;
+
     clear_tc(AT91_TC_CHN0);
 
-    /* Get AT91_PIN_PB5 Pin value */
-    data[count] = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
-    //data[count] = at91_get_gpio_value(irq_to_gpio(irq));
+    status = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
 
-    if(count==LEN)
+    /* Skip sample Clock0, clock1, clock3, clock5... as above explain  */
+    if(! (i%2 || i == 0) ) 
+        ch |= (status<<((i-1)/2));  
+
+    if(i == 18 ) /* Stop bit clock arrive  */
     {
-        int i;
-        stop_tc(AT91_TC_CHN0);
-        printk("count=%d\n", count);
-        for(i=0; i<LEN; i++)
-            printk(" data[%d]=%d\n", i, data[i]);
-//        memset(data, 0, LEN);
-        count = 0;
+#if 0  /* Debug output the receive data */
+        {
+#define LEN    64 
+            static int  j=0;
+            int         k=0;
+            static char buf[LEN];
+
+            buf[j] = ch;
+            j++;
+
+            if(j>=LEN)
+            {
+               for(k=0; k<LEN; k++) 
+               {
+                  printk("buf[%d]=0x%x\n", k,buf[k]); 
+               }
+               j=0;
+            }
+               
+        }
+#endif
+
+        /* Stop the TC counter */
+        stop_tc(AT91_TC_CHN0); 
+
+        /* Clear AT91_PIN_PB5 pin interrupt */
+        at91_sys_read(AT91_PIOB+PIO_ISR);
 
         /* Enable AT91_PIN_PB5 pin interrupt */
         at91_sys_write(AT91_PIOB+PIO_IER, 1<<5);
+
+        i = ch = 0;
+        return IRQ_HANDLED;
     }
 
-    count++;
+    i++;
     return IRQ_HANDLED;
 }
 
-/* This is the RXD GPIO Pin interrupt handler */
-static irqreturn_t recv_intterupt_handler(int irq,void *de_id)
+/* When there is Data incoming, the RXD pin should get a falling edge interrupt */
+static irqreturn_t rxdpin_intterupt_handler(int irq,void *dev_id)
 {
-    /* The start bit must be lowlevel */
+    /* AT91 PIO Interrupt can only capture both FALLING EDGE and RISING EDGE 
+     * interrupt, but we should only capture the FALLING EDGE interrupt here*/
     if(HIGHLEVEL == at91_get_gpio_value(irq_to_gpio(irq)) )
         return IRQ_HANDLED;
 
-    /* Disable AT91_PIN_PB5 pin interrupt */
+    /* Disable AT91_PIN_PB5 interrupt */
     at91_sys_write(AT91_PIOB+PIO_IDR, 1<<5);
 
-    start_tc(AT91_TC_CHN0, 1200);
+    /* Clear the interrupt status */
+    at91_sys_read(AT91_PIOB+PIO_ISR);
+
+    /* We use 2*Baudrate to sample the code, to fix the uncertain clock sample point */
+    start_tc(AT91_TC_CHN0, 2*9600);
 
     return IRQ_HANDLED;
 }
@@ -173,19 +237,18 @@ static int gstty_open(struct inode *inode, struct file *file)
     struct gsuart *pgsuart = NULL;
     
     pgsuart = file->private_data = &gsuarts[num];
-    printk("num=%d\n", num);
 
     /* Set the RXD pin to interrupt mode */
     at91_set_gpio_input(pgsuart->rxd_gpio, ENPULLUP);
     at91_set_deglitch(pgsuart->rxd_gpio, 1);
-    result = request_irq(pgsuart->rxd_gpio, recv_intterupt_handler, 0, DEV_NAME, (void *)num);
+    result = request_irq(pgsuart->rxd_gpio, rxdpin_intterupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
          result = -EBUSY; 
          return -EBUSY;
     }
 
-    result = request_irq(AT91SAM9260_ID_TC0, gstty_rxdtc_interrupt, 0, DEV_NAME, (void *)num);
+    result = request_irq(AT91SAM9260_ID_TC0, rxdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
          result = -EBUSY; 
@@ -200,8 +263,6 @@ static int gstty_open(struct inode *inode, struct file *file)
 static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
     int result = 0;
-
-
 
     return result;
 }
@@ -303,13 +364,6 @@ static int __init at91_gstty_init(void)
         goto ERROR;
     }
     tcaddr = tc->regs;
-
-
-#if 0
-    request_mem_region(AT91SAM9260_BASE_TCB0, 0x4000, "recv_tc");
-    tcaddr = ioremap(AT91SAM9260_BASE_TCB0, 0x4000);
-#endif
-
 
     printk("AT91 %s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
     return 0;
