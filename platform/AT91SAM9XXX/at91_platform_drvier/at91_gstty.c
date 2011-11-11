@@ -36,6 +36,7 @@
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
+static int baudrate = 9600;
 
 
 static void __iomem    *tcaddr;
@@ -125,6 +126,12 @@ static void stop_tc(int channel)
 static void clear_tc(int channel)
 { 
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
+}
+
+static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
+{
+
+    return IRQ_HANDLED;
 }
 
 
@@ -225,7 +232,7 @@ static irqreturn_t rxdpin_intterupt_handler(int irq,void *dev_id)
     at91_sys_read(AT91_PIOB+PIO_ISR);
 
     /* We use 2*Baudrate to sample the code, to fix the uncertain clock sample point */
-    start_tc(AT91_TC_CHN0, 2*9600);  /* Max Baudrate support 9600bps */
+    start_tc(AT91_TC_CHN0, 2*baudrate);  /* Max Baudrate support 9600bps */
 
     return IRQ_HANDLED;
 }
@@ -244,17 +251,27 @@ static int gstty_open(struct inode *inode, struct file *file)
     result = request_irq(pgsuart->rxd_gpio, rxdpin_intterupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
-         result = -EBUSY; 
-         return -EBUSY;
+        goto RET;
     }
 
     result = request_irq(AT91SAM9260_ID_TC0, rxdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
-         result = -EBUSY; 
-         return -EBUSY;
+        free_irq(pgsuart->rxd_gpio, (void *)num);
+        goto RET;
     }
 
+    result = request_irq(AT91SAM9260_ID_TC1, txdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
+    if( result )
+    {
+        free_irq(pgsuart->rxd_gpio, (void *)num);
+        free_irq(AT91SAM9260_ID_TC0, (void *)num);
+        goto RET;
+    }
+
+    start_tc(AT91_TC_CHN1, baudrate);  /* Max Baudrate support 9600bps */
+
+RET:
     return result;
 }
 
@@ -267,21 +284,29 @@ static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t 
 
     if((size=CIRC_CNT(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
     {
-       len = size>count? count : size; 
+       len = size<=count? size : count; 
        copy_to_user(buf, &rx_ring.buf[rx_ring.tail], len);
        rx_ring.tail = (rx_ring.tail + len) & (CIRC_BUF_SIZE - 1); 
     }
-    else
-        return 0;
 
     return len;
 }
 
 static ssize_t gstty_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 {
-    int result = 0;
+    int len = 0;
+    int size = 0;
 
-    return result;
+    /* Check buffer is overflow or not */
+    if ( (size=CIRC_SPACE(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1 )
+    {
+        len = count<=size ? count : size;
+        copy_from_user(&tx_ring.buf[tx_ring.head], buf, len);
+        tx_ring.head = (tx_ring.head + len) & (CIRC_BUF_SIZE - 1);
+    }
+
+
+    return len;
 }
 
 static long gstty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -301,6 +326,9 @@ static int gstty_release(struct inode *inode, struct file *file)
 
     disable_irq(AT91SAM9260_ID_TC0);
     free_irq(AT91SAM9260_ID_TC0,(void *)num);
+
+    disable_irq(AT91SAM9260_ID_TC1);
+    free_irq(AT91SAM9260_ID_TC1,(void *)num);
 
     disable_irq(pgsuart->rxd_gpio);
     free_irq(pgsuart->rxd_gpio, (void *)num);
