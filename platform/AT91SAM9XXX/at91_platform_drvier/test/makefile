@@ -3,20 +3,18 @@
 #                  All rights reserved.
 #
 #       Filename:  Makefile
-#    Description:  This Makefile used to call function to compile all the C source
-#                  in current folder and links all the objects file into a excutable
-#                  binary file.
+#    Description:  This Makefile used to compile all the C source code file in current 
+#                  folder to respective excutable binary files.
 #                      
 #        Version:  1.0.0(10/08/2011~)
 #                  Author:  Guo Wenxue <guowenxue@gmail.com>
-#      ChangeLog:  1, Release initial version on "10/08/2011 01:29:33 AM"
+#      ChangeLog:  1, Release initial version on "11/11/2011 01:29:33 PM"
 #                       
 #********************************************************************************/
 
 PWD=$(shell pwd)
 INSTPATH=/tftp
 
-APP_BINARY_NAME = button
 #ARCH?=i386
 ARCH?=arm926t
 
@@ -66,12 +64,14 @@ else
 	LDFLAGS+=-ldl
 endif
 
-all: entry version $(APP_BINARY_NAME)
+SRCFILES = $(wildcard *.c)
+BINARIES=$(SRCFILES:%.c=%)
 
+all: entry version binaries 
 entry: 
 	@echo " ";
 	@echo " =========================================================";
-	@echo " **        Compile ${APP_BINARY_NAME} for ${ARCH}         ";
+	@echo " **        Compile \"${BINARIES}\" for ${ARCH}         ";
 	@echo " =========================================================";
 
 version:
@@ -86,23 +86,22 @@ version:
         echo "#define SVNVER 0" >>version.h; \
     fi;
 
-$(APP_BINARY_NAME):	$(OBJS) 
-	$(CC)  -o $@ $(OBJS) $(LDFLAGS)
-	$(STRIP) $(APP_BINARY_NAME)
+binaries:  ${BINARIES} 
+	@echo " Compile over"
 
-%.o : %.c
-	$(CC)  -c $< $(CFLAGS)
+%:  %.c 
+	$(CC) -o $@ $< $(CFLAGS)
 
 tag: 
 	@ctags --c-kinds=+defglmnstuvx --langmap=c:.c.h.ho.hem.het.hec.hev.him.hit.hic.hiv -R .  
 	@cscope -Rbq
 
 install:
-	@cp $(APP_BINARY_NAME) ${INSTPATH}
+	@cp $(BINARIES) ${INSTPATH}
 
 clean: 
 	@rm -f version.h 
-	@rm -f *.o $(APP_BINARY_NAME) 
+	@rm -f *.o $(BINARIES) 
 	@rm -rf *.gdb *.a *.so *.elf*
 
 distclean: clean
