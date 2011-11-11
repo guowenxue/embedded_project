@@ -50,14 +50,17 @@ static struct class *dev_class = NULL;
 #define AT91_TC_CHN0              0 /* Channel 0 in a TC Block */
 #define AT91_TC_CHN1              1 /* Channel 1 in a TC Block */
 #define AT91_TC_CHN2              2 /* Channel 2 in a TC Block */
-#define ARCH_ID_AT91SAM9260       0x019803a0
-#define ARCH_ID_AT91SAM9G20       0x019905a0
+
+#define CIRC_BUF_SIZE             64
 
 struct gsuart
 {
     unsigned int           rxd_gpio;    /* Which PIN used as Receive  */
     unsigned int           txd_gpio;    /* Which PIN used as Transmit */
 };
+
+struct circ_buf  rx_ring;
+struct circ_buf  tx_ring;
 
 static struct gsuart  gsuarts[] = {
     [0] = {
@@ -66,7 +69,6 @@ static struct gsuart  gsuarts[] = {
     },
 };
 #define GSUART_NUMS      ARRAY_SIZE(gsuarts)
-
 
 /* Start the TC channel to provide the receive/send data clock */
 static inline void start_tc(int channel, unsigned long baudrate)
@@ -171,28 +173,6 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
 
     if(i == 18 ) /* Stop bit clock arrive  */
     {
-#if 0  /* Debug output the receive data */
-        {
-#define LEN    64 
-            static int  j=0;
-            int         k=0;
-            static char buf[LEN];
-
-            buf[j] = ch;
-            j++;
-
-            if(j>=LEN)
-            {
-               for(k=0; k<LEN; k++) 
-               {
-                  printk("buf[%d]=0x%x\n", k,buf[k]); 
-               }
-               j=0;
-            }
-               
-        }
-#endif
-
         /* Stop the TC counter */
         stop_tc(AT91_TC_CHN0); 
 
@@ -202,6 +182,25 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
         /* Enable AT91_PIN_PB5 pin interrupt */
         at91_sys_write(AT91_PIOB+PIO_IER, 1<<5);
 
+        /* Check buffer is overflow or not */
+        if (CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE))
+        {
+            rx_ring.buf[rx_ring.head] = ch;
+            rx_ring.head = (rx_ring.head + 1) & (CIRC_BUF_SIZE - 1);
+        }
+#if 0
+        else /* Buffer overflow  */
+        {
+            int j=0;
+            for(j=0; j<rx_ring.head; j++)
+            {
+                printk("buf[%d]=0x%x\n", j, rx_ring.buf[j]);
+            }
+            printk("Head=%d\n", rx_ring.head);
+            memset(rx_ring.buf, 0xa5, CIRC_BUF_SIZE);
+            rx_ring.head = rx_ring.tail = 0;
+        }
+#endif
         i = ch = 0;
         return IRQ_HANDLED;
     }
@@ -225,7 +224,7 @@ static irqreturn_t rxdpin_intterupt_handler(int irq,void *dev_id)
     at91_sys_read(AT91_PIOB+PIO_ISR);
 
     /* We use 2*Baudrate to sample the code, to fix the uncertain clock sample point */
-    start_tc(AT91_TC_CHN0, 2*9600);
+    start_tc(AT91_TC_CHN0, 2*9600);  /* Max Baudrate support 9600bps */
 
     return IRQ_HANDLED;
 }
@@ -262,9 +261,21 @@ static int gstty_open(struct inode *inode, struct file *file)
 
 static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
-    int result = 0;
+    int len = 0;
 
-    return result;
+#if 0
+    int size = 0;
+    if((size=CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
+    {
+       len = size>count? count : size; 
+       copy_to_user(buf, &rx_ring.buf[rx_ring.tail], len);
+       rx_ring.tail = (rx_ring.tail + len) & (CIRC_BUF_SIZE - 1);
+    }
+    else
+        return 0;
+#endif
+
+    return len;
 }
 
 static ssize_t gstty_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
@@ -313,6 +324,17 @@ static int __init at91_gstty_init(void)
 {
     int result = 0;
     dev_t  devno;
+
+    memset(&rx_ring, 0, sizeof(struct circ_buf));
+    rx_ring.buf = kmalloc(CIRC_BUF_SIZE, GFP_KERNEL);
+    if( NULL == rx_ring.buf )
+        goto ERROR;
+
+    memset(&tx_ring, 0, sizeof(struct circ_buf));
+    tx_ring.buf = kmalloc(CIRC_BUF_SIZE, GFP_KERNEL);
+    if( NULL == tx_ring.buf )
+        goto ERROR;
+
 
     if( 0 != dev_major)
     {
@@ -369,6 +391,13 @@ static int __init at91_gstty_init(void)
     return 0;
 
 ERROR:
+
+    if(tx_ring.buf != NULL)
+        kfree(tx_ring.buf);
+
+    if(rx_ring.buf != NULL)
+        kfree(rx_ring.buf);
+
     printk("AT91 %s driver version %d.%d.%d install failure.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
     cdev_del(&cdev);
     unregister_chrdev_region(devno, 1);
