@@ -51,7 +51,7 @@ static struct class *dev_class = NULL;
 #define AT91_TC_CHN1              1 /* Channel 1 in a TC Block */
 #define AT91_TC_CHN2              2 /* Channel 2 in a TC Block */
 
-#define CIRC_BUF_SIZE             64
+#define CIRC_BUF_SIZE             1024
 
 struct gsuart
 {
@@ -183,8 +183,9 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
         at91_sys_write(AT91_PIOB+PIO_IER, 1<<5);
 
         /* Check buffer is overflow or not */
-        if (CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE))
+        if ( CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE) >= 1 )
         {
+            //printk("rx_ring.head=%d\n", rx_ring.head);
             rx_ring.buf[rx_ring.head] = ch;
             rx_ring.head = (rx_ring.head + 1) & (CIRC_BUF_SIZE - 1);
         }
@@ -262,18 +263,16 @@ static int gstty_open(struct inode *inode, struct file *file)
 static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
     int len = 0;
-
-#if 0
     int size = 0;
-    if((size=CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
+
+    if((size=CIRC_CNT(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
     {
        len = size>count? count : size; 
        copy_to_user(buf, &rx_ring.buf[rx_ring.tail], len);
-       rx_ring.tail = (rx_ring.tail + len) & (CIRC_BUF_SIZE - 1);
+       rx_ring.tail = (rx_ring.tail + len) & (CIRC_BUF_SIZE - 1); 
     }
     else
         return 0;
-#endif
 
     return len;
 }
