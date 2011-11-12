@@ -22,7 +22,7 @@ obj-m += at91_gstty.o
 modules:
 	@make -C $(LINUX_SRC) M=$(PWD) modules
 	@make clear
-	#@make install
+	@make install
 
 uninstall:
 	rm -f ${INST_PATH}/*.ko

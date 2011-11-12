@@ -8,6 +8,12 @@
  *        Version:  1.0.0(10/27/2011~)
  *         Author:  Guo Wenxue <guowenxue@gmail.com>
  *      ChangeLog:  1, Release initial version on "10/27/2011 11:39:10 AM"
+ *
+ *        TestLog:  2011.11.12 
+ *           1, Baudrata: 9600bps use 100ms or 1m period send '0123456789' 
+ *              will miss data;
+ *           2, Baudrata: 1200bps use 100ms period send '0123456789' will miss 
+ *              data in 12408 byte, but 1s period send is stable.
  *                 
  ********************************************************************************/
 
@@ -36,7 +42,7 @@
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
-static int baudrate = 9600;
+static int baudrate = 1200;
 
 
 static void __iomem    *tcaddr;
@@ -62,6 +68,8 @@ struct gsuart
 
 struct circ_buf  rx_ring;
 struct circ_buf  tx_ring;
+
+wait_queue_head_t          tx_waitq;
 
 static struct gsuart  gsuarts[] = {
     [0] = {
@@ -92,7 +100,7 @@ static inline void start_tc(int channel, unsigned long baudrate)
     /* Choose External Clock1(MCK/2),RC Compare triger */ 
     __raw_writel(AT91_TC_TIMER_CLOCK1| AT91_TC_CPCTRG, tcaddr + ATMEL_TC_REG(channel, CMR));  
 
-    //printk("mck_rat_hz=%lu RC=%lu\n", mck_rate_hz, mck_rate_hz/(2*baudrate));
+    dbg_print("mck_rat_hz=%lu baudrate=%lu RC=%lu\n", mck_rate_hz, baudrate, mck_rate_hz/(2*baudrate));
     /* Set the counter value */
     __raw_writel((mck_rate_hz/(2*baudrate)), tcaddr + ATMEL_TC_REG(channel, RC));  
 
@@ -128,9 +136,55 @@ static void clear_tc(int channel)
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
 }
 
+#define START_BIT          0
+#define STOP_BIT           9
 static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
 {
+    static int         i = 0;
+    int                size = 0;
+    static char        ch = 0;
 
+    clear_tc(AT91_TC_CHN1);
+
+    /* The send circle buffer get data need to be send */
+    if((size=CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1)
+    {
+        if(0 == (i%10) )
+        {
+            i=0;
+            ch=tx_ring.buf[tx_ring.tail];
+        }
+
+        switch(i)
+        {
+
+            case START_BIT:
+                /* Set TXD GPIO Pin as Low Level, send 0 */
+                at91_sys_write(AT91_PIOB+PIO_CODR, 1<<4);
+                break;
+            case STOP_BIT:
+                /* Set TXD GPIO Pin as High Level, send 1 */
+                at91_sys_write(AT91_PIOB+PIO_SODR, 1<<4);
+                tx_ring.tail = (tx_ring.tail + 1) & (CIRC_BUF_SIZE - 1); 
+                break;
+            default:
+                if(1 == (ch>>(i-1)&1) )
+                {
+                    /* Set TXD GPIO Pin as High Level, send 1 */
+                    at91_sys_write(AT91_PIOB+PIO_SODR, 1<<4);
+                }
+                else
+                {
+                    /* Set TXD GPIO Pin as Low Level, send 0 */
+                    at91_sys_write(AT91_PIOB+PIO_CODR, 1<<4);
+                }
+                break;
+        }
+
+        i++;
+    }
+    else
+        wake_up_interruptible(&tx_waitq);
     return IRQ_HANDLED;
 }
 
@@ -192,7 +246,6 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
         /* Check buffer is overflow or not */
         if ( CIRC_SPACE(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE) >= 1 )
         {
-            //printk("rx_ring.head=%d\n", rx_ring.head);
             rx_ring.buf[rx_ring.head] = ch;
             rx_ring.head = (rx_ring.head + 1) & (CIRC_BUF_SIZE - 1);
         }
@@ -204,7 +257,6 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
             {
                 printk("buf[%d]=0x%x\n", j, rx_ring.buf[j]);
             }
-            printk("Head=%d\n", rx_ring.head);
             memset(rx_ring.buf, 0xa5, CIRC_BUF_SIZE);
             rx_ring.head = rx_ring.tail = 0;
         }
@@ -247,6 +299,7 @@ static int gstty_open(struct inode *inode, struct file *file)
 
     /* Set the RXD pin to interrupt mode */
     at91_set_gpio_input(pgsuart->rxd_gpio, ENPULLUP);
+    at91_set_gpio_output(pgsuart->txd_gpio, HIGHLEVEL);
     at91_set_deglitch(pgsuart->rxd_gpio, 1);
     result = request_irq(pgsuart->rxd_gpio, rxdpin_intterupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
@@ -297,6 +350,8 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
     int len = 0;
     int size = 0;
 
+    DECLARE_WAITQUEUE(wait, current);
+
     /* Check buffer is overflow or not */
     if ( (size=CIRC_SPACE(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1 )
     {
@@ -305,7 +360,21 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
         tx_ring.head = (tx_ring.head + len) & (CIRC_BUF_SIZE - 1);
     }
 
+    add_wait_queue(&tx_waitq, &wait);
+    while(CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE) >=1)
+    {
+        set_current_state(TASK_INTERRUPTIBLE);
+        schedule();
+        if (signal_pending(current))
+        {
+             len = -ERESTARTSYS;
+             goto OUT;
+        }
+    }
 
+OUT:
+    remove_wait_queue(&tx_waitq, &wait);
+    set_current_state(TASK_RUNNING);
     return len;
 }
 
@@ -362,6 +431,7 @@ static int __init at91_gstty_init(void)
     if( NULL == tx_ring.buf )
         goto ERROR;
 
+    init_waitqueue_head(&tx_waitq);
 
     if( 0 != dev_major)
     {
