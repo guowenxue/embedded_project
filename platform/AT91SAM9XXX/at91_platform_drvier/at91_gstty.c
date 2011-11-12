@@ -11,7 +11,7 @@
  *
  *        TestLog:  2011.11.12 
  *           1, Baudrata: 9600bps is not stable when send '0123456789' in period 100ms. 
- *           2, Baudrata: 1200bps test is OK. 
+ *           2, Baudrata: 1200bps bit data error.
  *                 
  ********************************************************************************/
 
@@ -42,7 +42,7 @@ static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
 
-static int baudrate = 9600;
+static int baudrate = 1200;
 
 static struct cdev cdev;
 static struct class *dev_class = NULL;
