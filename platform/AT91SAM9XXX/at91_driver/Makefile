@@ -3,7 +3,8 @@ PLAT ?= L2
 ARCH = sam9g20
 #ARCH = sam9260
 KERNEL_VER = linux-3.0
-LINUX_SRC ?= ../kernel/$(KERNEL_VER)_$(ARCH)/
+#LINUX_SRC ?= ../kernel/$(KERNEL_VER)_$(ARCH)/ 
+LINUX_SRC ?= ~/concentrator/kernel/linux-3.0
 HWVER ?= V1
 
 #PLAT=L3

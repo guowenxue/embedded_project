@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -42,7 +43,7 @@ int main(int argc, char **argv)
         mode = MODE_POLL;
     }
 
-    fd = open("/dev/gstty0", O_RDONLY);
+    fd = open("/dev/gstty0", O_RDWR);
     if (fd < 0)
     {
         perror("Open gstty failure\n");
@@ -91,18 +92,28 @@ int main(int argc, char **argv)
         else
         {
             ret = read(fd, buf, BUF_SIZE);    //读设备
-            if (ret <= 0)
+            if (ret < 0)
             {
-                printf("ret=%d\n", ret);
+                perror("read failure");
             }
+#if 0
             else
             {
                 int i;
                 for (i=0; i<ret; i++)
                   printf("buf[%d] %x\n", i, buf[i]);
             }
+#endif
+            if(ret>0)
+            {
+               ret = write(fd, buf, ret);
+               if(ret < 0)
+                   perror("Write falure");
+            }
 
-            sleep(1);
+            memset(buf, 0x00, BUF_SIZE);
+
+            //sleep(1);
         }
     }
 

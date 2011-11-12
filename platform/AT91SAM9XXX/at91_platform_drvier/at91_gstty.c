@@ -10,10 +10,8 @@
  *      ChangeLog:  1, Release initial version on "10/27/2011 11:39:10 AM"
  *
  *        TestLog:  2011.11.12 
- *           1, Baudrata: 9600bps use 100ms or 1m period send '0123456789' 
- *              will miss data;
- *           2, Baudrata: 1200bps use 100ms period send '0123456789' will miss 
- *              data in 12408 byte, but 1s period send is stable.
+ *           1, Baudrata: 9600bps is not stable when send '0123456789' in period 100ms. 
+ *           2, Baudrata: 1200bps test is OK. 
  *                 
  ********************************************************************************/
 
@@ -23,6 +21,7 @@
 #include <linux/atmel_tc.h>
 #include <mach/at91_pio.h>
 #include <linux/clk.h>
+#include <linux/wait.h>
 
 #define DRV_AUTHOR                "Guo Wenxue <guowenxue@gmail.com>"
 #define DRV_DESC                  "AT91SAM9XXX GPIO Simulator UART driver"
@@ -42,49 +41,42 @@
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
-static int baudrate = 1200;
 
-
-static void __iomem    *tcaddr;
-struct atmel_tc        *tc; 
+static int baudrate = 9600;
 
 static struct cdev cdev;
 static struct class *dev_class = NULL;
 
 #define AT91_TCBLOCK0             0 /* Time Counter Block 0, for TC0,TC1,TC2  */
 #define AT91_TCBLOCK1             1 /* Time Counter Block 1, for TC3,TC4,TC5  */
-
 #define AT91_TC_CHN0              0 /* Channel 0 in a TC Block */
 #define AT91_TC_CHN1              1 /* Channel 1 in a TC Block */
 #define AT91_TC_CHN2              2 /* Channel 2 in a TC Block */
 
+#define RXD_CLOCK_CHN             AT91_TC_CHN0
+#define TXD_CLOCK_CHN             AT91_TC_CHN1
+
+#define RXD_CLOCK_IRQ             AT91SAM9260_ID_TC0
+#define TXD_CLOCK_IRQ             AT91SAM9260_ID_TC1
+
+#define TXD_GPIO_PIN              AT91_PIN_PB4
+#define RXD_GPIO_PIN              AT91_PIN_PB5
+
 #define CIRC_BUF_SIZE             1024
 
-struct gsuart
-{
-    unsigned int           rxd_gpio;    /* Which PIN used as Receive  */
-    unsigned int           txd_gpio;    /* Which PIN used as Transmit */
-};
+static void __iomem    *tcaddr;
+struct atmel_tc        *tc; 
 
-struct circ_buf  rx_ring;
-struct circ_buf  tx_ring;
+struct circ_buf        rx_ring;
+struct circ_buf        tx_ring;
 
-wait_queue_head_t          tx_waitq;
-
-static struct gsuart  gsuarts[] = {
-    [0] = {
-        .txd_gpio = AT91_PIN_PB4,
-        .rxd_gpio = AT91_PIN_PB5,
-    },
-};
-#define GSUART_NUMS      ARRAY_SIZE(gsuarts)
+static DECLARE_WAIT_QUEUE_HEAD(tx_waitq);
 
 /* Start the TC channel to provide the receive/send data clock */
 static inline void start_tc(int channel, unsigned long baudrate)
 {
     unsigned long mck_rate_hz = 0;
 
-    
     /* Enable the TC Clock in AT91_PMC_PCER(Can Read status from AT91_PMC_PCSR) */
     clk_enable(tc->clk[channel]);
 
@@ -143,12 +135,14 @@ static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
     static int         i = 0;
     int                size = 0;
     static char        ch = 0;
+    int                level = LOWLEVEL;
 
-    clear_tc(AT91_TC_CHN1);
+    clear_tc(TXD_CLOCK_CHN);
 
     /* The send circle buffer get data need to be send */
     if((size=CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1)
     {
+        /* A byte data include 1 start bit, 1 stop bit, 8 data bit */
         if(0 == (i%10) )
         {
             i=0;
@@ -157,30 +151,24 @@ static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
 
         switch(i)
         {
-
-            case START_BIT:
-                /* Set TXD GPIO Pin as Low Level, send 0 */
-                at91_sys_write(AT91_PIOB+PIO_CODR, 1<<4);
+            case START_BIT:  
+                /* Start bit should be 0, set TXD GPIO pin as low level */
+                level=LOWLEVEL;
                 break;
-            case STOP_BIT:
-                /* Set TXD GPIO Pin as High Level, send 1 */
-                at91_sys_write(AT91_PIOB+PIO_SODR, 1<<4);
+            case STOP_BIT: 
+                /* Stop bit should be 1, set TXD GPIO pin as high level */
+                level=HIGHLEVEL;
+                /* All the data bit has been sendout, the currenct byte data has been 
+                 * sent out, we should get next byte data from the circle buffer */
                 tx_ring.tail = (tx_ring.tail + 1) & (CIRC_BUF_SIZE - 1); 
                 break;
             default:
-                if(1 == (ch>>(i-1)&1) )
-                {
-                    /* Set TXD GPIO Pin as High Level, send 1 */
-                    at91_sys_write(AT91_PIOB+PIO_SODR, 1<<4);
-                }
-                else
-                {
-                    /* Set TXD GPIO Pin as Low Level, send 0 */
-                    at91_sys_write(AT91_PIOB+PIO_CODR, 1<<4);
-                }
+                /* This is data bit[0...7], set GPIO to low when it's 0 and high when it's 1 */
+                level = (ch>>(i-1)&1);
                 break;
         }
 
+        at91_set_gpio_value(AT91_PIN_PB4, level);
         i++;
     }
     else
@@ -224,18 +212,23 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
     unsigned int           status = 0;
     static unsigned  char  ch = 0;
 
-    clear_tc(AT91_TC_CHN0);
+    clear_tc(RXD_CLOCK_CHN);
 
-    status = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
+    //status = (at91_sys_read(AT91_PIOB+PIO_PDSR)>>5)&0x01;
+    status = at91_get_gpio_value(AT91_PIN_PB5);
 
-    /* Skip sample Clock0, clock1, clock3, clock5... as above explain  */
+    /* Skip sample Clock1, clock3, clock5, clock7... as above explain  */
     if(! (i%2 || i == 0) ) 
-        ch |= (status<<((i-1)/2));  
+    {
+        /* Record 2,4,6,8,10,12,14,16 for DATABIT, the data is MSB */  
+        ch |= (status<<((i-1)/2)); 
+    }
 
+    /* We just handle the STARTBIT  and 8 bits DATABIT, skip the STOPBIT */
     if(i == 18 ) /* Stop bit clock arrive  */
     {
         /* Stop the TC counter */
-        stop_tc(AT91_TC_CHN0); 
+        stop_tc(RXD_CLOCK_CHN); 
 
         /* Clear AT91_PIN_PB5 pin interrupt */
         at91_sys_read(AT91_PIOB+PIO_ISR);
@@ -249,18 +242,7 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
             rx_ring.buf[rx_ring.head] = ch;
             rx_ring.head = (rx_ring.head + 1) & (CIRC_BUF_SIZE - 1);
         }
-#if 0
-        else /* Buffer overflow  */
-        {
-            int j=0;
-            for(j=0; j<rx_ring.head; j++)
-            {
-                printk("buf[%d]=0x%x\n", j, rx_ring.buf[j]);
-            }
-            memset(rx_ring.buf, 0xa5, CIRC_BUF_SIZE);
-            rx_ring.head = rx_ring.tail = 0;
-        }
-#endif
+
         i = ch = 0;
         return IRQ_HANDLED;
     }
@@ -269,7 +251,9 @@ static irqreturn_t rxdtc_interrupt_handler(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
-/* When there is Data incoming, the RXD pin should get a falling edge interrupt */
+/* When there is Data incoming, the RXD pin should get a falling edge interrupt,
+ * then we will start the RXD Timer Counter to receive data
+ * */
 static irqreturn_t rxdpin_intterupt_handler(int irq,void *dev_id)
 {
     /* AT91 PIO Interrupt can only capture both FALLING EDGE and RISING EDGE 
@@ -284,7 +268,7 @@ static irqreturn_t rxdpin_intterupt_handler(int irq,void *dev_id)
     at91_sys_read(AT91_PIOB+PIO_ISR);
 
     /* We use 2*Baudrate to sample the code, to fix the uncertain clock sample point */
-    start_tc(AT91_TC_CHN0, 2*baudrate);  /* Max Baudrate support 9600bps */
+    start_tc(RXD_CLOCK_CHN, 2*baudrate);  /* Max Baudrate support 9600bps */
 
     return IRQ_HANDLED;
 }
@@ -293,36 +277,46 @@ static int gstty_open(struct inode *inode, struct file *file)
 {
     int result = 0;
     int num = MINOR(inode->i_rdev);
-    struct gsuart *pgsuart = NULL;
     
-    pgsuart = file->private_data = &gsuarts[num];
+    /* Set the TXD Pin to GPIO output mode  */
+    at91_set_gpio_input(RXD_GPIO_PIN, ENPULLUP);
 
     /* Set the RXD pin to interrupt mode */
-    at91_set_gpio_input(pgsuart->rxd_gpio, ENPULLUP);
-    at91_set_gpio_output(pgsuart->txd_gpio, HIGHLEVEL);
-    at91_set_deglitch(pgsuart->rxd_gpio, 1);
-    result = request_irq(pgsuart->rxd_gpio, rxdpin_intterupt_handler, 0, DEV_NAME, (void *)num);
+    at91_set_gpio_output(TXD_GPIO_PIN, HIGHLEVEL);
+    at91_set_deglitch(RXD_GPIO_PIN, 1);
+
+    /* Request the RXD GPIO pin interrupt, when there is data arrive in this pin, there should be
+     * a START BIT, which is low level, and it should be high level when the line is free. So when
+     * data arrive, there should be a falling edge interrupt happend.*/
+    result = request_irq(RXD_GPIO_PIN, rxdpin_intterupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
         goto RET;
     }
 
-    result = request_irq(AT91SAM9260_ID_TC0, rxdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
+    /* When the RXD GPIO pin get a falling edge interrupt, it means there is a data arrive, then it
+     * will start the TC0 for RXD Receive Clock.
+     */
+    result = request_irq(RXD_CLOCK_IRQ, rxdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
-        free_irq(pgsuart->rxd_gpio, (void *)num);
+        free_irq(RXD_GPIO_PIN, (void *)num);
         goto RET;
     }
 
-    result = request_irq(AT91SAM9260_ID_TC1, txdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
+    /* When the TXD GPIO pin get some data to send, it will use this Timer Counter to provide the 
+     * data send out clock
+     */
+    result = request_irq(TXD_CLOCK_IRQ, txdtc_interrupt_handler, 0, DEV_NAME, (void *)num);
     if( result )
     {
-        free_irq(pgsuart->rxd_gpio, (void *)num);
-        free_irq(AT91SAM9260_ID_TC0, (void *)num);
+        free_irq(RXD_GPIO_PIN, (void *)num);
+        free_irq(RXD_CLOCK_IRQ, (void *)num);
         goto RET;
     }
 
-    start_tc(AT91_TC_CHN1, baudrate);  /* Max Baudrate support 9600bps */
+    /* Always start SEND CLOCK TC channel */
+    start_tc(TXD_CLOCK_CHN, baudrate); 
 
 RET:
     return result;
@@ -335,6 +329,8 @@ static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t 
     int len = 0;
     int size = 0;
 
+    /* In rxdtc_interrupt_handler() function, it will receive the data from RXD GPIO pin
+     * and put the data into the Receive circle buffer. */
     if((size=CIRC_CNT(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
     {
        len = size<=count? size : count; 
@@ -352,7 +348,8 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
 
     DECLARE_WAITQUEUE(wait, current);
 
-    /* Check buffer is overflow or not */
+    /* If the send circle buffer is not full, put the send data into it. When the send circle buffer 
+     * is not empty, the txdtc_interrupt_handler() will start to send the data out.*/
     if ( (size=CIRC_SPACE(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1 )
     {
         len = count<=size ? count : size;
@@ -360,6 +357,7 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
         tx_ring.head = (tx_ring.head + len) & (CIRC_BUF_SIZE - 1);
     }
 
+    /* Add current process to wait queue, untill the data is send over by txdtc_interrupt_handler() */
     add_wait_queue(&tx_waitq, &wait);
     while(CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE) >=1)
     {
@@ -387,22 +385,18 @@ static long gstty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 static int gstty_release(struct inode *inode, struct file *file)
 {
-    int result = 0;
     int num = MINOR(inode->i_rdev);
-    struct gsuart *pgsuart = NULL;
 
-    pgsuart = file->private_data;
+    disable_irq(RXD_CLOCK_IRQ);
+    free_irq(RXD_CLOCK_IRQ,(void *)num);
 
-    disable_irq(AT91SAM9260_ID_TC0);
-    free_irq(AT91SAM9260_ID_TC0,(void *)num);
+    disable_irq(TXD_CLOCK_IRQ);
+    free_irq(TXD_CLOCK_IRQ,(void *)num);
 
-    disable_irq(AT91SAM9260_ID_TC1);
-    free_irq(AT91SAM9260_ID_TC1,(void *)num);
+    disable_irq(RXD_GPIO_PIN);
+    free_irq(RXD_GPIO_PIN, (void *)num);
 
-    disable_irq(pgsuart->rxd_gpio);
-    free_irq(pgsuart->rxd_gpio, (void *)num);
-
-    return result;
+    return 0;
 }
 
 
@@ -421,17 +415,17 @@ static int __init at91_gstty_init(void)
     int result = 0;
     dev_t  devno;
 
+    /* Initialize the receive circle buffer */
     memset(&rx_ring, 0, sizeof(struct circ_buf));
     rx_ring.buf = kmalloc(CIRC_BUF_SIZE, GFP_KERNEL);
     if( NULL == rx_ring.buf )
         goto ERROR;
 
+    /* Initialize the send circle buffer */
     memset(&tx_ring, 0, sizeof(struct circ_buf));
     tx_ring.buf = kmalloc(CIRC_BUF_SIZE, GFP_KERNEL);
     if( NULL == tx_ring.buf )
         goto ERROR;
-
-    init_waitqueue_head(&tx_waitq);
 
     if( 0 != dev_major)
     {
@@ -475,6 +469,8 @@ static int __init at91_gstty_init(void)
     device_create(dev_class, NULL, devno, "%s%d", DEV_NAME, 0);
 #endif
 
+    /* Alloc for the Timer Counter from drivers/misc/atmel_tclib.c, it depends on 
+     * the kernel configure for ATMEL TC library support in drivers->misc */
     tc = atmel_tc_alloc(AT91_TCBLOCK0, "recv_tc");
     if (!tc) 
     { 
@@ -484,7 +480,8 @@ static int __init at91_gstty_init(void)
     }
     tcaddr = tc->regs;
 
-    printk("AT91 %s driver version %d.%d.%d initiliazed.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
+    printk("AT91 %s driver version %d.%d.%d <%s> initiliazed.\n", 
+            DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER, __DATE__);
     return 0;
 
 ERROR:
@@ -495,7 +492,8 @@ ERROR:
     if(rx_ring.buf != NULL)
         kfree(rx_ring.buf);
 
-    printk("AT91 %s driver version %d.%d.%d install failure.\n", DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
+    printk("AT91 %s driver version %d.%d.%d <%s> install failure.\n", 
+            DEV_NAME, DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER, __DATE__);
     cdev_del(&cdev);
     unregister_chrdev_region(devno, 1);
 
