@@ -83,7 +83,7 @@ int produce_item(struct circ_buf *ring, char *data, int  count)
             memcpy(&(ring->buf[ring->head]), data, to_end_space); 
             for(i=0; i<to_end_space; i++) 
             { 
-                printf("produec_item %02d bytes: ring->buf[%d]=%d\n", to_end_space, ring->head+i, ring->buf[ring->head+i]); 
+                printf("produec_item %02d bytes: ring->buf[%02d]=%d\n", to_end_space, ring->head+i, ring->buf[ring->head+i]); 
             }
             ring->head = (ring->head + to_end_space) & (CIRC_BUF_SIZE - 1); 
             len -= to_end_space; 
@@ -95,7 +95,7 @@ int produce_item(struct circ_buf *ring, char *data, int  count)
         memcpy(&(ring->buf[ring->head]), &data[to_end_space], len);
         for(i=0; i<len; i++)
         {
-           printf("produec_item %02d bytes: ring->buf[%d]=%d\n", len, ring->head+i, ring->buf[ring->head+i]);
+           printf("produec_item %02d bytes: ring->buf[%02d]=%d\n", len, ring->head+i, ring->buf[ring->head+i]);
         }
         ring->head = (ring->head + len) & (CIRC_BUF_SIZE - 1);
     }
@@ -121,7 +121,7 @@ int consume_item(struct circ_buf *ring, char *buf, int  count)
             memcpy(buf, &(ring->buf[ring->tail]), to_end_space);
             for(i=0; i<to_end_space; i++) 
             { 
-                printf("consume_item %02d bytes: ring->buf[%d]=%d\n", to_end_space, ring->tail+i, ring->buf[ring->tail+i]); 
+                printf("consume_item %02d bytes: ring->buf[%02d]=%d\n", to_end_space, ring->tail+i, ring->buf[ring->tail+i]); 
             }
             ring->tail = (ring->tail + to_end_space) & (CIRC_BUF_SIZE - 1);
             left -= to_end_space;
@@ -133,13 +133,13 @@ int consume_item(struct circ_buf *ring, char *buf, int  count)
         memcpy(&buf[to_end_space], &(ring->buf[ring->tail]), left);
         for(i=0; i<left; i++)
         {
-           printf("consume_item %02d bytes: ring->buf[%d]=%d\n", left, ring->tail+i, ring->buf[ring->tail+i]);
+           printf("consume_item %02d bytes: ring->buf[%02d]=%d\n", left, ring->tail+i, ring->buf[ring->tail+i]);
         }
         ring->tail = (ring->tail + left) & (CIRC_BUF_SIZE - 1);
     }
 
     for(i=0; i<len; i++)
-        printf("output_data %02d bytes: buf[%d]=%d\n", len, i, buf[i]);
+        printf("output_data %02d bytes: buf[%02d]=%d\n", len, i, buf[i]);
 
     printf("-----------------------------------------------------------------------------------------------\n");
 
