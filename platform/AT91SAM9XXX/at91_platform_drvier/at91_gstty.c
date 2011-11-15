@@ -133,46 +133,40 @@ static void clear_tc(int channel)
 static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
 {
     static int         i = 0;
-    int                size = 0;
-    static char        ch = 0;
-    int                level = LOWLEVEL;
+    static char        bits[10];
+    static char        in_byte = 0x00;
+    int                j=0;
 
     clear_tc(TXD_CLOCK_CHN);
 
     /* The send circle buffer get data need to be send */
-    if((size=CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1)
+    if( in_byte ||  CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)>=1 )
     {
+        //printk("in_byte=%d size=%d\n", in_byte, CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE));
         /* A byte data include 1 start bit, 1 stop bit, 8 data bit */
         if(0 == (i%10) )
         {
             i=0;
-            ch=tx_ring.buf[tx_ring.tail];
+            in_byte = 0x01;
+
+            bits[START_BIT]=LOWLEVEL;  /* Start bit */
+            for(j=0; j<8; j++)       
+                bits[j+1]=(tx_ring.buf[tx_ring.tail]>>j) & 0x01;  /* Data bit */
+            bits[STOP_BIT]=HIGHLEVEL;  /* Stop bit  */
         }
 
-        switch(i)
+        at91_set_gpio_value(AT91_PIN_PB4, bits[i]);
+        if(STOP_BIT==i)
         {
-            case START_BIT:  
-                /* Start bit should be 0, set TXD GPIO pin as low level */
-                level=LOWLEVEL;
-                break;
-            case STOP_BIT: 
-                /* Stop bit should be 1, set TXD GPIO pin as high level */
-                level=HIGHLEVEL;
-                /* All the data bit has been sendout, the currenct byte data has been 
-                 * sent out, we should get next byte data from the circle buffer */
-                tx_ring.tail = (tx_ring.tail + 1) & (CIRC_BUF_SIZE - 1); 
-                break;
-            default:
-                /* This is data bit[0...7], set GPIO to low when it's 0 and high when it's 1 */
-                level = (ch>>(i-1)&1);
-                break;
+            tx_ring.tail = (tx_ring.tail + 1) & (CIRC_BUF_SIZE - 1); 
+            in_byte = 0x00;
         }
 
-        at91_set_gpio_value(AT91_PIN_PB4, level);
         i++;
     }
     else
         wake_up_interruptible(&tx_waitq);
+
     return IRQ_HANDLED;
 }
 
@@ -327,34 +321,81 @@ RET:
 static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
     int len = 0;
-    int size = 0;
+    int size, left; 
+    int to_end_space = 0;
+
+    if(count<=0 || !access_ok(VERIFY_WRITE, buf, count) )
+        return 0;
 
     /* In rxdtc_interrupt_handler() function, it will receive the data from RXD GPIO pin
      * and put the data into the Receive circle buffer. */
     if((size=CIRC_CNT(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE)) >= 1)
-    {
-       len = size<=count? size : count; 
-       copy_to_user(buf, &rx_ring.buf[rx_ring.tail], len);
-       rx_ring.tail = (rx_ring.tail + len) & (CIRC_BUF_SIZE - 1); 
+    { 
+        left = len = size<=count? size : count; 
+
+        /*  Circle buffer is not a continuous address space, this is tail to head left size */
+        to_end_space = CIRC_CNT_TO_END(rx_ring.head, rx_ring.tail, CIRC_BUF_SIZE);
+
+        if(left > to_end_space)
+        {
+            copy_to_user(buf, &rx_ring.buf[rx_ring.tail], to_end_space);
+            rx_ring.tail = (rx_ring.tail + to_end_space) & (CIRC_BUF_SIZE - 1);
+            left -= to_end_space;
+        }
+        else
+        {
+            to_end_space = 0;
+        }
+
+        copy_to_user(&buf[to_end_space], &rx_ring.buf[rx_ring.tail], left); 
+        rx_ring.tail = (rx_ring.tail + left) & (CIRC_BUF_SIZE - 1);
     }
 
+    if(size>count)
+    {
+        printk("WARNING: %s() buffer overflow: count=%d size=%d\n", __FUNCTION__, count, size);
+    }
     return len;
 }
 
 static ssize_t gstty_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 {
     int len = 0;
-    int size = 0;
+    int size, left;
+    int to_end_space = 0;
 
     DECLARE_WAITQUEUE(wait, current);
+
+    if(count <= 0 || !access_ok(VERIFY_READ, buf, count) )
+        return 0;
 
     /* If the send circle buffer is not full, put the send data into it. When the send circle buffer 
      * is not empty, the txdtc_interrupt_handler() will start to send the data out.*/
     if ( (size=CIRC_SPACE(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1 )
     {
-        len = count<=size ? count : size;
-        copy_from_user(&tx_ring.buf[tx_ring.head], buf, len);
-        tx_ring.head = (tx_ring.head + len) & (CIRC_BUF_SIZE - 1);
+        left = len = count<=size ? count : size;
+
+        /*  Circle buffer is not a continuous address space, this is tail to head left size */
+        to_end_space = CIRC_SPACE_TO_END(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE);
+
+        if(left > to_end_space)
+        {
+            copy_from_user(&tx_ring.buf[tx_ring.head], buf, to_end_space);
+            tx_ring.head = (tx_ring.head + to_end_space) & (CIRC_BUF_SIZE - 1);
+            left -= to_end_space;
+        }
+        else
+        {
+             to_end_space = 0;
+        }
+
+        copy_from_user(&tx_ring.buf[tx_ring.head], &buf[to_end_space], left);
+        tx_ring.head = (tx_ring.head + left) & (CIRC_BUF_SIZE - 1);
+    }
+
+    if(count>size)
+    {
+        printk("WARNING: %s() buffer overflow: count=%d size=%d\n", __FUNCTION__, count, size);
     }
 
     /* Add current process to wait queue, untill the data is send over by txdtc_interrupt_handler() */

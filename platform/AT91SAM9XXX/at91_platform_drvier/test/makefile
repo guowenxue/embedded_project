@@ -67,7 +67,7 @@ endif
 SRCFILES = $(wildcard *.c)
 BINARIES=$(SRCFILES:%.c=%)
 
-all: entry version binaries 
+all: entry version binaries install 
 entry: 
 	@echo " ";
 	@echo " =========================================================";
@@ -97,7 +97,7 @@ tag:
 	@cscope -Rbq
 
 install:
-	@cp $(BINARIES) ${INSTPATH}
+	cp $(BINARIES) ${INSTPATH}
 
 clean: 
 	@rm -f version.h 

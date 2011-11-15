@@ -36,9 +36,16 @@ int main(int argc, char **argv)
     int ret;
     char  buf[BUF_SIZE];
     unsigned mode = MODE_NORMAL;
+    int debug=0x00;
 
-    printf("Pass a argument will use POLL mode to test the gstty driver\n");
-    if (argc > 1)
+    printf("Pass two argument will use POLL mode to test the gstty driver\n");
+
+    if(argc==2)
+    {
+       debug=0x01; 
+    }
+
+    if (argc == 3)
     {
         mode = MODE_POLL;
     }
@@ -96,14 +103,14 @@ int main(int argc, char **argv)
             {
                 perror("read failure");
             }
-#if 0
-            else
+
+            if(debug && ret>0)
             {
                 int i;
                 for (i=0; i<ret; i++)
                   printf("buf[%d] %x\n", i, buf[i]);
             }
-#endif
+
             if(ret>0)
             {
                ret = write(fd, buf, ret);

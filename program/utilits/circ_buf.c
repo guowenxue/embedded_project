@@ -68,36 +68,36 @@ int main (int argc, char **argv)
 
 int produce_item(struct circ_buf *ring, char *data, int  count)
 {
-    int len,i,size;
+    int len = 0;
+    int left,i,size;
     int to_end_space=0;
-    unsigned char split = 0x00;
 
     if ( (size=CIRC_SPACE(ring->head, ring->tail, CIRC_BUF_SIZE)) >= 1 )
     {
-        len = count<=size ? count : size;
-
+        left = len = count<=size ? count : size;
         to_end_space = CIRC_SPACE_TO_END(ring->head, ring->tail, CIRC_BUF_SIZE);
-        if(len > to_end_space)
+
+        if(left > to_end_space)
         { 
-            split = 0x01;
             memcpy(&(ring->buf[ring->head]), data, to_end_space); 
             for(i=0; i<to_end_space; i++) 
             { 
                 printf("produec_item %02d bytes: ring->buf[%02d]=%d\n", to_end_space, ring->head+i, ring->buf[ring->head+i]); 
             }
             ring->head = (ring->head + to_end_space) & (CIRC_BUF_SIZE - 1); 
-            len -= to_end_space; 
+            left -= to_end_space; 
         }
-
-        if(!split)
+        else
+        { 
             to_end_space = 0;
-
-        memcpy(&(ring->buf[ring->head]), &data[to_end_space], len);
-        for(i=0; i<len; i++)
-        {
-           printf("produec_item %02d bytes: ring->buf[%02d]=%d\n", len, ring->head+i, ring->buf[ring->head+i]);
         }
-        ring->head = (ring->head + len) & (CIRC_BUF_SIZE - 1);
+
+        memcpy(&(ring->buf[ring->head]), &data[to_end_space], left);
+        for(i=0; i<left; i++)
+        {
+           printf("produec_item %02d bytes: ring->buf[%02d]=%d\n", left, ring->head+i, ring->buf[ring->head+i]);
+        }
+        ring->head = (ring->head + left) & (CIRC_BUF_SIZE - 1);
     }
     printf("-----------------------------------------------------------------------------------------------\n");
 
@@ -106,9 +106,9 @@ int produce_item(struct circ_buf *ring, char *data, int  count)
 
 int consume_item(struct circ_buf *ring, char *buf, int  count)
 {
-    int i, len, left, size;
+    int len = 0;
+    int i, left, size;
     int to_end_space=0;
-    unsigned char split = 0x00;
 
     if ( (size=CIRC_CNT(ring->head, ring->tail, CIRC_BUF_SIZE)) >= 1 )
     {
@@ -117,7 +117,6 @@ int consume_item(struct circ_buf *ring, char *buf, int  count)
 
         if(left > to_end_space)
         {
-            split = 0x01;
             memcpy(buf, &(ring->buf[ring->tail]), to_end_space);
             for(i=0; i<to_end_space; i++) 
             { 
@@ -126,9 +125,10 @@ int consume_item(struct circ_buf *ring, char *buf, int  count)
             ring->tail = (ring->tail + to_end_space) & (CIRC_BUF_SIZE - 1);
             left -= to_end_space;
         }
-
-        if(!split)
+        else
+        {
             to_end_space = 0;
+        }
 
         memcpy(&buf[to_end_space], &(ring->buf[ring->tail]), left);
         for(i=0; i<left; i++)

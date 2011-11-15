@@ -15,8 +15,8 @@
 PWD=$(shell pwd)
 INSTPATH=/tftp
 
-#ARCH?=i386
-ARCH?=arm926t
+ARCH?=i386
+#ARCH?=arm926t
 
 LINK_MODE=STATIC
 MODE=PRODUCTION
