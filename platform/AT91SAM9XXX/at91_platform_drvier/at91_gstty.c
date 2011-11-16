@@ -62,7 +62,7 @@ static struct class *dev_class = NULL;
 #define TXD_GPIO_PIN              AT91_PIN_PB4
 #define RXD_GPIO_PIN              AT91_PIN_PB5
 
-#define CIRC_BUF_SIZE             1024
+#define CIRC_BUF_SIZE             4096
 
 static void __iomem    *tcaddr;
 struct atmel_tc        *tc; 
@@ -379,9 +379,9 @@ static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t 
         rx_ring.tail = (rx_ring.tail + left) & (CIRC_BUF_SIZE - 1);
     }
 
-    if(size>count)
+    if(unlikely(size>count))
     {
-        printk("WARNING: %s() buffer overflow: count=%d size=%d\n", __FUNCTION__, count, size);
+        printk("WARNING: %s() copy left %d bytes data\n", __FUNCTION__, (size-count));
     }
     return len;
 }
@@ -396,8 +396,6 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
 
     if(count <= 0 || !access_ok(VERIFY_READ, buf, count) )
         return 0;
-
-
 
     /* If the send circle buffer is not full, put the send data into it. When the send circle buffer 
      * is not empty, the txdtc_interrupt_handler() will start to send the data out.*/
@@ -461,7 +459,7 @@ static int gstty_release(struct inode *inode, struct file *file)
     /* Wait for the data all send over, can not use wait_event_interruptible() here
      * for if the user program catch the kill signal, it will don't wait the data send
      * over here and goes out*/
-    wait_event(close_waitq, send_over);
+    wait_event_timeout(close_waitq, send_over, HZ);
     send_over=0;
 
     disable_irq(RXD_CLOCK_IRQ);
