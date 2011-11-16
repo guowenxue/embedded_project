@@ -67,10 +67,12 @@ static struct class *dev_class = NULL;
 static void __iomem    *tcaddr;
 struct atmel_tc        *tc; 
 
+volatile int           send_over = 0;
 struct circ_buf        rx_ring;
 struct circ_buf        tx_ring;
 
 static DECLARE_WAIT_QUEUE_HEAD(tx_waitq);
+static DECLARE_WAIT_QUEUE_HEAD(close_waitq);
 
 /* Start the TC channel to provide the receive/send data clock */
 static inline void start_tc(int channel, unsigned long baudrate)
@@ -128,44 +130,64 @@ static void clear_tc(int channel)
     __raw_readl(tcaddr + ATMEL_TC_REG(channel, SR));
 }
 
-#define START_BIT          0
-#define STOP_BIT           9
+/* We use 11 clock to send a byte: 
+ * 1st clock used to prepare the data 
+ * 2nd clock used to send start bit
+ * 3rd~10th clock used to send data bit
+ * 11st clock used to send stop bit*/
+#define START_BIT         0 
+#define STOP_BIT          9 
+
 static irqreturn_t txdtc_interrupt_handler(int irq, void *dev_id)
 {
-    static int         i = 0;
-    static char        bits[10];
+    static int         cycle = 0;
+    static char        bits[10];  /* 11 send clock */
     static char        in_byte = 0x00;
     int                j=0;
 
     clear_tc(TXD_CLOCK_CHN);
 
-    /* The send circle buffer get data need to be send */
-    if( in_byte ||  CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)>=1 )
+    /* The data bit send cycle */
+    if( in_byte )
     {
-        //printk("in_byte=%d size=%d\n", in_byte, CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE));
-        /* A byte data include 1 start bit, 1 stop bit, 8 data bit */
-        if(0 == (i%10) )
+        at91_set_gpio_value(AT91_PIN_PB4, bits[cycle]);
+        if(unlikely(STOP_BIT == cycle))
         {
-            i=0;
-            in_byte = 0x01;
-
-            bits[START_BIT]=LOWLEVEL;  /* Start bit */
-            for(j=0; j<8; j++)       
-                bits[j+1]=(tx_ring.buf[tx_ring.tail]>>j) & 0x01;  /* Data bit */
-            bits[STOP_BIT]=HIGHLEVEL;  /* Stop bit  */
-        }
-
-        at91_set_gpio_value(AT91_PIN_PB4, bits[i]);
-        if(STOP_BIT==i)
-        {
+            /* A byte data send over, tx_ring tail head on */
             tx_ring.tail = (tx_ring.tail + 1) & (CIRC_BUF_SIZE - 1); 
-            in_byte = 0x00;
-        }
 
-        i++;
+            /* All the bit in a bytes send over  */
+            in_byte = 0x00; 
+        }
+        cycle++;
     }
-    else
+    /* First cycle used to prepare the send data */
+    else if ( CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE) > 0 )
+    {
+            /* Start bit send low level*/
+            bits[START_BIT]=LOWLEVEL;  
+
+            /* 8bits data in a byte  */
+            for(j=0; j<8; j++)       
+                bits[j+START_BIT+1]=(tx_ring.buf[tx_ring.tail]>>j) & 0x01;
+
+            /* Stop bit send high level*/
+            bits[STOP_BIT]=HIGHLEVEL;  
+
+            /* Goes to next cycle start to send every bit in a bytes  */
+            in_byte = 0x01; 
+            cycle = START_BIT;
+            send_over = 0;
+    } 
+    /* All the data in the cycle buffer send over */
+    else if (cycle > STOP_BIT)
+    {   
+        cycle = 0;
+        in_byte = 0x00;
+        send_over = 1;
+        wake_up(&close_waitq);
         wake_up_interruptible(&tx_waitq);
+    }
 
     return IRQ_HANDLED;
 }
@@ -271,12 +293,18 @@ static int gstty_open(struct inode *inode, struct file *file)
 {
     int result = 0;
     int num = MINOR(inode->i_rdev);
-    
+
+#if 0
+    /* Clear the send/receive circle buffer  */
+    tx_ring.head = tx_ring.tail = 0;
+    rx_ring.head = rx_ring.tail = 0;
+#endif
+
     /* Set the TXD Pin to GPIO output mode  */
-    at91_set_gpio_input(RXD_GPIO_PIN, ENPULLUP);
+    at91_set_gpio_output(TXD_GPIO_PIN, HIGHLEVEL);
 
     /* Set the RXD pin to interrupt mode */
-    at91_set_gpio_output(TXD_GPIO_PIN, HIGHLEVEL);
+    at91_set_gpio_input(RXD_GPIO_PIN, ENPULLUP);
     at91_set_deglitch(RXD_GPIO_PIN, 1);
 
     /* Request the RXD GPIO pin interrupt, when there is data arrive in this pin, there should be
@@ -369,6 +397,8 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
     if(count <= 0 || !access_ok(VERIFY_READ, buf, count) )
         return 0;
 
+
+
     /* If the send circle buffer is not full, put the send data into it. When the send circle buffer 
      * is not empty, the txdtc_interrupt_handler() will start to send the data out.*/
     if ( (size=CIRC_SPACE(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE)) >= 1 )
@@ -398,7 +428,7 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
         printk("WARNING: %s() buffer overflow: count=%d size=%d\n", __FUNCTION__, count, size);
     }
 
-    /* Add current process to wait queue, untill the data is send over by txdtc_interrupt_handler() */
+    /*  Add current process to wait queue, untill the data is send over by txdtc_interrupt_handler() */
     add_wait_queue(&tx_waitq, &wait);
     while(CIRC_CNT(tx_ring.head, tx_ring.tail, CIRC_BUF_SIZE) >=1)
     {
@@ -406,8 +436,8 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
         schedule();
         if (signal_pending(current))
         {
-             len = -ERESTARTSYS;
-             goto OUT;
+            len = -ERESTARTSYS;
+            goto OUT;
         }
     }
 
@@ -427,6 +457,12 @@ static long gstty_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static int gstty_release(struct inode *inode, struct file *file)
 {
     int num = MINOR(inode->i_rdev);
+
+    /* Wait for the data all send over, can not use wait_event_interruptible() here
+     * for if the user program catch the kill signal, it will don't wait the data send
+     * over here and goes out*/
+    wait_event(close_waitq, send_over);
+    send_over=0;
 
     disable_irq(RXD_CLOCK_IRQ);
     free_irq(RXD_CLOCK_IRQ,(void *)num);
