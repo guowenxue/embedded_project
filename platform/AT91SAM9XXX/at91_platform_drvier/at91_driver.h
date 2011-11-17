@@ -64,6 +64,7 @@
 #include <asm/arch/gpio.h>
 #include <asm/arch/at91_pmc.h>
 #include <asm/arch/at91_tc.h>
+#include <asm/arch/at91_adc.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/at91_rtt.h>
 #include <asm/arch/cpu.h>
@@ -99,6 +100,9 @@
 
 #define DEV_LED_NAME                "led"
 #define DEV_LED_MAJOR               203
+
+#define DEV_ADC_NAME                "adc"
+#define DEV_ADC_MAJOR               204
 
 #define DEV_BUTTON_NAME             "button"
 #define DEV_BUTTON_MAJOR            "211"

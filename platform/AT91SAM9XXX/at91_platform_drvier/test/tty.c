@@ -19,10 +19,21 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <signal.h>
 
 #define MODE_POLL     0x01
 #define MODE_NORMAL   0x02
 #define BUF_SIZE      64
+
+
+unsigned char g_ucStop = 0x00;
+
+void signal_handler (int signo)
+{
+    g_ucStop = 0x01;
+}
+
 
 /********************************************************************************
  *  Description:
@@ -37,6 +48,7 @@ int main(int argc, char **argv)
     char  buf[BUF_SIZE];
     unsigned mode = MODE_NORMAL;
     int debug=0x00;
+    struct sigaction      sigact;
 
     printf("Pass two argument will use POLL mode to test the gstty driver\n");
 
@@ -55,9 +67,21 @@ int main(int argc, char **argv)
     {
         perror("Open gstty failure\n");
         return -1;
-    }
+    } 
+    
+    /* Install signal.*/ 
+    sigemptyset (&sigact.sa_mask); 
+    sigact.sa_flags = 0; 
+    sigact.sa_handler = signal_handler;
 
-    while (1)
+    sigaction (SIGTERM, &sigact, 0);    /*  catch terminate signal "kill" command*/ 
+    sigaction (SIGINT,  &sigact, 0);    /*  catch interrupt signal CTRL+C */ 
+    sigaction (SIGSEGV, &sigact, 0);    /*  catch segmentation faults  */ 
+    sigaction (SIGCHLD, &sigact, 0);    /*  catch child process return */ 
+    sigaction (SIGPIPE, &sigact, 0);    /*  catch broken pipe */
+
+
+    while ( !g_ucStop )
     {
         if (MODE_POLL == mode)
         {
@@ -120,9 +144,11 @@ int main(int argc, char **argv)
 
             memset(buf, 0x00, BUF_SIZE);
 
-            //sleep(1);
         }
+
     }
+
+    ioctl(fd, 0, 0);
 
     close(fd);
     return 0;
