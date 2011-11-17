@@ -378,11 +378,12 @@ static int gstty_read(struct file *file, char __user *buf, size_t count, loff_t 
         copy_to_user(&buf[to_end_space], &rx_ring.buf[rx_ring.tail], left); 
         rx_ring.tail = (rx_ring.tail + left) & (CIRC_BUF_SIZE - 1);
     }
-
+#if 0  /* If enable printk here, it will lost some data */
     if(unlikely(size>count))
     {
         printk("WARNING: %s() copy left %d bytes data\n", __FUNCTION__, (size-count));
     }
+#endif
     return len;
 }
 
@@ -421,10 +422,12 @@ static ssize_t gstty_write(struct file *file, const char __user *buf, size_t cou
         tx_ring.head = (tx_ring.head + left) & (CIRC_BUF_SIZE - 1);
     }
 
+#if 0
     if(count>size)
     {
         printk("WARNING: %s() buffer overflow: count=%d size=%d\n", __FUNCTION__, count, size);
     }
+#endif
 
     /*  Add current process to wait queue, untill the data is send over by txdtc_interrupt_handler() */
     add_wait_queue(&tx_waitq, &wait);
