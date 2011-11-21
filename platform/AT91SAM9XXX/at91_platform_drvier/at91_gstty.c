@@ -1,5 +1,5 @@
 /*********************************************************************************
- *      Copyright:  (C) 2011 R&D of San Fran Electronics Co., LTD  
+ *      Copyright:  (C) 2011 Guo Wenxue<guowenxue@gmail.com>
  *                  All rights reserved.
  *
  *       Filename:  gpio_gstty.c
@@ -9,9 +9,14 @@
  *         Author:  Guo Wenxue <guowenxue@gmail.com>
  *      ChangeLog:  1, Release initial version on "10/27/2011 11:39:10 AM"
  *
- *        TestLog:  2011.11.12 
- *           1, Baudrata: 9600bps is not stable when send '0123456789' in period 100ms. 
- *           2, Baudrata: 1200bps bit data error.
+ *
+ *        WARNING:  This driver depends on the Linux kernel support AT91 TCLIB, we
+ *                  can do it as follow:
+ *                  [guowenxue@centos6 linux-3.0]$ make menuconfig
+ *                        Device Drivers  --->
+ *                             [*] Misc devices  --->
+ *                                  [*]   Atmel AT32/AT91 Timer/Counter Library
+ *
  *                 
  ********************************************************************************/
 
