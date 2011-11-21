@@ -45,11 +45,19 @@ static struct resource at91_adc_resources[] = {
     },
 };
 
+static void platform_adc_release(struct device * dev)
+{
+    return ;
+}
+
 static struct platform_device at91_adc_device = { 
     .name      = "at91_adc",
     .id        = -1,
     .resource   = at91_adc_resources,
     .num_resources  = ARRAY_SIZE(at91_adc_resources),
+    .dev = {
+        .release = platform_adc_release,
+    }
 };
 
 
@@ -73,6 +81,7 @@ struct adc_channel
     unsigned int        sample_data[DATA_LEN];
     struct timer_list   sample_timer;
     struct cdev         cdev; 
+    int                 devno;
 };
 
 struct adc_dev
@@ -83,7 +92,7 @@ struct adc_dev
     struct adc_channel  *channel;
 };
 
-struct adc_dev *adc = NULL;
+static struct adc_dev *adc;
 
 static int adc_open(struct inode *inode, struct file *file)
 {
@@ -108,46 +117,79 @@ static struct file_operations adc_fops = {
     .unlocked_ioctl = adc_ioctl, /*  compatible with kernel version >=2.6.38*/
 };
 
-static int setup_adc_device(struct adc_dev *adc)
+/* Malloc for the adc device and channels  */
+struct adc_dev * setup_adc_device(void)
 {  
+
     int i,ret = 0;
-    int devno;
-    struct adc_channel *channel;
+    struct adc_dev *adc = NULL;
+    struct adc_channel *channel = NULL;
 
     adc = kmalloc(sizeof(struct adc_dev), GFP_KERNEL);
     if (!adc) 
-    {
-        ret = -ENOMEM;
-    }
+        goto ERR_ADC_MALLOC;
+
     memset(adc, 0, sizeof(struct adc_dev));
+
+    adc->class = class_create(THIS_MODULE, DEV_NAME);
+    if(IS_ERR(adc->class)) 
+    { 
+        printk("%s driver create class failture\n",DEV_NAME);
+        goto ERR_CLASS_CREAT;
+    }
 
     adc->chn_cnt = 2;
     adc->channel = kmalloc(adc->chn_cnt*sizeof(struct adc_channel), GFP_KERNEL);
     if(!adc->channel)
     {
-        ret = -ENOMEM;
+        goto ERR_CHANNEL_MALLOC;
     }
 
     for(i=0; i<adc->chn_cnt; i++)
     {
-        memset(adc->channel, 0, sizeof(struct adc_channel));
+        memset(&(adc->channel[i]), 0, sizeof(struct adc_channel));
         channel = &(adc->channel[i]);
 
-        devno = MKDEV(dev_major, dev_minor+i);
+        channel->devno = MKDEV(dev_major, dev_minor+i);
         cdev_init(&channel->cdev, &adc_fops);
         channel->cdev.owner = THIS_MODULE; 
         channel->cdev.ops = &adc_fops;
 
-        ret = cdev_add (&channel->cdev, devno, 1);
+        ret = cdev_add (&channel->cdev, channel->devno, 1);
         if(ret)
-            printk(KERN_NOTICE "Error %d adding %s%d", ret, DEV_NAME, i);
+        {
+            printk(KERN_NOTICE "Error[%d] adding %s%d", ret, DEV_NAME, i);
+            goto ERR_DEV_CREATE;
+        }
+        else
+        { 
+            device_create(adc->class, NULL, channel->devno, NULL, "%s%d", DEV_NAME, i);
+            dbg_print("cdev_add %s%d successfully.\n", DEV_NAME, i);
+        }
+
     }
 
-    return ret;
+    adc->channel[0].id = ADC_CHN0; 
+    adc->channel[1].id = ADC_CHN3; 
+    dbg_print("setup_adc_device() ok.\n");
+
+    return adc;
+
+ERR_DEV_CREATE:
+    kfree(adc->channel);
+
+ERR_CHANNEL_MALLOC:
+    class_destroy(adc->class);
+
+ERR_CLASS_CREAT:
+    kfree(adc);
+
+ERR_ADC_MALLOC:
+    return NULL;
 }
 
 
-static int at91_adc_probe(struct platform_device *dev)
+static int at91_adc_probe(struct platform_device *pdev)
 {
     struct resource *res;
     int size;
@@ -172,10 +214,19 @@ static int at91_adc_probe(struct platform_device *dev)
         return ret;   
     }  
 
-    setup_adc_device(adc);
 
+    /* Set up the device information and add the device */
+    adc = setup_adc_device();
+    if(NULL == adc)
+    {
+        printk("setup_adc_device() failure: ret=%d\n", ret);
+        unregister_chrdev_region(MKDEV(dev_major, dev_minor), 1);
+        return ret;
+    }
 
-    res = platform_get_resource(dev, IORESOURCE_MEM, 0);
+    platform_set_drvdata(pdev, adc);
+
+    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
     if( !res )
     {
         printk("%s[%04d] failed to get %s memory regist.\n", __FILE__, __LINE__, DEV_NAME);
@@ -183,7 +234,7 @@ static int at91_adc_probe(struct platform_device *dev)
     }
 
     size = resource_size(res); 
-    if( !request_mem_region(res->start, size, dev->name) )
+    if( !request_mem_region(res->start, size, pdev->name) )
     {
         printk("%s[%04d] failed to get %s memory region.\n", __FILE__, __LINE__, DEV_NAME);
         ret = -ENOENT;
@@ -195,16 +246,48 @@ static int at91_adc_probe(struct platform_device *dev)
         printk("%s[%04d] %s ioremap() of registers failed.\n", __FILE__, __LINE__, DEV_NAME);
         ret = -ENXIO;
     }
-
-
-
+    printk("at91_adc driver probe successfully!\n");
 
     return 0;
 }
 
 
-static int at91_adc_remove(struct platform_device *dev)
+static int at91_adc_remove(struct platform_device *pdev)
 {
+    struct adc_dev *adc = platform_get_drvdata(pdev);
+
+
+    if(NULL == adc)
+    {
+        goto RET;
+    }
+
+    if(NULL == adc->channel) 
+    {
+        kfree(adc);
+        goto RET;
+    }
+
+    if(NULL != adc->channel) 
+    { 
+        int i;
+        for(i=0; i<adc->chn_cnt; i++)
+        {
+            dbg_print("Desdroy %s%d ID=%d.\n", DEV_NAME, i, adc->channel[i].id);
+            cdev_del(&(adc->channel[i].cdev));
+            device_destroy(adc->class, adc->channel[i].devno);
+        } 
+    }
+
+    class_destroy(adc->class);
+  
+    kfree(adc->channel); 
+    kfree(adc);
+    unregister_chrdev_region(MKDEV(dev_major, dev_minor), 1);
+    printk("AT91 %s driver removed\n", DEV_NAME);
+
+RET:
+    platform_set_drvdata(pdev, NULL);
     return 0;
 }
 
@@ -237,6 +320,8 @@ static int __init at91_adc_init(void)
         goto fail_reg_plat_drv;
     }
     dbg_print("Regist AT91 platform %s driver successfully.\n", DEV_NAME);
+
+    return 0;
 
 fail_reg_plat_drv:
     platform_driver_unregister(&at91_adc_driver);
