@@ -45,6 +45,8 @@ static struct resource at91_adc_resources[] = {
     },
 };
 
+static int at91_adc_remove(struct platform_device *pdev);
+
 static void platform_adc_release(struct device * dev)
 {
     return ;
@@ -96,6 +98,7 @@ static struct adc_dev *adc;
 
 static int adc_open(struct inode *inode, struct file *file)
 {
+
     return 0;
 }
 
@@ -214,14 +217,13 @@ static int at91_adc_probe(struct platform_device *pdev)
         return ret;   
     }  
 
-
     /* Set up the device information and add the device */
     adc = setup_adc_device();
     if(NULL == adc)
     {
         printk("setup_adc_device() failure: ret=%d\n", ret);
-        unregister_chrdev_region(MKDEV(dev_major, dev_minor), 1);
         return ret;
+        goto adc_del_dev;
     }
 
     platform_set_drvdata(pdev, adc);
@@ -231,6 +233,7 @@ static int at91_adc_probe(struct platform_device *pdev)
     {
         printk("%s[%04d] failed to get %s memory regist.\n", __FILE__, __LINE__, DEV_NAME);
         ret = -ENXIO;
+        goto adc_del_channel;
     }
 
     size = resource_size(res); 
@@ -238,6 +241,7 @@ static int at91_adc_probe(struct platform_device *pdev)
     {
         printk("%s[%04d] failed to get %s memory region.\n", __FILE__, __LINE__, DEV_NAME);
         ret = -ENOENT;
+        goto adc_del_channel;
     }
 
     adc->io = ioremap(res->start, size);
@@ -245,17 +249,43 @@ static int at91_adc_probe(struct platform_device *pdev)
     {
         printk("%s[%04d] %s ioremap() of registers failed.\n", __FILE__, __LINE__, DEV_NAME);
         ret = -ENXIO;
+        goto adc_release_mem;
     }
-    printk("at91_adc driver probe successfully!\n");
 
+    printk("at91_adc driver probe successfully!\n");
     return 0;
+
+adc_release_mem:
+    release_mem_region(res->start, size);
+
+adc_del_channel:
+    at91_adc_remove(pdev);
+
+adc_del_dev: 
+    unregister_chrdev_region(MKDEV(dev_major, dev_minor), 1);
+
+    return ret;
 }
 
 
 static int at91_adc_remove(struct platform_device *pdev)
 {
     struct adc_dev *adc = platform_get_drvdata(pdev);
+    struct resource *res;
+    int size = 0;
 
+    iounmap(adc->io);
+
+    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+    if( !res )
+    {
+        printk("%s[%04d] failed to get %s memory regist.\n", __FILE__, __LINE__, DEV_NAME);
+    }
+    else
+    { 
+        size = resource_size(res); 
+        release_mem_region(res->start, size);
+    }
 
     if(NULL == adc)
     {
@@ -283,6 +313,7 @@ static int at91_adc_remove(struct platform_device *pdev)
   
     kfree(adc->channel); 
     kfree(adc);
+
     unregister_chrdev_region(MKDEV(dev_major, dev_minor), 1);
     printk("AT91 %s driver removed\n", DEV_NAME);
 
@@ -290,6 +321,8 @@ RET:
     platform_set_drvdata(pdev, NULL);
     return 0;
 }
+
+
 
 static struct platform_driver at91_adc_driver = { 
     .probe      = at91_adc_probe, 
