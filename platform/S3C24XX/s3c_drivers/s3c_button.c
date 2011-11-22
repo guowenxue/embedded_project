@@ -145,8 +145,7 @@ static irqreturn_t s3c_button_intterupt(int irq,void *de_id)
     if(BUTTON_UP  == button_device.status[i])
     {
        button_device.status[i] = BUTTON_UNCERTAIN;
-       button_device.timers[i].expires = jiffies + TIMER_DELAY_DOWN;
-       add_timer(&(button_device.timers[i]));
+       mod_timer(&(button_device.timers[i]), jiffies+TIMER_DELAY_DOWN);
     }
 
     return IRQ_HANDLED;
@@ -174,8 +173,7 @@ static void button_timer_handler(unsigned long data)
         }
 
         /* Cancel the dithering  */
-        button_device.timers[num].expires = jiffies + TIMER_DELAY_UP;
-        add_timer(&(button_device.timers[num]));
+        mod_timer(&(button_device.timers[num]), jiffies+TIMER_DELAY_UP);
     }
     else
     {
@@ -321,6 +319,7 @@ static int button_release(struct inode *inode, struct file *file)
     {
         disable_irq(pdata->buttons[i].nIRQ);
         free_irq(pdata->buttons[i].nIRQ, (void *)i);
+        del_timer(&(pdev->timers[i]));
     }
 
     kfree(pdev->timers);
