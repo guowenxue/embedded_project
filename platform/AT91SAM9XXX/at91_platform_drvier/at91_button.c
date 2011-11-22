@@ -64,7 +64,8 @@ static struct at91_button_info  at91_buttons[] = {
         .name = "restore",
         .nIRQ = AT91_PIN_PB20,
         .gpio = AT91_PIN_PB20,
-        .irq_type = AT91_AIC_SRCTYPE_FALLING,
+        /* AT91SAM9260 ONLY support both(RISING and FALLING) EDGE triggle on Internal(GPIO) Interrupt, So it's unsued here*/
+        .irq_type = AT91_AIC_SRCTYPE_FALLING, 
     },
 };
 
@@ -108,7 +109,7 @@ static irqreturn_t at91_button_intterupt(int irq,void *de_id)
     int found = 0;
     struct at91_button_platform_data *pdata = button_device.data;
 
-    printk("Receive IRQ=%d level=%d status=%d\n", irq, at91_get_gpio_value(irq_to_gpio(irq)),(at91_sys_read(AT91_AIC_SMR(AT91SAM9260_ID_PIOB))>>5)&0x03 );
+    //printk("Receive IRQ=%d level=%d status=%d\n", irq, at91_get_gpio_value(irq_to_gpio(irq)),(at91_sys_read(AT91_AIC_SMR(AT91SAM9260_ID_PIOB))>>5)&0x03 );
 
     for(i=0; i<pdata->nbuttons; i++)
     {
@@ -124,15 +125,11 @@ static irqreturn_t at91_button_intterupt(int irq,void *de_id)
         return IRQ_NONE;
     }
 
-    /* Disable current Key interrupt */
-    //disable_irq(pdata->buttons[i].nIRQ);
-
-    /* Only when button is up then we will handle this event */
+    /* Only when button record status is up then we will handle this event */
     if(BUTTON_UP  == button_device.status[i])
     {
        button_device.status[i] = BUTTON_UNCERTAIN;
-       button_device.timers[i].expires = jiffies + TIMER_DELAY_DOWN;
-       add_timer(&(button_device.timers[i]));
+       mod_timer(&(button_device.timers[i]), jiffies + TIMER_DELAY_DOWN);
     }
 
     return IRQ_HANDLED;
@@ -157,20 +154,17 @@ static void button_timer_handler(unsigned long data)
             wake_up_interruptible(&(button_device.waitq));
         }
 
-        /* Cancel the dithering  */
-        button_device.timers[num].expires = jiffies + TIMER_DELAY_UP;
-        add_timer(&(button_device.timers[num]));
+        /* Cancel the dithering */
+        mod_timer(&(button_device.timers[num]), jiffies + TIMER_DELAY_UP);
     }
     else
     {
         //dbg_print("Key Released!\n");
         button_device.status[num] = BUTTON_UP;
-     //   enable_irq(pdata->buttons[num].nIRQ);
     }
 
     return ;
 }
-
 
 /*===================== Button device driver part ===========================*/
 
@@ -219,7 +213,7 @@ static int button_open(struct inode *inode, struct file *file)
         /* Enable glitch filter for interrupt */
         at91_set_deglitch(pdata->buttons[i].gpio, 1);   
 
-        /* AT91SAM9260 ONLY support both(RISING and FALLING) EDGE triggle */
+        /* AT91SAM9260 ONLY support both(RISING and FALLING) EDGE triggle, so it's unused here */
 #if 0
         irq_set_irq_type(pdata->buttons[i].nIRQ, pdata->buttons[i].irq_type); 
         at91_sys_write(AT91_AIC_SMR(AT91SAM9260_ID_PIOB), AT91_AIC_SRCTYPE_LOW);
@@ -315,6 +309,7 @@ static int button_release(struct inode *inode, struct file *file)
     {
         disable_irq(pdata->buttons[i].nIRQ);
         free_irq(pdata->buttons[i].nIRQ, (void *)i);
+        del_timer(&(pdev->timers[i]));
     }
 
     kfree(pdev->timers);
