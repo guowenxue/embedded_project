@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define BUF_SIZE      80
+#define BUF_SIZE      128
 
 /********************************************************************************
  *  Description:

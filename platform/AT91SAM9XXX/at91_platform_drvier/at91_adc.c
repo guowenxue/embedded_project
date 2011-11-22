@@ -8,6 +8,10 @@
  *        Version:  1.0.0(11/17/2011~)
  *         Author:  Guo Wenxue <guowenxue@gmail.com>
  *      ChangeLog:  1, Release initial version on "11/17/2011 04:40:39 PM"
+ *
+ *      Reference:  http://www.at91.com/forum/viewtopic.php/f,12/t,4992/
+ *                  http://www.hackchina.com/r/75269/adc.h__html
+ *                  
  *                 
  ********************************************************************************/
 
@@ -28,10 +32,10 @@
 #define DEV_MAJOR                 0 /*   dynamic major by default */ 
 #endif
 
-#define ADC_CHN0                  0
-#define ADC_CHN1                  1
-#define ADC_CHN2                  2
-#define ADC_CHN3                  3
+#define ADC_CHN0                  0  /* This Pin is for SIM/SAM SCK3 on MiniSTAC  */
+#define ADC_CHN1                  1  /* This Pin is for restore key on MiNiSTAC */
+#define ADC_CHN2                  2  /* This Pin is for Beep on MiniSTAC  */
+#define ADC_CHN3                  3  /* This Pin is for LED0 on MiniSTAC  */
 #define MAX_ADC_CHN               4
 #define ADC_CHN_CNT               2
 
@@ -41,6 +45,7 @@
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
+
 
 static struct resource at91_adc_resources[] = {
     [0] = {
@@ -72,6 +77,7 @@ struct adc_channel
 struct adc_dev
 {
     void __iomem        *io;
+    struct clk          *clk;
     struct class        *class;
     int                 chn_cnt;
     struct adc_channel  *channel;
@@ -95,11 +101,29 @@ static struct platform_device at91_adc_device = {
     }
 };
 
-void adc_sample_timer_handler(unsigned long data)
+void adc_sample_timer_handler(unsigned long index)
 {
-    int index = data;
-    printk("ADC Channel[%d] sample now.\n", index);
+    int id = adc->channel[index].id;
 
+    spin_lock(&adc->lock);
+    __raw_writel(AT91_ADC_START, (adc->io + AT91_ADC_CR)); /*  Trigger the ADC  */ 
+    spin_unlock(&adc->lock);
+
+#if 0
+    printk("ADC Channel[%d]   ADC_MR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_MR));
+    printk("ADC Channel[%d] ADC_CHSR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_CHSR));
+    printk("ADC Channel[%d]   ADC_SR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_SR));
+    printk("ADC Channel[%d]  ADC_IMR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_IMR));
+#endif
+
+    /* Wait for conversion to be complete. */
+    while ((__raw_readl(adc->io+AT91_ADC_SR) & (1<<id)) == 0) 
+    {
+        //printk("ADC Channel[%d]  ADC_SR register: 0x%x.\n", id,  ioread32(adc->io+AT91_ADC_SR));
+        cpu_relax();
+    }
+
+    printk("ADC Channel[%d] sample data: %u.\n", id,  ioread32(adc->io + AT91_ADC_CHR(id)));
     mod_timer(&(adc->channel[index].sample_timer), jiffies + SAMPLE_INTERVAL);
 }
 
@@ -153,8 +177,8 @@ struct adc_dev * setup_adc_device(void)
         goto ERR_CHANNEL_MALLOC;
     }
 
-    /* We used ADC channel 0,3  */
-    adc->channel[0].id = ADC_CHN0; 
+    /* We used ADC channel 1,3  */
+    adc->channel[0].id = ADC_CHN1; 
     adc->channel[1].id = ADC_CHN3; 
 
     for(i=0; i<adc->chn_cnt; i++)
@@ -205,15 +229,16 @@ static void initialize_adc_channel( struct adc_dev *adc )
     int i;
     struct adc_channel *channel = NULL;
 
+    adc->clk=clk_get(NULL,"adc_clk"); 
+    clk_enable(adc->clk);
+
     dbg_print("%s[%d] %s()\n", __FILE__,__LINE__,__FUNCTION__);
 
     /* Reset the the ADC  */
-    iowrite32(AT91_ADC_SWRST, (adc->io + AT91_ADC_CR));
-    //adc_writel(adc->io, AT91_ADC_CR,  AT91_ADC_SWRST);
-
+    __raw_writel(AT91_ADC_SWRST, (adc->io + AT91_ADC_CR));
 
     /* Disable all ADC interrupter, we use software timer to sample */
-    iowrite32(0x0, (adc->io+AT91_ADC_IDR) );
+    __raw_writel(0x0F0F0F, (adc->io+AT91_ADC_IDR) );
 
     /* Configure ADC mode register:
      *  From 39.7.2 ADC Mode Register P715~P716 of AT91SAM9260 user manual: 
@@ -226,7 +251,7 @@ static void initialize_adc_channel( struct adc_dev *adc )
      *  Enable sleep mode and disable hardware trigger from TIOA output from TC0.we use 
      *  software timer.
      */
-    iowrite32((AT91_ADC_SHTIM_(9) | AT91_ADC_STARTUP_(9) | AT91_ADC_PRESCAL_(9) | 
+    __raw_writel((AT91_ADC_SHTIM_(9) | AT91_ADC_STARTUP_(9) | AT91_ADC_PRESCAL_(9) | 
                 AT91_ADC_SLEEP ), (adc->io + AT91_ADC_MR));
 
     for(i=0; i<adc->chn_cnt; i++)
@@ -237,7 +262,7 @@ static void initialize_adc_channel( struct adc_dev *adc )
         at91_set_A_periph(adc_channel_gpio[channel->id], 0);
 
         /* Enable all the ADC channels */
-        iowrite32(AT91_ADC_CH(channel->id), (adc->io+AT91_ADC_CHER));
+        __raw_writel(AT91_ADC_CH(channel->id), (adc->io+AT91_ADC_CHER));
 
         /* Add the ADC sample timer */
         init_timer(&(channel->sample_timer));

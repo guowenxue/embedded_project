@@ -50,10 +50,15 @@
 #include <linux/serial_core.h>
 #include <linux/irq.h>
 
+#include <linux/atmel_tc.h>
+#include <mach/at91_pio.h>
+#include <linux/clk.h>
+#include <linux/wait.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,32)
 #include <mach/hardware.h>
 #include <mach/at91_tc.h>
+#include <mach/at91_adc.h>
 #include <mach/gpio.h>
 #include <mach/at91_pmc.h>
 #include <asm/irq.h>
