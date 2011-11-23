@@ -39,13 +39,14 @@
 #define MAX_ADC_CHN               4
 #define ADC_CHN_CNT               2
 
-#define DATA_LEN                  10  /* MAX save 10 sample datas */
-#define SAMPLE_INTERVAL           40
+#define DATA_LEN                  10   /* MAX save 10 sample datas */
+#define STD_VOLTAGE               3300 /* 3.3V=3300mv */
+#define PRECISION                 1024 /* We use 10bit ADC */
 
 static int debug = DISABLE;
 static int dev_major = DEV_MAJOR;
 static int dev_minor = 0;
-
+static unsigned long sample_interval=100;  /* 1second=100jiffies */
 
 static struct resource at91_adc_resources[] = {
     [0] = {
@@ -103,33 +104,84 @@ static struct platform_device at91_adc_device = {
 
 void adc_sample_timer_handler(unsigned long index)
 {
-    int id = adc->channel[index].id;
+    struct adc_channel  *channel = &(adc->channel[index]);
+    int i;
+
+#if 0
+    { 
+        struct timeval time;
+        do_gettimeofday(&time);
+        printk(KERN_INFO "sample_interval:%lu Time %ld:%ld\n",sample_interval, time.tv_sec, time.tv_usec);
+    }
+#endif
 
     spin_lock(&adc->lock);
     __raw_writel(AT91_ADC_START, (adc->io + AT91_ADC_CR)); /*  Trigger the ADC  */ 
     spin_unlock(&adc->lock);
 
 #if 0
-    printk("ADC Channel[%d]   ADC_MR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_MR));
-    printk("ADC Channel[%d] ADC_CHSR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_CHSR));
-    printk("ADC Channel[%d]   ADC_SR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_SR));
-    printk("ADC Channel[%d]  ADC_IMR register: 0x%x.\n", id,  ioread32(adc->io + AT91_ADC_IMR));
+    printk("ADC Channel[%d]   ADC_MR register: 0x%x.\n", channel->id,  ioread32(adc->io + AT91_ADC_MR));
+    printk("ADC Channel[%d] ADC_CHSR register: 0x%x.\n", channel->id,  ioread32(adc->io + AT91_ADC_CHSR));
+    printk("ADC Channel[%d]   ADC_SR register: 0x%x.\n", channel->id,  ioread32(adc->io + AT91_ADC_SR));
+    printk("ADC Channel[%d]  ADC_IMR register: 0x%x.\n", channel->id,  ioread32(adc->io + AT91_ADC_IMR));
 #endif
 
     /* Wait for conversion to be complete. */
-    while ((__raw_readl(adc->io+AT91_ADC_SR) & (1<<id)) == 0) 
+    while ((__raw_readl(adc->io+AT91_ADC_SR) & (1<<channel->id)) == 0) 
     {
-        //printk("ADC Channel[%d]  ADC_SR register: 0x%x.\n", id,  ioread32(adc->io+AT91_ADC_SR));
+        //printk("ADC Channel[%d]  ADC_SR register: 0x%x.\n", channel->id,  ioread32(adc->io+AT91_ADC_SR));
         cpu_relax();
     }
 
-    printk("ADC Channel[%d] sample data: %u.\n", id,  ioread32(adc->io + AT91_ADC_CHR(id)));
-    mod_timer(&(adc->channel[index].sample_timer), jiffies + SAMPLE_INTERVAL);
+    for(i=DATA_LEN-1; i>0; i--)
+    {
+        channel->sample_data[i]=channel->sample_data[i-1];
+    }
+    /* Calculate current voltage, unit mv */
+    channel->sample_data[0] = STD_VOLTAGE*ioread32(adc->io + AT91_ADC_CHR(channel->id))/PRECISION;
+
+#if 0
+    printk("ADC Channel[%d] sample new data: %u.\n", channel->id,  channel->sample_data[0]);
+    for(i=0; i<DATA_LEN; i++)
+        printk("%u ", channel->sample_data[i]);
+    printk("\n");
+#endif
+
+    spin_lock(&adc->lock);
+    mod_timer(&(channel->sample_timer), jiffies+sample_interval);
+    spin_unlock(&adc->lock);
 }
 
 static int adc_open(struct inode *inode, struct file *file)
-{
+{ 
+    int  index; 
+    index = iminor(file->f_path.dentry->d_inode); /* Which Channel*/ 
+
+    file->private_data = &(adc->channel[index]);
     return 0;
+}
+
+static int adc_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+{
+    struct adc_channel *channel = file->private_data;
+    int len = 0;
+
+    len = min(sizeof(channel->sample_data), count);
+
+#if 0
+    { 
+        int i; 
+        printk("Read ADC sample %d bytes data:\n", len); 
+        for(i=0; i<DATA_LEN; i++) 
+        { 
+            printk("%d ", channel->sample_data[i]); 
+        } 
+        printk("\n");
+    }
+#endif
+    copy_to_user(buf, channel->sample_data, len);
+
+    return len;
 }
 
 static int adc_release(struct inode *inode, struct file *file)
@@ -137,8 +189,41 @@ static int adc_release(struct inode *inode, struct file *file)
     return 0;
 }
 
+static void print_help(void)
+{ 
+    printk("Follow is the ioctl() command for %s driver:\n", DEV_NAME); 
+    printk("Enable Driver debug command     : %u\n", SET_DRV_DEBUG); 
+    printk("Get Driver verion  command      : %u\n", GET_DRV_VER); 
+    printk("Set ADC sample interval command : %u\n", ADC_SET_INTERVEL); 
+}
+
+
 static long adc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
+    switch (cmd) 
+    { 
+        case SET_DRV_DEBUG: 
+            dbg_print("%s driver debug now.\n", DISABLE == arg ? "Disable" : "Enable"); 
+            debug = (0==arg) ? DISABLE : ENABLE; 
+            break; 
+
+        case GET_DRV_VER: 
+            print_version(DRV_VERSION); 
+            return DRV_VERSION;
+
+        case ADC_SET_INTERVEL: 
+            spin_lock(&adc->lock); 
+            sample_interval = arg;
+            spin_unlock(&adc->lock);
+            dbg_print("Set sample_interval time: %lu\n", sample_interval);
+            break;
+
+        default:
+             dbg_print("%s driver don't support ioctl command=%d\n", DEV_NAME, cmd);
+             print_help();
+             return -EINVAL;
+    }
+
     return 0;
 }
 
@@ -146,6 +231,7 @@ static long adc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static struct file_operations adc_fops = { 
     .owner = THIS_MODULE, 
     .open = adc_open, 
+    .read = adc_read, 
     .release = adc_release, 
     .unlocked_ioctl = adc_ioctl, /*  compatible with kernel version >=2.6.38*/
 };
@@ -185,7 +271,7 @@ struct adc_dev * setup_adc_device(void)
     {
         channel = &(adc->channel[i]);
 
-        memset(channel->sample_data, 0, DATA_LEN);
+        memset(channel->sample_data, 0, sizeof(channel->sample_data));
 
         /* Setup the character device  */
         channel->devno = MKDEV(dev_major, dev_minor+i);
@@ -268,7 +354,7 @@ static void initialize_adc_channel( struct adc_dev *adc )
         init_timer(&(channel->sample_timer));
         channel->sample_timer.function = adc_sample_timer_handler;
         channel->sample_timer.data = (unsigned long)i;
-        channel->sample_timer.expires  = jiffies + SAMPLE_INTERVAL;
+        channel->sample_timer.expires  = jiffies + sample_interval;
         add_timer(&(channel->sample_timer));
     }
 

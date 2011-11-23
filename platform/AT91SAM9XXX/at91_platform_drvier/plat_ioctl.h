@@ -37,10 +37,15 @@
  *                 ioctl command for few ioctl() cmd driver 0x10~0x2F
  *===========================================================================*/
 
+/* ADC driver */
+#define ADC_SET_INTERVEL            _IO (PLATDRV_MAGIC, 0x11)
+
 /* LED driver */
 #define LED_OFF                     _IO (PLATDRV_MAGIC, 0x18)
 #define LED_ON                      _IO (PLATDRV_MAGIC, 0x19)
 #define LED_BLINK                   _IO (PLATDRV_MAGIC, 0x1A)
+
+
 
 /*===========================================================================
  *                   ioctl command for GPRS driver 0x30~0x4F
