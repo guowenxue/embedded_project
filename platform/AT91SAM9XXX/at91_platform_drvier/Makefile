@@ -19,6 +19,7 @@ obj-m += at91_adc.o
 obj-m += at91_led.o
 obj-m += at91_button.o
 obj-m += at91_gstty.o
+obj-m += usb_gsm.o
 
 modules:
 	@make -C $(LINUX_SRC) M=$(PWD) modules
