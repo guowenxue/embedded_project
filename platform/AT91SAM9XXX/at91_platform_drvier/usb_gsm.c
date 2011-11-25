@@ -170,7 +170,7 @@ static int __init usb_gsm_init(void)
         printk("usb_register failed. Error number %d", result);
     }
 
-    printk(KERN_INFO DRV_DESC " %d.%d.%d\n", DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
+    printk(KERN_INFO DRV_DESC " %d.%d.%d registered.\n", DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
     return result;
 ERROR:
     tty_unregister_driver(gsm_tty_driver);
@@ -181,11 +181,16 @@ ERROR:
 static void __exit usb_gsm_exit(void)
 {
     /*  deregister the TTY driver */
-    tty_unregister_driver(gsm_tty_driver);
-    put_tty_driver(gsm_tty_driver);
+    if(gsm_tty_driver)
+    { 
+        tty_unregister_driver(gsm_tty_driver); 
+        put_tty_driver(gsm_tty_driver);
+    }
 
     /*  deregister the USB driver */
     usb_deregister(&gsm_usb_driver);
+
+    printk(KERN_INFO DRV_DESC " %d.%d.%d removed.\n", DRV_MAJOR_VER, DRV_MINOR_VER, DRV_REVER_VER);
 }
 
 module_init (usb_gsm_init);
